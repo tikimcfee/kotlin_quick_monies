@@ -47,7 +47,7 @@ class CommandProcessor {
         else -> Command.MainAppStop
     }
 
-    private inline fun List<String>.toTransaction(): Transaction {
+    private fun List<String>.toTransaction(): Transaction {
         return when (size) {
             2 -> Transaction(Date(), get(1).toDouble())
             3 -> Transaction(Date(), get(2).toDouble())
