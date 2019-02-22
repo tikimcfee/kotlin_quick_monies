@@ -15,20 +15,39 @@ class CommandProcessor {
             return Command.MainAppStop
         }
 
-        val pos = args[1].toInt() - 1
-
-        return when {
-            args[0] == "+" -> {
-                Command.Add(-1, args.toTransaction())
-            }
-            args[0] == "-" -> {
-                Command.Remove(pos)
-            }
-            else -> Command.MainAppStop
-        }
+        return args.argListToCommand()
     }
 
-    private fun List<String>.toTransaction(): Transaction {
+    private fun List<String>.argListToCommand() = when {
+        get(0) == "+" -> {
+            if (size == 2) {
+                Command.Add(
+                        RelativePos.Last,
+                        toTransaction()
+                )
+            } else {
+                Command.Add(
+                        RelativePos.Explicit(get(1).toInt()),
+                        toTransaction()
+                )
+            }
+        }
+        get(0) == "-" -> {
+            if (size == 1) {
+                Command.Remove(
+                        RelativePos.Last
+                )
+            } else {
+                Command.Remove(
+                        RelativePos.Explicit(get(1).toInt())
+                )
+            }
+
+        }
+        else -> Command.MainAppStop
+    }
+
+    private inline fun List<String>.toTransaction(): Transaction {
         return when (size) {
             2 -> Transaction(Date(), get(1).toDouble())
             3 -> Transaction(Date(), get(2).toDouble())

@@ -9,7 +9,9 @@ class TransactionAccountant {
     )
 
     fun computeTransactionDeltas(transactionList: TransactionList): List<Snapshot> {
-        if (transactionList.transactions.size == 0) {
+        val transactionCount = transactionList.transactions.size
+
+        if (transactionCount == 0) {
             return listOf()
         }
 
@@ -19,6 +21,7 @@ class TransactionAccountant {
 
         transactionList.transactions
                 .asSequence()
+                .drop(1)
                 .mapTo(deltaList) { transaction ->
                     (lastAccumulator withAnother transaction).also { lastAccumulator = it }
                 }

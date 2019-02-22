@@ -4,19 +4,31 @@ class TransactionList {
 
     val transactions = mutableListOf<Transaction>()
 
-    fun insert(listPosition: Int = -1, transaction: Transaction) {
-        if (listPosition in IntRange(0, transactions.size - 1)) {
-            transactions.add(listPosition, transaction)
-        } else {
-            transactions.add(transaction)
+    fun insert(listPosition: RelativePos = RelativePos.Last, transaction: Transaction) {
+        when (listPosition) {
+            RelativePos.First -> transactions.add(0, transaction)
+            RelativePos.Last -> transactions.add(transaction)
+            is RelativePos.Explicit -> {
+                if (listPosition.pos in IntRange(1, transactions.size)) {
+                    transactions.add(listPosition.pos - 1, transaction)
+                } else {
+                    insert(transaction = transaction)
+                }
+            }
         }
     }
 
-    fun remove(listPosition: Int = -1) {
-        if (listPosition in IntRange(0, transactions.size - 1)) {
-            transactions.removeAt(listPosition)
-        } else {
-            println("Nothing there, bub. ($listPosition)")
+    fun remove(listPosition: RelativePos = RelativePos.Last) {
+        when (listPosition) {
+            RelativePos.First -> transactions.removeAt(0)
+            RelativePos.Last -> transactions.removeAt(transactions.size - 1)
+            is RelativePos.Explicit -> {
+                if (listPosition.pos in IntRange(1, transactions.size)) {
+                    transactions.removeAt(listPosition.pos - 1)
+                } else {
+                    remove()
+                }
+            }
         }
     }
 
