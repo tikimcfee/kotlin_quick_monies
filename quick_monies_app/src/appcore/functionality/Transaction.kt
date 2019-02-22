@@ -1,4 +1,4 @@
-package appcore
+package appcore.functionality
 
 import java.util.Date
 

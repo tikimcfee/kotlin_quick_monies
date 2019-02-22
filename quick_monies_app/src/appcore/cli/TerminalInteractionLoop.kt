@@ -1,31 +1,24 @@
 package appcore.cli
 
-import appcore.Transaction
-import java.util.Date
+import appcore.functionality.ApplicationState
+import appcore.functionality.Command
+import appcore.functionality.TransactionList
 
 class TerminalInteractionLoop {
-
-    sealed class Command {
-        object Stop : Command()
-
-        class Add(val listPos: Int, val transaction: Transaction) : Command()
-
-        class Remove(val listPos: Int) : Command()
-    }
 
     private var shouldContinue = true
 
     fun loop(applicationState: ApplicationState) {
-//        clear()
+        clear()
 
         while (shouldContinue) {
             // Grab Input
             print("What's your poison? :: ")
-            val rawCommand = readLine() ?: ""
-            val parsedCommand = rawCommand.toCommand()
+            val input = readLine()
+            val commandInput = applicationState.commandProcessor.parseStringCommand(input)
 
             // Run it
-            parsedCommand.execute(applicationState)
+            commandInput.execute(applicationState)
 
             // Redraw the basic stuff, including a clear
             clear()
@@ -52,7 +45,7 @@ class TerminalInteractionLoop {
                 applicationState.transactionList.remove(listPos)
             }
 
-            Command.Stop -> stop()
+            Command.MainAppStop -> stop()
         }
     }
 
@@ -66,33 +59,4 @@ class TerminalInteractionLoop {
         }
     }
 
-    private fun String?.toCommand(): Command {
-        val args = this?.split(' ') ?: return Command.Stop
-
-        fun String.isStop() = this == "--" || this == "exit" || this == "x" || this == "quit"
-
-        if (args.size == 1 && args[0].isStop()) {
-            return Command.Stop
-        }
-
-        val pos = args[1].toInt() - 1
-
-        return when {
-            args[0] == "+" -> {
-                Command.Add(pos, args.toTransaction())
-            }
-            args[0] == "-" -> {
-                Command.Remove(pos)
-            }
-            else -> Command.Stop
-        }
-    }
-
-    private fun List<String>.toTransaction(): Transaction {
-        return when (size) {
-            2 -> Transaction(Date(), get(1).toDouble())
-            3 -> Transaction(Date(), get(2).toDouble())
-            else -> Transaction(Date(), 0.0)
-        }
-    }
 }
