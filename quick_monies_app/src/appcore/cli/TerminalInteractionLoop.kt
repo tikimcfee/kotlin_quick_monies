@@ -2,7 +2,9 @@ package appcore.cli
 
 import appcore.functionality.ApplicationState
 import appcore.functionality.Command
+import appcore.functionality.TransactionAccountant
 import appcore.functionality.TransactionList
+import appcore.transfomers.TransactionsAsText
 
 class TerminalInteractionLoop {
 
@@ -26,9 +28,10 @@ class TerminalInteractionLoop {
             outputTransactions(applicationState.transactionList)
             println()
 
-            applicationState.transactionAccountant
-                    .computeTransactionDeltas(applicationState.transactionList)
-                    .forEach { println(it) }
+            outputAccounting(
+                    applicationState.transactionList,
+                    applicationState.transactionAccountant
+            )
             println()
         }
     }
@@ -54,9 +57,20 @@ class TerminalInteractionLoop {
     }
 
     private fun outputTransactions(transactionList: TransactionList) {
-        transactionList.transactions.forEachIndexed { index, transaction ->
-            println("${index + 1}. $transaction")
-        }
+        transactionList
+                .transactions
+                .forEachIndexed { index, transaction ->
+                    println("${index + 1}. ${TransactionsAsText.Simple.render(transaction)}")
+                }
+    }
+
+    private fun outputAccounting(transactionList: TransactionList,
+                                 transactionAccountant: TransactionAccountant) {
+        transactionAccountant
+                .computeTransactionDeltas(transactionList)
+                .forEachIndexed { index, snapshot ->
+                    println("${index + 1}. ${TransactionsAsText.Simple.render(snapshot)}")
+                }
     }
 
 }
