@@ -34,6 +34,15 @@ object BasicTableRenderer {
                     }
                 }
 
+                form {
+                    set("action", "${actionEndpoint}remove_last")
+                    set("method", "post")
+
+                    button {
+                        text("Remove last")
+                    }
+                }
+
                 table {
                     tr {
                         td { text("Date") }

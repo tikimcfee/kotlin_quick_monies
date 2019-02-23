@@ -29,15 +29,12 @@ class JavalinWebFrameworkWrapper {
             }
         }
 
-        app.put("/run_raw") { requestContext: Context ->
-
+        app.post("/remove_last") { requestContext: Context ->
             simpleStateTransformer.runTransform(
-                    runtimeState, requestContext.body()
+                    runtimeState, "-"
             )
 
-            with(BasicTableRenderer) {
-                runtimeState.renderTo(requestContext)
-            }
+            requestContext.redirect("/")
         }
 
         app.post("/") { requestContext: Context ->

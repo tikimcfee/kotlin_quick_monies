@@ -90,6 +90,6 @@ class SimpleHTML {
         }, input)
     }
 
-    fun Form.button(init: Button.() -> Unit) =
+    fun Tag.button(init: Button.() -> Unit) =
             doInit(Button(), init)
 }
