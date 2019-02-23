@@ -4,6 +4,7 @@ import appcore.functionality.ApplicationState
 import appcore.functionality.Transaction
 import appcore.functionality.accounting.TransactionAccountant
 import appcore.functionality.commands.Command
+import appcore.functionality.dataPopulation.ProjectedTransactionGenerator
 import appcore.functionality.list.RelativePos
 import appcore.functionality.list.TransactionList
 import appcore.transfomers.TransactionsAsText
@@ -15,7 +16,23 @@ class TerminalInteractionLoop {
 
     fun loop(applicationState: ApplicationState) {
         clear()
+        applicationState.restoreState()
         applicationState.stateLoop()
+    }
+
+    private fun ApplicationState.restoreState() {
+        commandHistorian.readCommandHistory().forEach { restoredInput ->
+            with(commandProcessor) {
+                if (restoredInput.isStop()) return@forEach
+
+                parseStringCommand(restoredInput).execute(
+                        transactionList,
+                        projectedTransactionGenerator
+                )
+            }
+        }
+
+        drawScreen(this)
     }
 
     private fun ApplicationState.stateLoop() {
@@ -28,25 +45,17 @@ class TerminalInteractionLoop {
             val commandInput = commandProcessor.parseStringCommand(input)
 
             // Run it
-            with(commandInput) {
-                when (this) {
-                    is Command.Add ->
-                        transactionList.insert(listPos, transaction)
-                    is Command.Remove ->
-                        transactionList.remove(listPos)
-                    Command.Test_AddMultiple ->
-                        projectedTransactionGenerator.createMultiple(
-                                Transaction(Date(), 125.00),
-                                14,
-                                25
-                        ).forEach {
-                            transactionList.insert(RelativePos.Last, it)
-                        }
-                    Command.MainAppStop ->
-                        stop()
-                }
-            }
+            commandInput.execute(
+                    transactionList,
+                    projectedTransactionGenerator
+            )
 
+            drawScreen(this)
+        }
+    }
+
+    private fun drawScreen(applicationState: ApplicationState) {
+        with(applicationState) {
             // Redraw the basic stuff, including a clear
             clear()
 
@@ -55,6 +64,28 @@ class TerminalInteractionLoop {
 
             outputAccounting(transactionList, transactionAccountant)
             println()
+        }
+    }
+
+    private fun Command.execute(
+            transactionList: TransactionList,
+            projectedTransactionGenerator: ProjectedTransactionGenerator
+    ) {
+        when (this) {
+            is Command.Add ->
+                transactionList.insert(listPos, transaction)
+            is Command.Remove ->
+                transactionList.remove(listPos)
+            Command.Test_AddMultiple ->
+                projectedTransactionGenerator.createMultiple(
+                        Transaction(Date(), 125.00),
+                        14,
+                        25
+                ).forEach {
+                    transactionList.insert(RelativePos.Last, it)
+                }
+            Command.MainAppStop ->
+                stop()
         }
     }
 

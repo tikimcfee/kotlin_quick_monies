@@ -17,6 +17,8 @@ class CommandHistorian {
         }
     }
 
+    fun readCommandHistory() = historyFile().readLines()
+
     private fun ensureRoot() =
             File(workingDirectory())
                     .resolve(historyDirectoryName)

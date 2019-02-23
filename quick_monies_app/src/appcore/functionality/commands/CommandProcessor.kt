@@ -8,10 +8,10 @@ class CommandProcessor {
 
     fun parseStringCommand(input: String?) = input.toCommand()
 
+    fun String.isStop() = this == "--" || this == "exit" || this == "x" || this == "quit"
+
     private fun String?.toCommand(): Command {
         val args = this?.split(' ') ?: return Command.MainAppStop
-
-        fun String.isStop() = this == "--" || this == "exit" || this == "x" || this == "quit"
 
         if (args.size == 1 && args[0].isStop()) {
             return Command.MainAppStop
@@ -20,7 +20,7 @@ class CommandProcessor {
         return args.argListToCommand()
     }
 
-    private fun List<String>.argListToCommand() = when(get(0)) {
+    private fun List<String>.argListToCommand() = when (get(0)) {
         "+" -> {
             if (size == 2) {
                 Command.Add(
