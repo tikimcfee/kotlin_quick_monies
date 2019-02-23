@@ -1,4 +1,4 @@
-package appcore.functionality
+package appcore.functionality.list
 
 sealed class RelativePos {
     object First : RelativePos()

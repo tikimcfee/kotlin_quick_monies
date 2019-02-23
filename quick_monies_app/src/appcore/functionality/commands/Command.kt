@@ -1,4 +1,7 @@
-package appcore.functionality
+package appcore.functionality.commands
+
+import appcore.functionality.list.RelativePos
+import appcore.functionality.Transaction
 
 sealed class Command {
     object MainAppStop : Command()

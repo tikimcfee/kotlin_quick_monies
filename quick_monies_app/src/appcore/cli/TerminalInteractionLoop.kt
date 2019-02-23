@@ -1,9 +1,9 @@
 package appcore.cli
 
 import appcore.functionality.ApplicationState
-import appcore.functionality.Command
-import appcore.functionality.TransactionAccountant
-import appcore.functionality.TransactionList
+import appcore.functionality.accounting.TransactionAccountant
+import appcore.functionality.commands.Command
+import appcore.functionality.list.TransactionList
 import appcore.transfomers.TransactionsAsText
 
 class TerminalInteractionLoop {
@@ -12,45 +12,42 @@ class TerminalInteractionLoop {
 
     fun loop(applicationState: ApplicationState) {
         clear()
+        applicationState.stateLoop()
+    }
 
+    private fun ApplicationState.stateLoop() {
         while (shouldContinue) {
             // Grab Input
             print("What's your poison? :: ")
             val input = readLine()
-            val commandInput = applicationState.commandProcessor.parseStringCommand(input)
+            commandHistorian.recordRawCommand(input ?: "--end-of-input--")
+
+            val commandInput = commandProcessor.parseStringCommand(input)
 
             // Run it
-            commandInput.execute(applicationState)
+            with(commandInput) {
+                when (this) {
+                    is Command.Add -> transactionList.insert(listPos, transaction)
+                    is Command.Remove -> transactionList.remove(listPos)
+                    Command.MainAppStop -> stop()
+                }
+            }
 
             // Redraw the basic stuff, including a clear
             clear()
 
-            outputTransactions(applicationState.transactionList)
+            outputTransactions(transactionList)
             println()
 
-            outputAccounting(
-                    applicationState.transactionList,
-                    applicationState.transactionAccountant
-            )
+            outputAccounting(transactionList, transactionAccountant)
             println()
         }
     }
 
-    private fun clear() = println("\u001Bc")
-
-    private fun Command.execute(applicationState: ApplicationState) {
-        when (this) {
-            is Command.Add -> {
-                applicationState.transactionList.insert(listPos, transaction)
-            }
-
-            is Command.Remove -> {
-                applicationState.transactionList.remove(listPos)
-            }
-
-            Command.MainAppStop -> stop()
-        }
+    private fun clear() {
+//        println("\u001Bc")
     }
+
 
     private fun stop() {
         shouldContinue = false

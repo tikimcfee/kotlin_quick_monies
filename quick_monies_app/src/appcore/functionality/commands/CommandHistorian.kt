@@ -1,0 +1,43 @@
+package appcore.functionality.commands
+
+import java.io.File
+
+class CommandHistorian {
+
+    //    private val DEFAULT_FILENAME: String = "command_history_" + Date().time + ".txt"
+    private val historyDirectoryName = "command_historian_data"
+    private val commandHistoryName = "command_history"
+    private val commandHistoryBackupPre = "command_history_pre.bak"
+    private val commandHistoryBackupPost = "command_history_post.bak"
+
+    fun recordRawCommand(rawCommand: String) {
+        with(historyFile()) {
+            copyTo(preBackupFile(), overwrite = true)
+            appendText(rawCommand + "\n")
+            copyTo(postBackupFile(), overwrite = true)
+        }
+    }
+
+    private fun ensureRoot() =
+            File(workingDirectory())
+                    .resolve(historyDirectoryName)
+                    .also { if (!it.exists()) it.mkdirs() }
+
+    private fun ensureFile(name: String) =
+            ensureRoot().resolve(name).ensureExists()
+
+    private fun historyFile() =
+            ensureFile(commandHistoryName)
+
+    private fun preBackupFile() =
+            ensureFile(commandHistoryBackupPre)
+
+    private fun postBackupFile() =
+            ensureFile(commandHistoryBackupPost)
+
+    private fun File.ensureExists() = apply {
+        if (!exists()) createNewFile()
+    }
+
+    private fun workingDirectory() = System.getProperty("user.dir")
+}

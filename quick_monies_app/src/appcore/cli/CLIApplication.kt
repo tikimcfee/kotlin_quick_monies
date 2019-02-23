@@ -1,7 +1,7 @@
 package appcore.cli
 
 import appcore.functionality.ApplicationState
-import appcore.functionality.TransactionList
+import appcore.functionality.list.TransactionList
 
 fun main(args: Array<String>) {
     TerminalInteractionLoop().loop(

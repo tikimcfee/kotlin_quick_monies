@@ -1,4 +1,6 @@
-package appcore.functionality
+package appcore.functionality.list
+
+import appcore.functionality.Transaction
 
 class TransactionList {
 

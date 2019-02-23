@@ -1,4 +1,7 @@
-package appcore.functionality
+package appcore.functionality.accounting
+
+import appcore.functionality.Transaction
+import appcore.functionality.list.TransactionList
 
 class TransactionAccountant {
 
