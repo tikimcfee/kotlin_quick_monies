@@ -70,23 +70,25 @@ class TerminalInteractionLoop {
     private fun Command.execute(
             transactionList: TransactionList,
             projectedTransactionGenerator: ProjectedTransactionGenerator
-    ) {
-        when (this) {
-            is Command.Add ->
-                transactionList.insert(listPos, transaction)
-            is Command.Remove ->
-                transactionList.remove(listPos)
-            Command.Test_AddMultiple ->
-                projectedTransactionGenerator.createMultiple(
-                        Transaction(Date(), 125.00),
-                        14,
-                        25
-                ).forEach {
-                    transactionList.insert(RelativePos.Last, it)
-                }
-            Command.MainAppStop ->
-                stop()
-        }
+    ) = when (this) {
+        is Command.Add -> transactionList.insert(listPos, transaction)
+        is Command.Remove -> transactionList.remove(listPos)
+        is Command.Move -> transactionList.move(from, to)
+
+        Command.MainAppStop ->
+            stop()
+
+        Command.Test_AddMultiple ->
+            projectedTransactionGenerator.createMultiple(
+                    Transaction(
+                            Date(),
+                            125.00
+                    ),
+                    14,
+                    25
+            ).forEach {
+                transactionList.insert(RelativePos.Last, it)
+            }
     }
 
     private fun clear() {

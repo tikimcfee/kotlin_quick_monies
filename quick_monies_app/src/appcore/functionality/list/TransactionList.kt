@@ -34,4 +34,16 @@ class TransactionList {
         }
     }
 
+    fun move(from: RelativePos, to: RelativePos) {
+        transactions.removeAt(from.toAbsoluteIndex()).let {
+            transactions.add(to.toAbsoluteIndex(), it)
+        }
+    }
+
+    fun RelativePos.toAbsoluteIndex() = when (this) {
+        RelativePos.Last -> transactions.size - 1
+        RelativePos.First -> 0
+        is RelativePos.Explicit -> pos - 1
+    }
+
 }

@@ -46,6 +46,12 @@ class CommandProcessor {
             }
 
         }
+        "m" -> {
+            Command.Move(
+                    RelativePos.Explicit(get(1).toInt()),
+                    RelativePos.Explicit(get(2).toInt())
+            )
+        }
         "*" -> {
             Command.Test_AddMultiple
         }
