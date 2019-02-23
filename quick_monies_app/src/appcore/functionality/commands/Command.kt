@@ -9,4 +9,6 @@ sealed class Command {
     class Add(val listPos: RelativePos, val transaction: Transaction) : Command()
 
     class Remove(val listPos: RelativePos) : Command()
+
+    object Test_AddMultiple : Command()
 }

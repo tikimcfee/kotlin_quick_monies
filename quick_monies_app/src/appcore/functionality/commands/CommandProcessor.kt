@@ -20,8 +20,8 @@ class CommandProcessor {
         return args.argListToCommand()
     }
 
-    private fun List<String>.argListToCommand() = when {
-        get(0) == "+" -> {
+    private fun List<String>.argListToCommand() = when(get(0)) {
+        "+" -> {
             if (size == 2) {
                 Command.Add(
                         RelativePos.Last,
@@ -34,7 +34,7 @@ class CommandProcessor {
                 )
             }
         }
-        get(0) == "-" -> {
+        "-" -> {
             if (size == 1) {
                 Command.Remove(
                         RelativePos.Last
@@ -45,6 +45,9 @@ class CommandProcessor {
                 )
             }
 
+        }
+        "*" -> {
+            Command.Test_AddMultiple
         }
         else -> Command.MainAppStop
     }

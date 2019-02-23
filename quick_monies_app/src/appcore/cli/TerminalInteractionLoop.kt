@@ -1,10 +1,13 @@
 package appcore.cli
 
 import appcore.functionality.ApplicationState
+import appcore.functionality.Transaction
 import appcore.functionality.accounting.TransactionAccountant
 import appcore.functionality.commands.Command
+import appcore.functionality.list.RelativePos
 import appcore.functionality.list.TransactionList
 import appcore.transfomers.TransactionsAsText
+import java.util.*
 
 class TerminalInteractionLoop {
 
@@ -27,9 +30,20 @@ class TerminalInteractionLoop {
             // Run it
             with(commandInput) {
                 when (this) {
-                    is Command.Add -> transactionList.insert(listPos, transaction)
-                    is Command.Remove -> transactionList.remove(listPos)
-                    Command.MainAppStop -> stop()
+                    is Command.Add ->
+                        transactionList.insert(listPos, transaction)
+                    is Command.Remove ->
+                        transactionList.remove(listPos)
+                    Command.Test_AddMultiple ->
+                        projectedTransactionGenerator.createMultiple(
+                                Transaction(Date(), 125.00),
+                                14,
+                                25
+                        ).forEach {
+                            transactionList.insert(RelativePos.Last, it)
+                        }
+                    Command.MainAppStop ->
+                        stop()
                 }
             }
 
