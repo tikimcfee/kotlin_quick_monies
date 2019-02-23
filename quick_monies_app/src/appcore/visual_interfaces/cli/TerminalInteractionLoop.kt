@@ -1,14 +1,11 @@
-package appcore.cli
+package appcore.visual_interfaces.cli
 
+import appcore.functionality.execute
 import appcore.functionality.ApplicationState
-import appcore.functionality.Transaction
 import appcore.functionality.accounting.TransactionAccountant
-import appcore.functionality.commands.Command
-import appcore.functionality.dataPopulation.ProjectedTransactionGenerator
-import appcore.functionality.list.RelativePos
 import appcore.functionality.list.TransactionList
+import appcore.functionality.restoreState
 import appcore.transfomers.TransactionsAsText
-import java.util.*
 
 class TerminalInteractionLoop {
 
@@ -16,23 +13,11 @@ class TerminalInteractionLoop {
 
     fun loop(applicationState: ApplicationState) {
         clear()
-        applicationState.restoreState()
-        applicationState.stateLoop()
-    }
-
-    private fun ApplicationState.restoreState() {
-        commandHistorian.readCommandHistory().forEach { restoredInput ->
-            with(commandProcessor) {
-                if (restoredInput.isStop()) return@forEach
-
-                parseStringCommand(restoredInput).execute(
-                        transactionList,
-                        projectedTransactionGenerator
-                )
-            }
+        with(applicationState) {
+            restoreState()
+            drawScreen(this)
+            stateLoop()
         }
-
-        drawScreen(this)
     }
 
     private fun ApplicationState.stateLoop() {
@@ -67,33 +52,8 @@ class TerminalInteractionLoop {
         }
     }
 
-    private fun Command.execute(
-            transactionList: TransactionList,
-            projectedTransactionGenerator: ProjectedTransactionGenerator
-    ) = when (this) {
-        is Command.Add -> transactionList.insert(listPos, transaction)
-        is Command.Remove -> transactionList.remove(listPos)
-        is Command.Move -> transactionList.move(from, to)
-
-        Command.MainAppStop ->
-            stop()
-
-        Command.Test_AddMultiple ->
-            projectedTransactionGenerator.createMultiple(
-                    Transaction(
-                            date = Date(),
-                            amount = 125.00,
-                            description = "Testing Multiple Additions"
-                    ),
-                    14,
-                    25
-            ).forEach {
-                transactionList.insert(RelativePos.Last, it)
-            }
-    }
-
     private fun clear() {
-        println("\u001Bc")
+//        println("\u001Bc")
     }
 
 
@@ -118,4 +78,6 @@ class TerminalInteractionLoop {
                 }
     }
 
+
 }
+

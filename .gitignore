@@ -1,5 +1,5 @@
 .idea/
-build_output
-lib
+build_output/
 _working/
+lib/
 command_historian_data/

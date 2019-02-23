@@ -14,6 +14,7 @@ class TransactionAccountant {
     fun computeTransactionDeltas(transactionList: TransactionList): List<Snapshot> {
         val transactionCount = transactionList.transactions.size
 
+
         if (transactionCount == 0) {
             return listOf()
         }

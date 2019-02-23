@@ -8,5 +8,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="KotlinJavaRuntime" level="project" />
+    <orderEntry type="library" name="io.javalin:javalin:2.6.0" level="project" />
+    <orderEntry type="library" name="org.slf4j:slf4j-simple:1.7.25" level="project" />
   </component>
 </module>

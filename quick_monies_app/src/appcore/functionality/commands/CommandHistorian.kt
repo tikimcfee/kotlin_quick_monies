@@ -39,7 +39,6 @@ class CommandHistorian {
     private fun postBackupFile() =
             ensureFile(commandHistoryBackupPost)
 
-
     private fun workingDirectory() =
             System.getProperty("user.dir")
 }
