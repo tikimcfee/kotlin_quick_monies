@@ -81,8 +81,9 @@ class TerminalInteractionLoop {
         Command.Test_AddMultiple ->
             projectedTransactionGenerator.createMultiple(
                     Transaction(
-                            Date(),
-                            125.00
+                            date = Date(),
+                            amount = 125.00,
+                            description = "Testing Multiple Additions"
                     ),
                     14,
                     25
@@ -92,7 +93,7 @@ class TerminalInteractionLoop {
     }
 
     private fun clear() {
-//        println("\u001Bc")
+        println("\u001Bc")
     }
 
 

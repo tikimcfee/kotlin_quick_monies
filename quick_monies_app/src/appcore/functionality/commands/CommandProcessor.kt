@@ -60,9 +60,9 @@ class CommandProcessor {
 
     private fun List<String>.toTransaction(): Transaction {
         return when (size) {
-            2 -> Transaction(Date(), get(1).toDouble())
-            3 -> Transaction(Date(), get(2).toDouble())
-            else -> Transaction(Date(), 0.0)
+            2 -> Transaction(Date(), get(1).toDouble(), subList(2, size).joinToString())
+            3 -> Transaction(Date(), get(2).toDouble(), subList(3, size).joinToString())
+            else -> Transaction(Date(), 0.0, "[${joinToString()}]")
         }
     }
 }
