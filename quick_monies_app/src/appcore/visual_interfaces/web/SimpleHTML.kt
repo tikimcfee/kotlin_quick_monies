@@ -40,11 +40,12 @@ class SimpleHTML {
     }
 
     class Form : Tag("form")
-    class Label() : Tag("label")
-
+    class Label : Tag("label")
     class Input : Tag("input")
-
     class Button : Tag("button")
+    class LineBreak : Tag("br") {
+        override fun toString() = "<br/>"
+    }
 
     fun html(init: Html.() -> Unit): Html =
             Html().apply(init)
@@ -70,13 +71,17 @@ class SimpleHTML {
     fun Tag.text(s: Any?) =
             doInit(Text(s.toString()), {})
 
-    fun Form.newField(forAttr: String,
+    fun Tag.lineBreak() =
+            doInit(LineBreak(), {})
+
+    fun Form.newField(labelText: String,
+                      forAttr: String,
                       label: Label.() -> Unit,
                       input: Input.() -> Unit
     ) {
         doInit(Label().apply {
             set("for", forAttr)
-            text("Put stuff in here... ")
+            text(labelText)
         }, label)
 
         doInit(Input().apply {
