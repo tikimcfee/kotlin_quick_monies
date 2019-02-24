@@ -37,9 +37,28 @@ object WholeLineFeeder {
     //    )
     //}
     
+    enum class TokenType {
+        SingleChar,
+        Word,
+        NumberValue,
+        LineStop,
+        EndOfInput
+    }
     
+    sealed class Token(type: TokenType) {
+        data class SingleChar(val char: Char) : Token(WholeLineFeeder.TokenType.SingleChar)
+        data class Word(val word: String) : Token()
+        data class NumberValue(val number: Double) : Token()
+        object LineStop : Token()
+        object EndOfInput : Token()
+    }
     
-    fun String.test() {
+    val addCommand = listOf<List<TokenType>>(
+        listOf(WholeLineFeeder.TokenType.SingleChar),
+        NumberValue(),
+        )
+    
+    fun String.testTokenizer() {
         val tokenizer = StreamTokenizer(ReaderUTF8(byteInputStream()))
         
         
@@ -49,27 +68,36 @@ object WholeLineFeeder {
                 val token = tokenizer.nextToken()
                 when (tokenizer.ttype) {
                     '\''.toInt() -> {
-                        TODO("the value is literally a quote char")
+                        val characterToken = tokenizer.ttype.toChar()
+                        pushToken(SingleChar(characterToken))
                     }
                     
-                    '"'.toInt() -> {
-                        val stringBody = tokenizer.sval
-                    }
+                    //'"'.toInt() -> {
+                    //    val stringBody = tokenizer.sval
+                    //    pushToken(WholeLineFeeder.Token.Word(stringBody))
+                    //}
                     
                     StreamTokenizer.TT_WORD -> {
                         val wordCharacters = tokenizer.sval
+                        pushToken(Word(wordCharacters))
                     }
                     
                     StreamTokenizer.TT_NUMBER -> {
-                    
+                        val numberValue = tokenizer.nval
+                        pushToken(NumberValue(numberValue))
                     }
                     
                     StreamTokenizer.TT_EOF -> {
-                    
+                        pushToken(EndOfInput)
                     }
                     
                     StreamTokenizer.TT_EOL -> {
+                        pushToken(LineStop)
+                    }
                     
+                    else -> {
+                        val characterToken = token.toChar()
+                        pushToken(SingleChar(characterToken))
                     }
                 }
             } while (tokenizer.ttype != StreamTokenizer.TT_EOF)

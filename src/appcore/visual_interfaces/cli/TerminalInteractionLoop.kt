@@ -2,6 +2,7 @@ package appcore.visual_interfaces.cli
 
 import appcore.functionality.ApplicationState
 import appcore.functionality.accounting.TransactionAccountant
+import appcore.functionality.commands.WholeLineFeeder
 import appcore.functionality.execute
 import appcore.functionality.list.TransactionList
 import appcore.functionality.restoreState
@@ -24,8 +25,14 @@ class TerminalInteractionLoop {
         while (shouldContinue) {
             // Grab Input
             print("What's your poison? :: ")
-            val input = readLine()
-            commandHistorian.recordRawCommand(input ?: "--end-of-input--")
+            val input = readLine() ?: "--line-read-failure--"
+            
+            with(WholeLineFeeder) {
+                input.testTokenizer()
+            }
+            
+            
+            commandHistorian.recordRawCommand(input)
             
             val commandInput = commandProcessor.parseStringCommand(input)
             val __test__feedCommand = commandProcessor.__test__wholeLineFeed(input)
