@@ -42,9 +42,7 @@ class SimpleHTML {
     class Label : Tag("label")
     class Input : Tag("input")
     class Button : Tag("button")
-    class LineBreak : Tag("br") {
-        override fun toString() = "<br/>"
-    }
+    class LineBreak : Tag("br")
     
     fun html(init: Html.() -> Unit): Html =
         Html().apply(init)
@@ -77,15 +75,17 @@ class SimpleHTML {
         labelText: String,
         forAttr: BasicTableRenderer.FormParam
     ) {
-        doInit(Label().apply {
+        doInit(Label()) {
             set("for", forAttr.id)
             text(labelText)
-        }) {}
+        }
         
-        doInit(Input().apply {
+        lineBreak()
+        
+        doInit(Input()) {
             set("name", forAttr.id)
             set("id", forAttr.id)
-        }) {}
+        }
     }
     
     fun Tag.button(init: Button.() -> Unit) =

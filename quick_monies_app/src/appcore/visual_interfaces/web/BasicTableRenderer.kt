@@ -18,76 +18,76 @@ object BasicTableRenderer {
     
     fun ApplicationState.renderTo(
         context: Context,
-        actionEndpoint: String = "http://localhost:7000/",
+        actionRootUrl: String = "http://localhost:7000/",
         actionMethod: String = "post"
     ) {
         val rawHtml = with(SimpleHTML()) {
             html {
-                form {
-                    set("action", actionEndpoint)
-                    set("method", actionMethod)
-                    
-                    fun header() {
-                        lineBreak()
-                        lineBreak()
-                        text("-- Transaction Info --")
-                        lineBreak()
-                        lineBreak()
-                    }
-                    
-                    fun inputFields() {
-                        newField(
-                            labelText = "How much in or out of your monies?",
-                            forAttr = TRANSACTION_AMOUNT
-                        )
-                        lineBreak()
-                        newField(
-                            labelText = "Type a description here to re",
-                            forAttr = TRANSACTION_DESCRIPTION
-                        )
-                    }
-                    
-                    
-                    
-                    header()
-                    inputFields()
-                    
-                    button {
-                        text("Stick it in there")
-                    }
+                fun header() {
+                    lineBreak()
+                    text("-- Transaction Info --")
+                    lineBreak()
                 }
                 
-                form {
-                    set("action", "${actionEndpoint}remove_last")
-                    set("method", "post")
-                    
-                    button {
-                        text("Remove last")
-                    }
-                }
-                
-                table {
-                    tr {
-                        td { text("Date") }
-                        td { text("Transaction Amount") }
-                        td { text("After Transaction") }
-                    }
-                    
-                    fun makeRow(snapshot: TransactionAccountant.Snapshot) {
-                        tr {
-                            with(snapshot.transaction) {
-                                td(align = "right") { text(formattedDate()) }
-                                td(align = "right") { text(formattedAmount()) }
-                            }
-                            td(align = "right") { text(snapshot.formattedAfter()) }
+                fun userTransactionInput() {
+                    form {
+                        set("action", actionRootUrl)
+                        set("method", actionMethod)
+                        
+                        newField("Monies, in or out", TRANSACTION_AMOUNT)
+                        lineBreak()
+                        
+                        newField("What it's for: ", TRANSACTION_DESCRIPTION)
+                        lineBreak()
+                        
+                        button {
+                            text("Stick it in there")
                         }
                     }
-                    
-                    transactionAccountant
-                        .computeTransactionDeltas(transactionList)
-                        .asReversed()
-                        .forEach { makeRow(it) }
                 }
+                
+                fun extraCommands() {
+                    form {
+                        set("action", "${actionRootUrl}remove_last")
+                        set("method", "post")
+                        
+                        button {
+                            text("Remove last")
+                        }
+                    }
+                }
+                
+                fun transactionTable() {
+                    table {
+                        tr {
+                            td { text("Date") }
+                            td { text("Transaction Amount") }
+                            td { text("After Transaction") }
+                        }
+                        
+                        fun makeRow(snapshot: TransactionAccountant.Snapshot) {
+                            tr {
+                                with(snapshot.transaction) {
+                                    td(align = "right") { text(formattedDate()) }
+                                    td(align = "right") { text(formattedAmount()) }
+                                }
+                                td(align = "right") { text(snapshot.formattedAfter()) }
+                            }
+                        }
+                        
+                        transactionAccountant
+                            .computeTransactionDeltas(transactionList)
+                            .asReversed()
+                            .forEach { makeRow(it) }
+                    }
+                }
+                
+                header()
+                userTransactionInput()
+                lineBreak()
+                extraCommands()
+                lineBreak()
+                transactionTable()
             }
         }.toString()
         
