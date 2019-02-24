@@ -28,6 +28,7 @@ class TerminalInteractionLoop {
             commandHistorian.recordRawCommand(input ?: "--end-of-input--")
             
             val commandInput = commandProcessor.parseStringCommand(input)
+            val __test__feedCommand = commandProcessor.__test__wholeLineFeed(input)
             
             // Run it
             commandInput.execute(
