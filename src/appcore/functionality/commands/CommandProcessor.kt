@@ -2,91 +2,10 @@ package appcore.functionality.commands
 
 import appcore.functionality.Transaction
 import appcore.functionality.list.RelativePos
-import jdk.internal.util.xml.impl.ReaderUTF8
-import java.io.IOException
-import java.io.StreamTokenizer
 import java.util.*
 
-object WholeLineFeeder {
-    
-    //fun String?.toCommand(): Command {
-    //    this ?: return Command.MainAppStop
-    //
-    //    val aliasRegexSplat =
-    //        "(${Command.allAliases().joinToString("|")})"
-    //
-    //    val commandFromAlias = Regex(aliasRegexSplat).find(this)?.let {
-    //        Command.fromStringAlias(it.value)
-    //    } ?: Command.MainAppStop
-    //
-    //    when (commandFromAlias) {
-    //        Command.MainAppStop -> TODO()
-    //        Command.Test_AddMultiple -> TODO()
-    //        is Command.Add -> TODO()
-    //        is Command.Remove -> TODO()
-    //        is Command.Move -> TODO()
-    //    }
-    //
-    //    return Command.Add(
-    //        RelativePos.Last,
-    //        Transaction(
-    //            Date(),
-    //            782.22,
-    //            "Testing input feed: [$this]"
-    //        )
-    //    )
-    //}
-    
-    
-    
-    fun String.test() {
-        val tokenizer = StreamTokenizer(ReaderUTF8(byteInputStream()))
-        
-        
-        
-        try {
-            do {
-                val token = tokenizer.nextToken()
-                when (tokenizer.ttype) {
-                    '\''.toInt() -> {
-                        TODO("the value is literally a quote char")
-                    }
-                    
-                    '"'.toInt() -> {
-                        val stringBody = tokenizer.sval
-                    }
-                    
-                    StreamTokenizer.TT_WORD -> {
-                        val wordCharacters = tokenizer.sval
-                    }
-                    
-                    StreamTokenizer.TT_NUMBER -> {
-                    
-                    }
-                    
-                    StreamTokenizer.TT_EOF -> {
-                    
-                    }
-                    
-                    StreamTokenizer.TT_EOL -> {
-                    
-                    }
-                }
-            } while (tokenizer.ttype != StreamTokenizer.TT_EOF)
-            
-        }
-        catch (readFailure: IOException) {
-            println(readFailure)
-        }
-    }
-    
-}
 
 class CommandProcessor {
-    
-    fun __test__wholeLineFeed(input: String?) = with(WholeLineFeeder) {
-        input.toCommand()
-    }
     
     fun parseStringCommand(input: String?) = input.toCommand()
     
