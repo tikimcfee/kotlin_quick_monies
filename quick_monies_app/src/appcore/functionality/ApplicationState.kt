@@ -8,9 +8,9 @@ import appcore.functionality.list.TransactionList
 
 
 data class ApplicationState(
-        val transactionList: TransactionList = TransactionList(),
-        val transactionAccountant: TransactionAccountant = TransactionAccountant(),
-        val commandProcessor: CommandProcessor = CommandProcessor(),
-        val commandHistorian: CommandHistorian = CommandHistorian(),
-        val projectedTransactionGenerator: ProjectedTransactionGenerator = ProjectedTransactionGenerator()
+    val transactionList: TransactionList = TransactionList(),
+    val transactionAccountant: TransactionAccountant = TransactionAccountant(),
+    val commandProcessor: CommandProcessor = CommandProcessor(),
+    val commandHistorian: CommandHistorian = CommandHistorian(),
+    val projectedTransactionGenerator: ProjectedTransactionGenerator = ProjectedTransactionGenerator()
 )

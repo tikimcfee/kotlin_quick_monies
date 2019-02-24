@@ -1,9 +1,9 @@
 package appcore.functionality
 
-import java.util.Date
+import java.util.*
 
 data class Transaction(
-        val date: Date,
-        val amount: Double,
-        val description: String
+    val date: Date,
+    val amount: Double,
+    val description: String
 )

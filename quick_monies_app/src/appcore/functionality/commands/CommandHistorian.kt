@@ -3,12 +3,12 @@ package appcore.functionality.commands
 import java.io.File
 
 class CommandHistorian {
-
-    private val historyDirectoryName = "command_historian_data"
+    
+    private val historyDirectoryName = "_working"
     private val commandHistoryName = "command_history"
     private val commandHistoryBackupPre = "command_history_pre.bak"
     private val commandHistoryBackupPost = "command_history_post.bak"
-
+    
     fun recordRawCommand(rawCommand: String) {
         with(historyFile()) {
             copyTo(preBackupFile(), overwrite = true)
@@ -16,29 +16,29 @@ class CommandHistorian {
             copyTo(postBackupFile(), overwrite = true)
         }
     }
-
+    
     fun readCommandHistory() = historyFile().readLines()
-
+    
     private fun ensureRoot() =
-            File(workingDirectory())
-                    .resolve(historyDirectoryName)
-                    .also { if (!it.exists()) it.mkdirs() }
-
+        File(workingDirectory())
+            .resolve(historyDirectoryName)
+            .also { if (!it.exists()) it.mkdirs() }
+    
     private fun File.ensureExists() =
-            apply { if (!exists()) createNewFile() }
-
+        apply { if (!exists()) createNewFile() }
+    
     private fun ensureFile(name: String) =
-            ensureRoot().resolve(name).ensureExists()
-
+        ensureRoot().resolve(name).ensureExists()
+    
     private fun historyFile() =
-            ensureFile(commandHistoryName)
-
+        ensureFile(commandHistoryName)
+    
     private fun preBackupFile() =
-            ensureFile(commandHistoryBackupPre)
-
+        ensureFile(commandHistoryBackupPre)
+    
     private fun postBackupFile() =
-            ensureFile(commandHistoryBackupPost)
-
+        ensureFile(commandHistoryBackupPost)
+    
     private fun workingDirectory() =
-            System.getProperty("user.dir")
+        System.getProperty("user.dir")
 }

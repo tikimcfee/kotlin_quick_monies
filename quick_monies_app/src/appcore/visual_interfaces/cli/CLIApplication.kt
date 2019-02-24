@@ -5,9 +5,9 @@ import appcore.functionality.list.TransactionList
 
 fun main(args: Array<String>) {
     TerminalInteractionLoop().loop(
-            ApplicationState(
-                    TransactionList()
-            )
+        ApplicationState(
+            TransactionList()
+        )
     )
 }
 
