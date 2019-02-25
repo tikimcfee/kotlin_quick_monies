@@ -2,12 +2,13 @@ package appcore.visual_interfaces.web
 
 import appcore.functionality.ApplicationState
 import appcore.functionality.accounting.TransactionAccountant
+import appcore.transfomers.TransactionsAsText
 import appcore.transfomers.TransactionsAsText.IndividualFormatting.formattedAfter
 import appcore.transfomers.TransactionsAsText.IndividualFormatting.formattedAmount
 import appcore.transfomers.TransactionsAsText.IndividualFormatting.formattedDate
-import appcore.visual_interfaces.web.BasicTableRenderer.FormParam.ADD_TRANSACTION_AMOUNT
-import appcore.visual_interfaces.web.BasicTableRenderer.FormParam.ADD_TRANSACTION_DESCRIPTION
+import appcore.visual_interfaces.web.BasicTableRenderer.FormParam.*
 import io.javalin.Context
+import java.util.*
 
 object BasicTableRenderer {
     
@@ -45,11 +46,26 @@ object BasicTableRenderer {
                         newField("What it's for? : ", ADD_TRANSACTION_DESCRIPTION)
                         lineBreak()
                         
+                        newField(
+                            "When did it happen? : ",
+                            ADD_TRANSACTION_DATE,
+                            input = {
+                                it.set(
+                                    "value",
+                                    with(TransactionsAsText.QuickMoniesDates) {
+                                        Date().format()
+                                    })
+                            })
+                        lineBreak()
+                        
                         button { text("Stick it in there") }
                     }
                 }
                 
                 fun extraCommands() {
+                    lineBreak()
+                    text("-- Shortcuts --")
+                    lineBreak()
                     form {
                         addActionAndMethod(JavalinWebFrameworkWrapper.Route.RemoveLast)
                         button { text("Remove last") }
@@ -59,10 +75,10 @@ object BasicTableRenderer {
                 fun transactionTable() {
                     table {
                         tr {
-                            td(align = "left") { text("|\tDate\t|\t") }
-                            td(align = "left") { text("|\tTransaction Amount\t|\t") }
-                            td(align = "left") { text("|\tAfter Transaction\t|\t") }
-                            td(align = "left") { text("|\tDescription\t|\t") }
+                            td(align = "left") { text("Date") }
+                            td(align = "left") { text("Transaction Amount") }
+                            td(align = "left") { text("After Transaction") }
+                            td(align = "left") { text("Description") }
                         }
                         
                         fun makeRow(snapshot: TransactionAccountant.Snapshot) {
@@ -73,7 +89,7 @@ object BasicTableRenderer {
                                     td {
                                         text(snapshot.formattedAfter())
                                     }
-                                    td{
+                                    td {
                                         text(description)
                                     }
                                 }

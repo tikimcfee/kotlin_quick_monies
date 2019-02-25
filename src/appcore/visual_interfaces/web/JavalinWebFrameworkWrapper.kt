@@ -6,11 +6,12 @@ import appcore.functionality.Transaction
 import appcore.functionality.commands.Command
 import appcore.functionality.list.RelativePos
 import appcore.functionality.restoreState
+import appcore.transfomers.TransactionsAsText
 import appcore.visual_interfaces.web.BasicTableRenderer.FormParam.*
 import appcore.visual_interfaces.web.BasicTableRenderer.renderResponseTo
 import io.javalin.Context
 import io.javalin.Javalin
-import java.util.*
+import java.text.ParseException
 
 typealias NotANumber = NumberFormatException
 
@@ -60,20 +61,20 @@ class JavalinWebFrameworkWrapper {
                         it,
                         simpleStateTransformer
                     )
-                    runtimeState.renderResponseTo(it)
+                    it.redirect(Route.Home.path)
                 }
                 Route.RemoveLast -> app.post(route.name) {
                     runtimeState.withContextRemoveLast(
                         simpleStateTransformer
                     )
-                    runtimeState.renderResponseTo(it)
+                    it.redirect(Route.Home.path)
                 }
                 Route.RemoveIndex -> app.post(route.name) {
                     runtimeState.withContextRemoveFromPosition(
                         it,
                         simpleStateTransformer
                     )
-                    runtimeState.renderResponseTo(it)
+                    it.redirect(Route.Home.path)
                 }
             }
         }
@@ -109,7 +110,14 @@ class JavalinWebFrameworkWrapper {
         stateTransformer: SimpleStateTransformer
     ) {
         with(requestContext) {
-            val transactionDate = Date()
+            val transactionDate = with(TransactionsAsText.QuickMoniesDates) {
+                try {
+                    formString(ADD_TRANSACTION_DATE).parse()
+                } catch (e: ParseException) {
+                    // Don't allow bad dates in, for now.
+                    return
+                }
+            }
             val transactionAmount = formDouble(ADD_TRANSACTION_AMOUNT)
             val transactionDescription = formString(ADD_TRANSACTION_DESCRIPTION)
             
@@ -130,8 +138,7 @@ class JavalinWebFrameworkWrapper {
     fun Context.formDouble(param: BasicTableRenderer.FormParam): Double =
         try {
             formParam(param.id)?.toDouble() ?: -9999.9999
-        }
-        catch (badInput: NotANumber) {
+        } catch (badInput: NotANumber) {
             println("Looked for $param, scored a ${formParam(param.id)}")
             -9999.9999
         }
@@ -140,8 +147,7 @@ class JavalinWebFrameworkWrapper {
         val invalid_number = Int.MIN_VALUE
         val parsed = try {
             formParam(param.id)?.toInt() ?: invalid_number
-        }
-        catch (badInput: NotANumber) {
+        } catch (badInput: NotANumber) {
             println("Looked for $param, scored a ${formParam(param.id)}")
             invalid_number
         }

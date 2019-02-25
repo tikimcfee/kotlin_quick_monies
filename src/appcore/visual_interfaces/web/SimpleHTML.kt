@@ -45,6 +45,9 @@ object SimpleHTML {
     class Button : Tag("button")
     class LineBreak : Tag("br")
     
+    // ------------------------------------
+    // HTML
+    // ------------------------------------
     fun html(init: Html.() -> Unit): Html =
         Html().apply(init)
     
@@ -57,6 +60,9 @@ object SimpleHTML {
     fun Html.form(init: Form.() -> Unit) =
         doInit(Form(), init)
     
+    // ------------------------------------
+    // Tables
+    // ------------------------------------
     fun Table.tr(color: String? = null, init: TR.() -> Unit) =
         doInit(TR(), init)
             .set("bgcolor", color)
@@ -66,6 +72,34 @@ object SimpleHTML {
             .set("align", align)
             .set("bgcolor", color)
     
+    
+    // ------------------------------------
+    // Forms
+    // ------------------------------------
+    fun Form.newField(
+        labelText: String,
+        forAttr: BasicTableRenderer.FormParam,
+        label: ((Label) -> Unit) = {},
+        input: ((Input) -> Unit) = {}
+    ) {
+        doInit(Label()) {
+            set("for", forAttr.id)
+            text(labelText)
+            label(this)
+        }
+        
+        span()
+        
+        doInit(Input()) {
+            set("name", forAttr.id)
+            set("id", forAttr.id)
+            input(this)
+        }
+    }
+    
+    // ------------------------------------
+    // Simple Children
+    // ------------------------------------
     fun Tag.span(spanner: ((Span) -> Unit) = {}) =
         doInit(Span(), spanner)
     
@@ -74,23 +108,6 @@ object SimpleHTML {
     
     fun Tag.lineBreak() =
         doInit(LineBreak(), {})
-    
-    fun Form.newField(
-        labelText: String,
-        forAttr: BasicTableRenderer.FormParam
-    ) {
-        doInit(Label()) {
-            set("for", forAttr.id)
-            text(labelText)
-        }
-        
-        span()
-        
-        doInit(Input()) {
-            set("name", forAttr.id)
-            set("id", forAttr.id)
-        }
-    }
     
     fun Tag.button(init: Button.() -> Unit) =
         doInit(Button(), init)

@@ -21,19 +21,35 @@ object TransactionsAsText {
         }
     }
     
+    object QuickMoniesDates {
+        private const val yearMonthDayPattern = "yyyy-MM-dd"
+        private val yearMonthDayFormat = SimpleDateFormat(yearMonthDayPattern)
+        
+        fun String.parse(): Date = try {
+            yearMonthDayFormat.parse(this)
+        } catch (e: Exception) {
+            println("Parse failure [$yearMonthDayPattern]<[$this")
+            println(e)
+            throw e
+        }
+        
+        fun Date.format() = yearMonthDayFormat.format(this)
+    }
+    
     object IndividualFormatting {
-        private val yearMonthDay = SimpleDateFormat("yyyy-MM-dd")
-        private const val sharedNumberFormat = "%10.2f"
         
-        private fun Date.format() = yearMonthDay.format(this)
+        private const val maxPaddedNumber = "%10.2f"
         
-        fun Transaction.formattedDate() = date.format()
+        fun Transaction.formattedDate(): String =
+            with(QuickMoniesDates) { date.format() }
         
-        fun Transaction.formattedAmount() = sharedNumberFormat.format(amount)
+        fun Transaction.formattedAmount() = maxPaddedNumber.format(amount)
         
-        fun TransactionAccountant.Snapshot.formattedAfter() = sharedNumberFormat.format(amountAfterTransaction)
+        fun TransactionAccountant.Snapshot.formattedAfter() =
+            maxPaddedNumber.format(amountAfterTransaction)
         
-        fun TransactionAccountant.Snapshot.formattedBefore() = sharedNumberFormat.format(amountBeforeTransaction)
+        fun TransactionAccountant.Snapshot.formattedBefore() =
+            maxPaddedNumber.format(amountBeforeTransaction)
     }
     
 }
