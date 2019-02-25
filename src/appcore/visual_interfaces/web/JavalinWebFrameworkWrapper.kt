@@ -118,7 +118,12 @@ class JavalinWebFrameworkWrapper {
                     return
                 }
             }
-            val transactionAmount = formDouble(ADD_TRANSACTION_AMOUNT)
+            val transactionAmount = formDouble(ADD_TRANSACTION_AMOUNT).let {
+                if (!it.second) {
+                    return
+                }
+                it.first
+            }
             val transactionDescription = formString(ADD_TRANSACTION_DESCRIPTION)
             
             stateTransformer.runTransform(
@@ -135,23 +140,26 @@ class JavalinWebFrameworkWrapper {
         }
     }
     
-    fun Context.formDouble(param: BasicTableRenderer.FormParam): Double =
-        try {
-            formParam(param.id)?.toDouble() ?: -9999.9999
+    fun Context.formDouble(param: BasicTableRenderer.FormParam): Pair<Double, Boolean> {
+        val invalidNumber = Double.MIN_VALUE
+        val parsed = try {
+            formParam(param.id)?.toDouble() ?: invalidNumber
         } catch (badInput: NotANumber) {
             println("Looked for $param, scored a ${formParam(param.id)}")
-            -9999.9999
+            invalidNumber
         }
+        return Pair(parsed, parsed != invalidNumber)
+    }
     
     fun Context.formInt(param: BasicTableRenderer.FormParam): Pair<Int, Boolean> {
-        val invalid_number = Int.MIN_VALUE
+        val invalidNumber = Int.MIN_VALUE
         val parsed = try {
-            formParam(param.id)?.toInt() ?: invalid_number
+            formParam(param.id)?.toInt() ?: invalidNumber
         } catch (badInput: NotANumber) {
             println("Looked for $param, scored a ${formParam(param.id)}")
-            invalid_number
+            invalidNumber
         }
-        return Pair(parsed, parsed != invalid_number)
+        return Pair(parsed, parsed != invalidNumber)
     }
     
     fun Context.formString(param: BasicTableRenderer.FormParam): String =
