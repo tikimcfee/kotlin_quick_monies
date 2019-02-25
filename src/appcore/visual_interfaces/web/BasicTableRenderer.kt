@@ -98,7 +98,7 @@ object BasicTableRenderer {
                         
                         transactionAccountant
                             .computeTransactionDeltas(transactionList)
-                            .asReversed()
+                            .asSequence()
                             .forEach { makeRow(it) }
                     }
                 }

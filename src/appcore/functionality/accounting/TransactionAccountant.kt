@@ -11,23 +11,27 @@ class TransactionAccountant {
         val amountAfterTransaction: Double
     )
     
-    fun computeTransactionDeltas(transactionList: TransactionList): List<Snapshot> {
+    fun computeTransactionDeltas(
+        transactionList: TransactionList
+    ): List<Snapshot> {
         val transactionCount = transactionList.transactions.size
-        
         
         if (transactionCount == 0) {
             return listOf()
         }
         val deltaList = mutableListOf<Snapshot>()
-        var lastAccumulator = transactionList.transactions[0].toInitialAccumulator()
-        deltaList.add(lastAccumulator)
         
         transactionList.transactions
             .asSequence()
-            .drop(1)
+            .sortedBy { it.date.time }
             .mapTo(deltaList) { transaction ->
-                (lastAccumulator withAnother transaction).also { lastAccumulator = it }
+                if (deltaList.isEmpty()) {
+                    transaction.toInitialAccumulator()
+                } else {
+                    deltaList.last() withAnother transaction
+                }
             }
+            .reverse()
         
         return deltaList
     }
