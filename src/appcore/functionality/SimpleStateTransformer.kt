@@ -1,22 +1,33 @@
 package appcore.functionality
 
+import appcore.functionality.commands.Command
+
 
 class SimpleStateTransformer {
     
+    /**
+     * So long - you've been fun.
+     */
+    //fun runTransform(
+    //    applicationState: ApplicationState,
+    //    input: String
+    //) {
+    //    with(applicationState) {
+    //        runTransform(
+    //            this,
+    //            commandProcessor.parseStringCommand(input)
+    //        )
+    //    }
+    //}
     fun runTransform(
         applicationState: ApplicationState,
-        input: String
+        command: Command
     ) {
-        
         with(applicationState) {
-            commandHistorian.recordRawCommand(input)
-            
-            commandProcessor
-                .parseStringCommand(input)
-                .execute(
-                    transactionList,
-                    projectedTransactionGenerator
-                )
+            commandHistorian.recordCommand(command)
+            command.execute(
+                transactionList, projectedTransactionGenerator
+            )
         }
     }
     

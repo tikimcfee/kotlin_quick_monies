@@ -1,6 +1,6 @@
 package appcore.visual_interfaces.web
 
-class SimpleHTML {
+object SimpleHTML {
     open class Tag(val name: String) {
         val children = mutableListOf<Tag>()
         val attributes = mutableListOf<Attribute>()
@@ -31,6 +31,7 @@ class SimpleHTML {
     
     class Html : Tag("html")
     class Table : Tag("table")
+    class Span : Tag("span")
     class Center : Tag("center")
     class TR : Tag("tr")
     class TD : Tag("td")
@@ -60,10 +61,13 @@ class SimpleHTML {
         doInit(TR(), init)
             .set("bgcolor", color)
     
-    fun TR.td(color: String? = null, align: String = "left", init: TD.() -> Unit) =
+    fun TR.td(color: String? = null, align: String = "right", init: TD.() -> Unit) =
         doInit(TD(), init)
             .set("align", align)
             .set("bgcolor", color)
+    
+    fun Tag.span(spanner: ((Span) -> Unit) = {}) =
+        doInit(Span(), spanner)
     
     fun Tag.text(s: Any?) =
         doInit(Text(s.toString()), {})
@@ -80,7 +84,7 @@ class SimpleHTML {
             text(labelText)
         }
         
-        lineBreak()
+        span()
         
         doInit(Input()) {
             set("name", forAttr.id)

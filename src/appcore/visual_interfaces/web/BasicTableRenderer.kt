@@ -5,23 +5,29 @@ import appcore.functionality.accounting.TransactionAccountant
 import appcore.transfomers.TransactionsAsText.IndividualFormatting.formattedAfter
 import appcore.transfomers.TransactionsAsText.IndividualFormatting.formattedAmount
 import appcore.transfomers.TransactionsAsText.IndividualFormatting.formattedDate
-import appcore.visual_interfaces.web.BasicTableRenderer.FormParam.TRANSACTION_AMOUNT
-import appcore.visual_interfaces.web.BasicTableRenderer.FormParam.TRANSACTION_DESCRIPTION
+import appcore.visual_interfaces.web.BasicTableRenderer.FormParam.ADD_TRANSACTION_AMOUNT
+import appcore.visual_interfaces.web.BasicTableRenderer.FormParam.ADD_TRANSACTION_DESCRIPTION
 import io.javalin.Context
 
 object BasicTableRenderer {
     
     enum class FormParam(val id: String) {
-        TRANSACTION_AMOUNT("inputTransactionAmount"),
-        TRANSACTION_DESCRIPTION("inputTransactionDescription"),
+        ADD_TRANSACTION_AMOUNT("inputTransactionAmount"),
+        ADD_TRANSACTION_DESCRIPTION("inputTransactionDescription"),
+        ADD_TRANSACTION_DATE("inputTransactionDate"),
+        
+        ACTION_REMOVE_FROM_POSITION("actionRemoveFromPosition")
     }
     
-    fun ApplicationState.renderTo(
-        context: Context,
-        actionRootUrl: String = "http://localhost:7000/",
-        actionMethod: String = "post"
-    ) {
-        val rawHtml = with(SimpleHTML()) {
+    fun SimpleHTML.Form.addActionAndMethod(route: JavalinWebFrameworkWrapper.Route) {
+        with(SimpleHTML) {
+            this@addActionAndMethod.set("action", route.path)
+            this@addActionAndMethod.set("method", route.method)
+        }
+    }
+    
+    fun ApplicationState.renderResponseTo(context: Context) {
+        val rawHtml = with(SimpleHTML) {
             html {
                 fun header() {
                     lineBreak()
@@ -31,47 +37,46 @@ object BasicTableRenderer {
                 
                 fun userTransactionInput() {
                     form {
-                        set("action", actionRootUrl)
-                        set("method", actionMethod)
+                        addActionAndMethod(JavalinWebFrameworkWrapper.Route.AddTransaction)
                         
-                        newField("Monies, in or out", TRANSACTION_AMOUNT)
+                        newField("How much money is coming in, or going out? : ", ADD_TRANSACTION_AMOUNT)
                         lineBreak()
                         
-                        newField("What it's for: ", TRANSACTION_DESCRIPTION)
+                        newField("What it's for? : ", ADD_TRANSACTION_DESCRIPTION)
                         lineBreak()
                         
-                        button {
-                            text("Stick it in there")
-                        }
+                        button { text("Stick it in there") }
                     }
                 }
                 
                 fun extraCommands() {
                     form {
-                        set("action", "${actionRootUrl}remove_last")
-                        set("method", "post")
-                        
-                        button {
-                            text("Remove last")
-                        }
+                        addActionAndMethod(JavalinWebFrameworkWrapper.Route.RemoveLast)
+                        button { text("Remove last") }
                     }
                 }
                 
                 fun transactionTable() {
                     table {
                         tr {
-                            td { text("Date") }
-                            td { text("Transaction Amount") }
-                            td { text("After Transaction") }
+                            td(align = "left") { text("|\tDate\t|\t") }
+                            td(align = "left") { text("|\tTransaction Amount\t|\t") }
+                            td(align = "left") { text("|\tAfter Transaction\t|\t") }
+                            td(align = "left") { text("|\tDescription\t|\t") }
                         }
                         
                         fun makeRow(snapshot: TransactionAccountant.Snapshot) {
                             tr {
                                 with(snapshot.transaction) {
-                                    td(align = "right") { text(formattedDate()) }
-                                    td(align = "right") { text(formattedAmount()) }
+                                    td { text(formattedDate()) }
+                                    td { text(formattedAmount()) }
+                                    td {
+                                        text(snapshot.formattedAfter())
+                                    }
+                                    td{
+                                        text(description)
+                                    }
                                 }
-                                td(align = "right") { text(snapshot.formattedAfter()) }
                             }
                         }
                         

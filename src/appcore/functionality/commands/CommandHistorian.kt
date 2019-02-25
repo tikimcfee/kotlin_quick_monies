@@ -3,11 +3,15 @@ package appcore.functionality.commands
 import java.io.File
 
 class CommandHistorian {
-    
     private val historyDirectoryName = "_working"
     private val commandHistoryName = "command_history"
     private val commandHistoryBackupPre = "command_history_pre.bak"
     private val commandHistoryBackupPost = "command_history_post.bak"
+    
+    
+    fun recordCommand(command: Command) {
+        recordRawCommand(command.singleLineSerialization())
+    }
     
     fun recordRawCommand(rawCommand: String) {
         with(historyFile()) {
@@ -18,7 +22,6 @@ class CommandHistorian {
     }
     
     fun readCommandHistory() = historyFile().readLines()
-    
     private fun ensureRoot() =
         File(workingDirectory())
             .resolve(historyDirectoryName)

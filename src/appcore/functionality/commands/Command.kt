@@ -3,60 +3,41 @@ package appcore.functionality.commands
 import appcore.functionality.Transaction
 import appcore.functionality.list.RelativePos
 
-sealed class Command(
-    commandId: String,
-    aliases: List<String> = listOf()
-) {
+abstract sealed class Command() {
+    abstract fun singleLineSerialization(): String
     
-    
-    companion object {
-        private val registeredCommandMap = mutableMapOf<String, Command>()
-        
-        fun allAliases() = registeredCommandMap.keys
-        
-        fun fromStringAlias(alias: String): Command? =
-            registeredCommandMap[alias]
-        
+    object MainAppStop : Command() {
+        override fun singleLineSerialization() = "MainAppStop"
     }
     
-    init {
-        aliases.forEach {
-            registeredCommandMap[it] = this
-        }
+    object Test_AddMultiple : Command() {
+        override fun singleLineSerialization() = "Test_AddMultiple"
     }
-    
-    
-    object MainAppStop : Command(
-        "MainAppStop",
-        listOf("exit", "stop", "quit", "x", "xx", "---", "q")
-    )
-    
-    object Test_AddMultiple : Command(
-        "Test_AddMultiple",
-        listOf("\\*")
-    )
     
     class Add(
         val listPos: RelativePos,
         val transaction: Transaction
-    ) : Command(
-        "Add",
-        listOf("\\+", "add")
-    )
+    ) : Command() {
+        override fun singleLineSerialization() =
+            "add ${listPos.serialize()} " +
+            "${transaction.amount} " +
+            "${transaction.date.time} " +
+            transaction.description
+    }
     
     class Remove(
         val listPos: RelativePos
-    ) : Command(
-        "Remove",
-        listOf("\\-", "remove")
-    )
+    ) : Command() {
+        override fun singleLineSerialization() =
+            "remove ${listPos.serialize()}"
+    }
     
     class Move(
         val from: RelativePos,
         val to: RelativePos
-    ) : Command(
-        "Move",
-        listOf("m")
-    )
+    ) : Command() {
+        override fun singleLineSerialization() =
+            "move ${from.serialize()} ${to.serialize()}"
+    }
     
 }

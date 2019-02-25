@@ -12,8 +12,8 @@ class TransactionList {
             RelativePos.Last -> transactions.add(transaction)
             
             is RelativePos.Explicit -> {
-                if (listPosition.pos in IntRange(1, transactions.size)) {
-                    transactions.add(listPosition.pos - 1, transaction)
+                if (listPosition.index in IntRange(1, transactions.size)) {
+                    transactions.add(listPosition.index - 1, transaction)
                 }
                 else {
                     insert(transaction = transaction)
@@ -28,8 +28,8 @@ class TransactionList {
             RelativePos.Last -> transactions.removeAt(transactions.size - 1)
             
             is RelativePos.Explicit -> {
-                if (listPosition.pos in IntRange(1, transactions.size)) {
-                    transactions.removeAt(listPosition.pos - 1)
+                if (listPosition.index in IntRange(1, transactions.size)) {
+                    transactions.removeAt(listPosition.index - 1)
                 }
                 else {
                     remove()
@@ -47,7 +47,7 @@ class TransactionList {
     fun RelativePos.toAbsoluteIndex() = when (this) {
         RelativePos.Last -> transactions.size - 1
         RelativePos.First -> 0
-        is RelativePos.Explicit -> pos - 1
+        is RelativePos.Explicit -> index - 1
     }
     
 }

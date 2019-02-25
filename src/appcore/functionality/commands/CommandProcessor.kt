@@ -4,57 +4,41 @@ import appcore.functionality.Transaction
 import appcore.functionality.list.RelativePos
 import java.util.*
 
-
 class CommandProcessor {
     
     fun parseStringCommand(input: String?) = input.toCommand()
     
-    fun String.isStop() = this == "--" || this == "exit" || this == "x" || this == "quit"
-    
     private fun String?.toCommand(): Command {
         val args = this?.split(' ') ?: return Command.MainAppStop
-        
-        if (args.size == 1 && args[0].isStop()) {
-            return Command.MainAppStop
-        }
-        
         return args.argListToCommand()
     }
     
     private fun List<String>.argListToCommand() = when (get(0)) {
-        "+" -> {
-            if (size == 2) {
-                Command.Add(
-                    RelativePos.Last,
-                    toTransaction()
-                )
-            }
-            else {
-                Command.Add(
-                    RelativePos.Explicit(get(1).toInt()),
-                    toTransaction()
-                )
-            }
-        }
-        
-        "-" -> {
-            if (size == 1) {
-                Command.Remove(
-                    RelativePos.Last
-                )
-            }
-            else {
-                Command.Remove(
-                    RelativePos.Explicit(get(1).toInt())
-                )
+        "add" -> {
+            val relativePos = positionFromArgIndex(1)
+            val amount = get(2).toDouble()
+            val date = Date(get(3).toLong())
+            val description = if (size >= 5) {
+                subList(4, size).joinToString(" ")
+            } else {
+                "{no description}"
             }
             
+            Command.Add(
+                relativePos,
+                Transaction(date, amount, description)
+            )
         }
         
-        "m" -> {
+        "remove" -> {
+            val relativePos = positionFromArgIndex(1)
+            Command.Remove(relativePos)
+        }
+        
+        "move" -> {
             Command.Move(
-                RelativePos.Explicit(get(1).toInt()),
-                RelativePos.Explicit(get(2).toInt())
+                positionFromArgIndex(1),
+                positionFromArgIndex(2)
             )
         }
         
@@ -62,14 +46,19 @@ class CommandProcessor {
             Command.Test_AddMultiple
         }
         
+        "stop" -> {
+            Command.MainAppStop
+        }
+        
         else -> Command.MainAppStop
     }
     
-    private fun List<String>.toTransaction(): Transaction {
-        return when (size) {
-            2 -> Transaction(Date(), get(1).toDouble(), subList(2, size).joinToString())
-            3 -> Transaction(Date(), get(2).toDouble(), subList(3, size).joinToString())
-            else -> Transaction(Date(), 0.0, "[${joinToString()}]")
+    private fun List<String>.positionFromArgIndex(index: Int = 1): RelativePos {
+        val positionArg = get(index).toInt()
+        return when (positionArg) {
+            -1 -> RelativePos.First
+            -2 -> RelativePos.Last
+            else -> RelativePos.Explicit(positionArg)
         }
     }
 }
