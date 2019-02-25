@@ -7,6 +7,7 @@ import appcore.transfomers.TransactionsAsText.IndividualFormatting.formattedAfte
 import appcore.transfomers.TransactionsAsText.IndividualFormatting.formattedAmount
 import appcore.transfomers.TransactionsAsText.IndividualFormatting.formattedDate
 import appcore.visual_interfaces.web.BasicTableRenderer.FormParam.*
+import appcore.visual_interfaces.web.JavalinWebFrameworkWrapper.Route.*
 import io.javalin.Context
 import java.util.*
 
@@ -17,7 +18,7 @@ object BasicTableRenderer {
         ADD_TRANSACTION_DESCRIPTION("inputTransactionDescription"),
         ADD_TRANSACTION_DATE("inputTransactionDate"),
         
-        ACTION_REMOVE_FROM_POSITION("actionRemoveFromPosition")
+        ACTION_REMOVE_FROM_POSITION_INDEX("actionRemoveFromPositionIndex")
     }
     
     fun SimpleHTML.Form.addActionAndMethod(route: JavalinWebFrameworkWrapper.Route) {
@@ -38,7 +39,7 @@ object BasicTableRenderer {
                 
                 fun userTransactionInput() {
                     form {
-                        addActionAndMethod(JavalinWebFrameworkWrapper.Route.AddTransaction)
+                        addActionAndMethod(AddTransaction)
                         
                         newField("How much money is coming in, or going out? : ", ADD_TRANSACTION_AMOUNT)
                         lineBreak()
@@ -67,7 +68,7 @@ object BasicTableRenderer {
                     text("-- Shortcuts --")
                     lineBreak()
                     form {
-                        addActionAndMethod(JavalinWebFrameworkWrapper.Route.RemoveLast)
+                        addActionAndMethod(RemoveLast)
                         button { text("Remove last") }
                     }
                 }
@@ -81,16 +82,28 @@ object BasicTableRenderer {
                             td(align = "left") { text("Description") }
                         }
                         
-                        fun makeRow(snapshot: TransactionAccountant.Snapshot) {
+                        fun makeRow(
+                            snapshot: TransactionAccountant.Snapshot
+                        ) {
                             tr {
                                 with(snapshot.transaction) {
                                     td { text(formattedDate()) }
                                     td { text(formattedAmount()) }
+                                    td { text(snapshot.formattedAfter()) }
+                                    td { text(description) }
                                     td {
-                                        text(snapshot.formattedAfter())
-                                    }
-                                    td {
-                                        text(description)
+                                        button {
+                                            text("Remove")
+                                            set("value", snapshot.originalPos.toString())
+                                            set(
+                                                "name",
+                                                ACTION_REMOVE_FROM_POSITION_INDEX.id
+                                            )
+                                            set(
+                                                "form",
+                                                ACTION_REMOVE_FROM_POSITION_INDEX.name
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -98,8 +111,7 @@ object BasicTableRenderer {
                         
                         transactionAccountant
                             .computeTransactionDeltas(transactionList)
-                            .asSequence()
-                            .forEach { makeRow(it) }
+                            .forEach(::makeRow)
                     }
                 }
                 
@@ -109,6 +121,11 @@ object BasicTableRenderer {
                 extraCommands()
                 lineBreak()
                 transactionTable()
+                form {
+                    addActionAndMethod(RemoveIndex)
+                    set("id", ACTION_REMOVE_FROM_POSITION_INDEX.name)
+                    hiddenInput(ACTION_REMOVE_FROM_POSITION_INDEX)
+                }
             }
         }.toString()
         

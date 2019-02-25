@@ -8,7 +8,13 @@ class TransactionAccountant {
     data class Snapshot(
         val transaction: Transaction,
         val amountBeforeTransaction: Double,
-        val amountAfterTransaction: Double
+        val amountAfterTransaction: Double,
+        val originalPos: Int
+    )
+    
+    private data class SortedTransaction(
+        val transaction: Transaction,
+        val originalPos: Int
     )
     
     fun computeTransactionDeltas(
@@ -23,12 +29,14 @@ class TransactionAccountant {
         
         transactionList.transactions
             .asSequence()
-            .sortedBy { it.date.time }
-            .mapTo(deltaList) { transaction ->
+            .withIndex()
+            .map { SortedTransaction(it.value, it.index) }
+            .sortedBy { it.transaction.date.time }
+            .mapTo(deltaList) { sortedTransaction ->
                 if (deltaList.isEmpty()) {
-                    transaction.toInitialAccumulator()
+                    sortedTransaction.toInitialAccumulator()
                 } else {
-                    deltaList.last() withAnother transaction
+                    deltaList.last() withAnother sortedTransaction
                 }
             }
             .reverse()
@@ -36,13 +44,21 @@ class TransactionAccountant {
         return deltaList
     }
     
-    private fun Transaction.toInitialAccumulator() = Snapshot(
-        this, 0.0, this.amount
-    )
+    private fun SortedTransaction.toInitialAccumulator() =
+        Snapshot(
+            transaction,
+            0.0,
+            this.transaction.amount,
+            originalPos
+        )
     
-    private infix fun Snapshot.withAnother(transaction: Transaction) = Snapshot(
-        transaction, amountAfterTransaction, amountAfterTransaction + transaction.amount
-    )
+    private infix fun Snapshot.withAnother(transaction: SortedTransaction) =
+        Snapshot(
+            transaction.transaction,
+            amountAfterTransaction,
+            amountAfterTransaction + transaction.transaction.amount,
+            transaction.originalPos
+        )
     
 }
 

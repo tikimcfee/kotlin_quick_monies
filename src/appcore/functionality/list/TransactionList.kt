@@ -14,8 +14,7 @@ class TransactionList {
             is RelativePos.Explicit -> {
                 if (listPosition.index in IntRange(1, transactions.size)) {
                     transactions.add(listPosition.index - 1, transaction)
-                }
-                else {
+                } else {
                     insert(transaction = transaction)
                 }
             }
@@ -28,10 +27,9 @@ class TransactionList {
             RelativePos.Last -> transactions.removeAt(transactions.size - 1)
             
             is RelativePos.Explicit -> {
-                if (listPosition.index in IntRange(1, transactions.size)) {
-                    transactions.removeAt(listPosition.index - 1)
-                }
-                else {
+                if (listPosition.index in IntRange(0, transactions.size - 1)) {
+                    transactions.removeAt(listPosition.index)
+                } else {
                     remove()
                 }
             }

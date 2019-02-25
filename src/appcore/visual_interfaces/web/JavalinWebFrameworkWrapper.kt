@@ -86,7 +86,7 @@ class JavalinWebFrameworkWrapper {
         stateTransformer: SimpleStateTransformer
     ) {
         with(requestContext) {
-            val deletePosition = formInt(ACTION_REMOVE_FROM_POSITION)
+            val deletePosition = formInt(ACTION_REMOVE_FROM_POSITION_INDEX)
             if (deletePosition.second) {
                 stateTransformer.runTransform(
                     this@withContextRemoveFromPosition,

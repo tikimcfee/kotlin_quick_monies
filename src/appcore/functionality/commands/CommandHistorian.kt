@@ -14,6 +14,7 @@ class CommandHistorian {
     }
     
     fun recordRawCommand(rawCommand: String) {
+        println("Recording command: [$rawCommand]")
         with(historyFile()) {
             copyTo(preBackupFile(), overwrite = true)
             appendText(rawCommand + "\n")

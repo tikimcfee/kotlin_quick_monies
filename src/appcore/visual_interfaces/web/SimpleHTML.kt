@@ -97,6 +97,18 @@ object SimpleHTML {
         }
     }
     
+    fun Form.hiddenInput(
+        forAttr: BasicTableRenderer.FormParam,
+        input: ((Input) -> Unit) = {}
+    ) {
+        doInit(Input()) {
+            set("style", "visibility: hidden;")
+            set("name", forAttr.id)
+            input(this)
+        }
+    }
+    
+    //<input type = "hidden" name = "topic" value = "something" />
     // ------------------------------------
     // Simple Children
     // ------------------------------------
