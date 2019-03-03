@@ -2,7 +2,7 @@ package appcore.visual_interfaces.web
 
 import appcore.functionality.ApplicationState
 import appcore.functionality.SimpleStateTransformer
-import appcore.functionality.Transaction
+import appcore.functionality.coreDefinitions.Transaction
 import appcore.functionality.commands.Command
 import appcore.functionality.list.RelativePos
 import appcore.functionality.restoreState
@@ -29,7 +29,7 @@ class JavalinWebFrameworkWrapper {
     ) {
         
         private val port = "7000"
-        private val host = "192.168.1.70"
+        private val host = "localhost"
         private val protocol = "http"
         private val root = "$protocol://$host:$port"
         val path = "$root/$name"

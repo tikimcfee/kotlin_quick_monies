@@ -16,14 +16,13 @@ object SimpleHTML {
         override fun toString() = """$name="$value""""
     }
     
-    fun <T : Tag> T.set(name: String, value: String?): T {
+    fun <T : Tag> T.setAttribute(name: String, value: String?): T = apply {
         if (value != null) {
             attributes.add(Attribute(name, value))
         }
-        return this
     }
     
-    fun <T : Tag> Tag.doInit(tag: T, init: T.() -> Unit): T {
+    fun <T : Tag> Tag.initTag(tag: T, init: T.() -> Unit): T {
         tag.init()
         children.add(tag)
         return tag
@@ -52,25 +51,25 @@ object SimpleHTML {
         Html().apply(init)
     
     fun Html.table(init: Table.() -> Unit) =
-        doInit(Table(), init)
+        initTag(Table(), init)
     
     fun Html.center(init: Center.() -> Unit) =
-        doInit(Center(), init)
+        initTag(Center(), init)
     
     fun Html.form(init: Form.() -> Unit) =
-        doInit(Form(), init)
+        initTag(Form(), init)
     
     // ------------------------------------
     // Tables
     // ------------------------------------
     fun Table.tr(color: String? = null, init: TR.() -> Unit) =
-        doInit(TR(), init)
-            .set("bgcolor", color)
+        initTag(TR(), init)
+            .setAttribute("bgcolor", color)
     
     fun TR.td(color: String? = null, align: String = "right", init: TD.() -> Unit) =
-        doInit(TD(), init)
-            .set("align", align)
-            .set("bgcolor", color)
+        initTag(TD(), init)
+            .setAttribute("align", align)
+            .setAttribute("bgcolor", color)
     
     
     // ------------------------------------
@@ -82,17 +81,17 @@ object SimpleHTML {
         label: ((Label) -> Unit) = {},
         input: ((Input) -> Unit) = {}
     ) {
-        doInit(Label()) {
-            set("for", forAttr.id)
+        initTag(Label()) {
+            setAttribute("for", forAttr.id)
             text(labelText)
             label(this)
         }
         
         span()
         
-        doInit(Input()) {
-            set("name", forAttr.id)
-            set("id", forAttr.id)
+        initTag(Input()) {
+            setAttribute("name", forAttr.id)
+            setAttribute("id", forAttr.id)
             input(this)
         }
     }
@@ -101,9 +100,9 @@ object SimpleHTML {
         forAttr: BasicTableRenderer.FormParam,
         input: ((Input) -> Unit) = {}
     ) {
-        doInit(Input()) {
-            set("style", "visibility: hidden;")
-            set("name", forAttr.id)
+        initTag(Input()) {
+            setAttribute("style", "visibility: hidden;")
+            setAttribute("name", forAttr.id)
             input(this)
         }
     }
@@ -113,14 +112,14 @@ object SimpleHTML {
     // Simple Children
     // ------------------------------------
     fun Tag.span(spanner: ((Span) -> Unit) = {}) =
-        doInit(Span(), spanner)
+        initTag(Span(), spanner)
     
     fun Tag.text(s: Any?) =
-        doInit(Text(s.toString()), {})
+        initTag(Text(s.toString()), {})
     
     fun Tag.lineBreak() =
-        doInit(LineBreak(), {})
+        initTag(LineBreak(), {})
     
     fun Tag.button(init: Button.() -> Unit) =
-        doInit(Button(), init)
+        initTag(Button(), init)
 }

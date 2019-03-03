@@ -1,6 +1,6 @@
 package appcore.functionality.commands
 
-import appcore.functionality.Transaction
+import appcore.functionality.coreDefinitions.Transaction
 import appcore.functionality.list.RelativePos
 import java.util.*
 
@@ -12,6 +12,13 @@ class CommandProcessor {
         val args = this?.split(' ') ?: return Command.MainAppStop
         return args.argListToCommand()
     }
+    
+    private fun List<String>.actionIsAddToAccount() = get(0) == "add"
+    private fun List<String>.actionIsremoveFromAccount() = get(0) == "remove"
+    private fun List<String>.actionIsMovePositionInAccount() = get(0) == "move"
+    private fun List<String>.actionIsAddMultipleToAccount() = get(0) == "*"
+    
+    private fun List<String>.actionIsStop() = get(0) == "stop"
     
     private fun List<String>.argListToCommand() = when (get(0)) {
         "add" -> {

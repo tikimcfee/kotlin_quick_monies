@@ -1,4 +1,4 @@
-package appcore.functionality
+package appcore.functionality.coreDefinitions
 
 import java.util.*
 

@@ -1,9 +1,9 @@
 package appcore.functionality.commands
 
-import appcore.functionality.Transaction
+import appcore.functionality.coreDefinitions.Transaction
 import appcore.functionality.list.RelativePos
 
-abstract sealed class Command() {
+sealed class Command {
     abstract fun singleLineSerialization(): String
     
     object MainAppStop : Command() {
@@ -18,6 +18,7 @@ abstract sealed class Command() {
         val listPos: RelativePos,
         val transaction: Transaction
     ) : Command() {
+        
         override fun singleLineSerialization() =
             "add ${listPos.serialize()} " +
             "${transaction.amount} " +
@@ -28,6 +29,7 @@ abstract sealed class Command() {
     class Remove(
         val listPos: RelativePos
     ) : Command() {
+        
         override fun singleLineSerialization() =
             "remove ${listPos.serialize()}"
     }
@@ -36,6 +38,7 @@ abstract sealed class Command() {
         val from: RelativePos,
         val to: RelativePos
     ) : Command() {
+        
         override fun singleLineSerialization() =
             "move ${from.serialize()} ${to.serialize()}"
     }

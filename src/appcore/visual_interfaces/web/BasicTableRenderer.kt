@@ -23,8 +23,8 @@ object BasicTableRenderer {
     
     fun SimpleHTML.Form.addActionAndMethod(route: JavalinWebFrameworkWrapper.Route) {
         with(SimpleHTML) {
-            this@addActionAndMethod.set("action", route.path)
-            this@addActionAndMethod.set("method", route.method)
+            this@addActionAndMethod.setAttribute("action", route.path)
+            this@addActionAndMethod.setAttribute("method", route.method)
         }
     }
     
@@ -51,7 +51,7 @@ object BasicTableRenderer {
                             "When did it happen? : ",
                             ADD_TRANSACTION_DATE,
                             input = {
-                                it.set(
+                                it.setAttribute(
                                     "value",
                                     with(TransactionsAsText.QuickMoniesDates) {
                                         Date().format()
@@ -94,12 +94,12 @@ object BasicTableRenderer {
                                     td {
                                         button {
                                             text("Remove")
-                                            set("value", snapshot.originalPos.toString())
-                                            set(
+                                            setAttribute("value", snapshot.sourceListPosition.toString())
+                                            setAttribute(
                                                 "name",
                                                 ACTION_REMOVE_FROM_POSITION_INDEX.id
                                             )
-                                            set(
+                                            setAttribute(
                                                 "form",
                                                 ACTION_REMOVE_FROM_POSITION_INDEX.name
                                             )
@@ -123,7 +123,7 @@ object BasicTableRenderer {
                 transactionTable()
                 form {
                     addActionAndMethod(RemoveIndex)
-                    set("id", ACTION_REMOVE_FROM_POSITION_INDEX.name)
+                    setAttribute("id", ACTION_REMOVE_FROM_POSITION_INDEX.name)
                     hiddenInput(ACTION_REMOVE_FROM_POSITION_INDEX)
                 }
             }

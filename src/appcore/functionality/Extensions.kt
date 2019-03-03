@@ -2,6 +2,7 @@ package appcore.functionality
 
 import appcore.functionality.commands.Command
 import appcore.functionality.commands.Command.*
+import appcore.functionality.coreDefinitions.Transaction
 import appcore.functionality.dataPopulation.ProjectedTransactionGenerator
 import appcore.functionality.list.RelativePos
 import appcore.functionality.list.TransactionList

@@ -1,6 +1,6 @@
 package appcore.functionality.dataPopulation
 
-import appcore.functionality.Transaction
+import appcore.functionality.coreDefinitions.Transaction
 import java.util.*
 
 class ProjectedTransactionGenerator {

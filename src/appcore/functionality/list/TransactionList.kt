@@ -1,6 +1,6 @@
 package appcore.functionality.list
 
-import appcore.functionality.Transaction
+import appcore.functionality.coreDefinitions.Transaction
 
 class TransactionList {
     
@@ -42,7 +42,7 @@ class TransactionList {
         }
     }
     
-    fun RelativePos.toAbsoluteIndex() = when (this) {
+    private fun RelativePos.toAbsoluteIndex() = when (this) {
         RelativePos.Last -> transactions.size - 1
         RelativePos.First -> 0
         is RelativePos.Explicit -> index - 1

@@ -1,6 +1,6 @@
 package appcore.functionality.accounting
 
-import appcore.functionality.Transaction
+import appcore.functionality.coreDefinitions.Transaction
 import appcore.functionality.list.TransactionList
 
 class TransactionAccountant {
@@ -9,12 +9,12 @@ class TransactionAccountant {
         val transaction: Transaction,
         val amountBeforeTransaction: Double,
         val amountAfterTransaction: Double,
-        val originalPos: Int
+        val sourceListPosition: Int
     )
     
     private data class SortedTransaction(
         val transaction: Transaction,
-        val originalPos: Int
+        val sourceListPosition: Int
     )
     
     fun computeTransactionDeltas(
@@ -49,7 +49,7 @@ class TransactionAccountant {
             transaction,
             0.0,
             this.transaction.amount,
-            originalPos
+            sourceListPosition
         )
     
     private infix fun Snapshot.withAnother(transaction: SortedTransaction) =
@@ -57,7 +57,7 @@ class TransactionAccountant {
             transaction.transaction,
             amountAfterTransaction,
             amountAfterTransaction + transaction.transaction.amount,
-            transaction.originalPos
+            transaction.sourceListPosition
         )
     
 }

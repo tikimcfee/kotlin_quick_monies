@@ -1,6 +1,6 @@
 package appcore.transfomers
 
-import appcore.functionality.Transaction
+import appcore.functionality.coreDefinitions.Transaction
 import appcore.functionality.accounting.TransactionAccountant
 import java.text.SimpleDateFormat
 import java.util.*
