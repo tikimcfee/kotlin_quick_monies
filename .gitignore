@@ -8,3 +8,4 @@ command_historian_data/
 
 # Ignore Gradle build output directory
 build
+out

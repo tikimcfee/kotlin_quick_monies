@@ -1,6 +1,7 @@
 package kotlin_quick_monies.visual_interfaces.web
 
-import appcore.functionality.ApplicationState
+import appcore.functionality.AppStateFunctions
+import io.javalin.Context
 import kotlin_quick_monies.functionality.accounting.TransactionAccountant
 import kotlin_quick_monies.transfomers.TransactionsAsText
 import kotlin_quick_monies.transfomers.TransactionsAsText.IndividualFormatting.formattedAfter
@@ -8,8 +9,7 @@ import kotlin_quick_monies.transfomers.TransactionsAsText.IndividualFormatting.f
 import kotlin_quick_monies.transfomers.TransactionsAsText.IndividualFormatting.formattedDate
 import kotlin_quick_monies.visual_interfaces.web.BasicTableRenderer.FormParam.*
 import kotlin_quick_monies.visual_interfaces.web.JavalinWebFrameworkWrapper.Route.*
-import io.javalin.Context
-import java.util.*
+import org.joda.time.DateTime
 
 object BasicTableRenderer {
     
@@ -17,6 +17,11 @@ object BasicTableRenderer {
         ADD_TRANSACTION_AMOUNT("inputTransactionAmount"),
         ADD_TRANSACTION_DESCRIPTION("inputTransactionDescription"),
         ADD_TRANSACTION_DATE("inputTransactionDate"),
+        
+        ADD_SIMPLE_MONTHLY_TRANSACTION_AMOUNT("inputMonthlyTransactionAmount"),
+        ADD_SIMPLE_MONTHLY_TRANSACTION_MONTHS_TO_ADD("inputMonthlyTransactionCount"),
+        ADD_SIMPLE_MONTHLY_TRANSACTION_START_DATE("inputMonthlyTransactionStartDate"),
+        ADD_SIMPLE_MONTHLY_TRANSACTION_DESCRIPTION("inputMonthlyTransactionDescription"),
         
         ACTION_REMOVE_FROM_POSITION_INDEX("actionRemoveFromPositionIndex")
     }
@@ -28,12 +33,12 @@ object BasicTableRenderer {
         }
     }
     
-    fun ApplicationState.renderResponseTo(context: Context) {
+    fun AppStateFunctions.renderResponseTo(context: Context) {
         val rawHtml = with(SimpleHTML) {
             html {
                 fun header() {
                     lineBreak()
-                    text("-- Transaction Info --")
+                    text("<strong>- Transaction Info -</<strong>")
                     lineBreak()
                 }
                 
@@ -50,11 +55,10 @@ object BasicTableRenderer {
                         newField(
                             "When did it happen? : ",
                             ADD_TRANSACTION_DATE,
-                            input = {
-                                it.setAttribute(
-                                    "value",
+                            input = { dateInputField ->
+                                dateInputField.setAttribute("value",
                                     with(TransactionsAsText.QuickMoniesDates) {
-                                        Date().format()
+                                        DateTime().format()
                                     })
                             })
                         lineBreak()
@@ -65,12 +69,38 @@ object BasicTableRenderer {
                 
                 fun extraCommands() {
                     lineBreak()
-                    text("-- Shortcuts --")
-                    lineBreak()
+                    text("<strong>- Simple Repeated Transactions -</strong>")
                     form {
-                        addActionAndMethod(RemoveLast)
-                        button { text("Remove last") }
+                        addActionAndMethod(AddMonthlyTransaction)
+                        
+                        newField("Monthly amount : ", ADD_SIMPLE_MONTHLY_TRANSACTION_AMOUNT)
+                        lineBreak()
+                        
+                        newField(
+                            "Start date : ",
+                            ADD_SIMPLE_MONTHLY_TRANSACTION_START_DATE,
+                            input = { dateInputField ->
+                                dateInputField.setAttribute("value",
+                                    with(TransactionsAsText.QuickMoniesDates) {
+                                        DateTime().format()
+                                    })
+                            })
+                        lineBreak()
+                        
+                        newField(
+                            "Months to adds : ",
+                            ADD_SIMPLE_MONTHLY_TRANSACTION_MONTHS_TO_ADD,
+                            input = { dateInputField ->
+                                dateInputField.setAttribute("value", "12")
+                            })
+                        lineBreak()
+                        
+                        newField("What it's for? : ", ADD_SIMPLE_MONTHLY_TRANSACTION_DESCRIPTION)
+                        lineBreak()
+                        
+                        button { text("Stick a bunch of 'em in there.") }
                     }
+                    
                 }
                 
                 fun transactionTable() {

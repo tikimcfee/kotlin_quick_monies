@@ -1,30 +1,38 @@
 package kotlin_quick_monies.functionality.dataPopulation
 
+import appcore.functionality.AppStateFunctions
+import kotlin_quick_monies.functionality.commands.Command
 import kotlin_quick_monies.functionality.coreDefinitions.Transaction
-import java.util.*
+import kotlin_quick_monies.functionality.list.RelativePos
+import org.joda.time.DateTime
 
 class ProjectedTransactionGenerator {
     
-    fun createMultiple(
+    fun `generate and insert a number of monthly transcations from a template`(
+        requestedGenerationAmount: Int = 12,
         transactionTemplate: Transaction,
-        daysBetween: Int,
-        count: Int
-    ): List<Transaction> {
-        return IntRange(1, count).map { i ->
-            val newDate = transactionTemplate
-                .date
-                .let { Date(it).toInstant() }
-                .plusSeconds(i * daysBetween.toLong() * 24 * 60 * 60)
-                .let { Date(it.toEpochMilli()).time }
-            with(transactionTemplate) {
-                Transaction(newDate, amount, describeAsTemplate(i, count))
+        appFunctions: AppStateFunctions
+    ) {
+        fun generateTransactions(): List<Transaction> {
+            var dateAccumulator = DateTime(transactionTemplate.date)
+            return IntRange(1, requestedGenerationAmount).map {
+                transactionTemplate
+                    .copy(date = dateAccumulator.millis)
+                    .also { dateAccumulator = dateAccumulator.plusMonths(1) }
             }
         }
+        
+        fun insertTransactions(transactions: List<Transaction>) {
+            transactions.forEach {
+                appFunctions.`apply command to current state`(
+                    Command.Add(RelativePos.Last(), it)
+                )
+            }
+        }
+        
+        with(generateTransactions()) {
+            insertTransactions(this)
+        }
     }
-    
-    private fun Transaction.describeAsTemplate(
-        instanceNumber: Int,
-        total: Int
-    ) = "($instanceNumber/$total from '$description')"
     
 }

@@ -14,31 +14,34 @@ sealed class Command(
     
     class MainAppStop : Command("MainAppStop")
     
-    class Test_AddMultiple : Command("Test_AddMultiple")
-    
-    class Add(
+    data class Add(
         val listPos: RelativePos,
         val transaction: Transaction
     ) : Command("add")
     
-    class Remove(
+    data class Remove(
         val listPos: RelativePos
     ) : Command("remove")
     
-    class Move(
+    data class Move(
         val from: RelativePos,
         val to: RelativePos
     ) : Command("move")
+    
+    data class AddMonthlyTransaction(
+        val monthsToAdd: Int,
+        val transactionTemplate: Transaction
+    ) : Command("add_monthly_transaction")
     
 }
 
 class CommandTypeAdapter : TypeAdapter<Command> {
     override fun classFor(type: Any): KClass<out Command> = when (type as String) {
-        "rectangle" -> MainAppStop::class
-        "circle" -> Test_AddMultiple::class
+        "MainAppStop" -> MainAppStop::class
         "add" -> Add::class
         "remove" -> Remove::class
         "move" -> Move::class
+        "add_monthly_transaction" -> AddMonthlyTransaction::class
         else -> throw IllegalArgumentException("Unknown type: $type")
     }
     

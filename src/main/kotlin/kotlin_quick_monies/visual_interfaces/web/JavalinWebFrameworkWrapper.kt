@@ -1,7 +1,6 @@
 package kotlin_quick_monies.visual_interfaces.web
 
-import appcore.functionality.ApplicationState
-import appcore.functionality.SimpleStateTransformer
+import appcore.functionality.AppStateFunctions
 import kotlin_quick_monies.functionality.commands.Command
 import kotlin_quick_monies.functionality.coreDefinitions.Transaction
 import kotlin_quick_monies.functionality.list.RelativePos
@@ -11,14 +10,13 @@ import kotlin_quick_monies.visual_interfaces.web.BasicTableRenderer.FormParam.*
 import kotlin_quick_monies.visual_interfaces.web.BasicTableRenderer.renderResponseTo
 import io.javalin.Context
 import io.javalin.Javalin
+import org.joda.time.DateTime
 import java.text.ParseException
 
 typealias NotANumber = NumberFormatException
 
-fun main(args: Array<String>) {
-    JavalinWebFrameworkWrapper().start(
-        SimpleStateTransformer()
-    )
+fun main() {
+    JavalinWebFrameworkWrapper().start()
 }
 
 class JavalinWebFrameworkWrapper {
@@ -37,101 +35,91 @@ class JavalinWebFrameworkWrapper {
         
         object Home : Route("", "get")
         object AddTransaction : Route("add_transaction", "post")
-        object RemoveLast : Route("remove_last", "post")
         object RemoveIndex : Route("remove_index", "post")
+        object AddMonthlyTransaction : Route("add_monthly_transaction", "post")
         
         companion object {
-            val allRoutes = setOf(
-                Home, AddTransaction, RemoveLast, RemoveIndex
+            val startupRouteSet = setOf(
+                Home, AddTransaction, RemoveIndex, AddMonthlyTransaction
             )
         }
     }
     
-    fun start(simpleStateTransformer: SimpleStateTransformer) {
+    fun start() {
         val app = Javalin.create().enableDebugLogging().start(7000)
-        val runtimeState = ApplicationState().apply { restoreState() }
+        val runtimeState = AppStateFunctions().apply { restoreState() }
         
-        Route.allRoutes.forEach { route ->
-            when (route) {
+        Route.startupRouteSet.forEach { route ->
+            // little trick to make the compiler enforce full enum set usage
+            // *Do not add an else!*
+            val noopReturnHandle = when (route) {
                 Route.Home -> app.get(route.name) {
                     runtimeState.renderResponseTo(it)
                 }
                 Route.AddTransaction -> app.post(route.name) {
-                    runtimeState.withContextAddTransaction(
-                        it,
-                        simpleStateTransformer
-                    )
-                    it.redirect(Route.Home.path)
-                }
-                Route.RemoveLast -> app.post(route.name) {
-                    runtimeState.withContextRemoveLast(
-                        simpleStateTransformer
-                    )
+                    runtimeState.withContextAddTransaction(it)
                     it.redirect(Route.Home.path)
                 }
                 Route.RemoveIndex -> app.post(route.name) {
-                    runtimeState.withContextRemoveFromPosition(
-                        it,
-                        simpleStateTransformer
-                    )
+                    runtimeState.withContextRemoveFromPosition(it)
+                    it.redirect(Route.Home.path)
+                }
+                Route.AddMonthlyTransaction -> app.post(route.name) {
+                    runtimeState.withContextAddMonthlyTransaction(it)
                     it.redirect(Route.Home.path)
                 }
             }
         }
-        
     }
     
-    fun ApplicationState.withContextRemoveFromPosition(
-        requestContext: Context,
-        stateTransformer: SimpleStateTransformer
+    fun AppStateFunctions.withContextAddMonthlyTransaction(
+        requestContext: Context
     ) {
         with(requestContext) {
-            val deletePosition = formInt(ACTION_REMOVE_FROM_POSITION_INDEX)
-            if (deletePosition.second) {
-                stateTransformer.runTransform(
-                    this@withContextRemoveFromPosition,
-                    Command.Remove(RelativePos.Explicit(deletePosition.first))
+            val monthsToAdd = formInt(ADD_SIMPLE_MONTHLY_TRANSACTION_MONTHS_TO_ADD) ?: return
+            
+            val startDate = tryFormStringToDate(ADD_SIMPLE_MONTHLY_TRANSACTION_START_DATE) ?: return
+            val monthlyAmount = formDouble(ADD_SIMPLE_MONTHLY_TRANSACTION_AMOUNT) ?: return
+            val transactionDescription = formString(ADD_SIMPLE_MONTHLY_TRANSACTION_DESCRIPTION)
+            
+            `apply command to current state`(
+                Command.AddMonthlyTransaction(
+                    monthsToAdd,
+                    Transaction(
+                        startDate.millis,
+                        monthlyAmount,
+                        transactionDescription
+                    )
+                )
+            )
+        }
+    }
+    
+    fun AppStateFunctions.withContextRemoveFromPosition(
+        requestContext: Context
+    ) {
+        with(requestContext) {
+            formInt(ACTION_REMOVE_FROM_POSITION_INDEX)?.let {
+                `apply command to current state`(
+                    Command.Remove(RelativePos.Explicit(it))
                 )
             }
         }
     }
     
-    fun ApplicationState.withContextRemoveLast(
-        stateTransformer: SimpleStateTransformer
-    ) {
-        stateTransformer.runTransform(
-            this,
-            Command.Remove(RelativePos.Last())
-        )
-    }
-    
-    fun ApplicationState.withContextAddTransaction(
-        requestContext: Context,
-        stateTransformer: SimpleStateTransformer
+    fun AppStateFunctions.withContextAddTransaction(
+        requestContext: Context
     ) {
         with(requestContext) {
-            val transactionDate = with(TransactionsAsText.QuickMoniesDates) {
-                try {
-                    formString(ADD_TRANSACTION_DATE).parse()
-                } catch (e: ParseException) {
-                    // Don't allow bad dates in, for now.
-                    return
-                }
-            }
-            val transactionAmount = formDouble(ADD_TRANSACTION_AMOUNT).let {
-                if (!it.second) {
-                    return
-                }
-                it.first
-            }
+            val transactionDate = tryFormStringToDate(ADD_TRANSACTION_DATE) ?: return
+            val transactionAmount = formDouble(ADD_TRANSACTION_AMOUNT) ?: return
             val transactionDescription = formString(ADD_TRANSACTION_DESCRIPTION)
             
-            stateTransformer.runTransform(
-                this@withContextAddTransaction,
+            `apply command to current state`(
                 Command.Add(
                     RelativePos.Last(),
                     Transaction(
-                        transactionDate.time,
+                        transactionDate.millis,
                         transactionAmount,
                         transactionDescription
                     )
@@ -140,30 +128,37 @@ class JavalinWebFrameworkWrapper {
         }
     }
     
-    fun Context.formDouble(param: BasicTableRenderer.FormParam): Pair<Double, Boolean> {
-        val invalidNumber = Double.MIN_VALUE
-        val parsed = try {
-            formParam(param.id)?.toDouble() ?: invalidNumber
+    fun Context.formDouble(param: BasicTableRenderer.FormParam): Double? {
+        return try {
+            formParam(param.id)?.toDouble()
         } catch (badInput: NotANumber) {
             println("Looked for $param, scored a ${formParam(param.id)}")
-            invalidNumber
+            null
         }
-        return Pair(parsed, parsed != invalidNumber)
     }
     
-    fun Context.formInt(param: BasicTableRenderer.FormParam): Pair<Int, Boolean> {
-        val invalidNumber = Int.MIN_VALUE
-        val parsed = try {
-            formParam(param.id)?.toInt() ?: invalidNumber
+    fun Context.formInt(param: BasicTableRenderer.FormParam): Int? {
+        return try {
+            formParam(param.id)?.toInt()
         } catch (badInput: NotANumber) {
             println("Looked for $param, scored a ${formParam(param.id)}")
-            invalidNumber
+            null
         }
-        return Pair(parsed, parsed != invalidNumber)
     }
     
     fun Context.formString(param: BasicTableRenderer.FormParam): String =
         formParam(param.id) ?: ""
     
+    fun Context.tryFormStringToDate(param: BasicTableRenderer.FormParam): DateTime? =
+        with(TransactionsAsText.QuickMoniesDates) {
+            val dateString = formString(param)
+            try {
+                dateString.parse()
+            } catch (e: ParseException) {
+                // Don't allow bad dates in, for now.
+                println("Tried to parse a string into a Date. No such luck: $dateString\n$e")
+                null
+            }
+        }
 }
 

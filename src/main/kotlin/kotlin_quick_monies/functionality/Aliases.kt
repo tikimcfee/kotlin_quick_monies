@@ -1,3 +1,2 @@
 package kotlin_quick_monies.functionality
 
-typealias TimeSinceEpochNumber = Long

@@ -1,6 +1,6 @@
 package kotlin_quick_monies.visual_interfaces.cli
 
-import appcore.functionality.ApplicationState
+import appcore.functionality.AppStateFunctions
 import kotlin_quick_monies.functionality.accounting.TransactionAccountant
 import appcore.functionality.execute
 import kotlin_quick_monies.functionality.list.TransactionList
@@ -11,16 +11,16 @@ class TerminalInteractionLoop {
     
     private var shouldContinue = true
     
-    fun loop(applicationState: ApplicationState) {
+    fun loop(appStateFunctions: AppStateFunctions) {
         clear()
-        with(applicationState) {
+        with(appStateFunctions) {
             restoreState()
             drawScreen(this)
             stateLoop()
         }
     }
     
-    private fun ApplicationState.stateLoop() {
+    private fun AppStateFunctions.stateLoop() {
         while (shouldContinue) {
             // Grab Input
             print("What's your poison? :: ")
@@ -31,16 +31,15 @@ class TerminalInteractionLoop {
             
             // Run it
             commandInput.execute(
-                transactionList,
-                projectedTransactionGenerator
+                this
             )
             
             drawScreen(this)
         }
     }
     
-    private fun drawScreen(applicationState: ApplicationState) {
-        with(applicationState) {
+    private fun drawScreen(appStateFunctions: AppStateFunctions) {
+        with(appStateFunctions) {
             // Redraw the basic stuff, including a clear
             clear()
             
