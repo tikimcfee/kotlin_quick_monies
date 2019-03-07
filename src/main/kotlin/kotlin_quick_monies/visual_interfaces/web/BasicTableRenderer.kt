@@ -44,14 +44,14 @@ object BasicTableRenderer {
                     form {
                         addActionAndMethod(AddTransaction)
                         
-                        newField("How much money is coming in, or going out? : ", ADD_TRANSACTION_AMOUNT)
-                        lineBreak()
-                        
                         newField("What it's for? : ", ADD_TRANSACTION_DESCRIPTION)
                         lineBreak()
                         
+                        newField("How much? : ", ADD_TRANSACTION_AMOUNT)
+                        lineBreak()
+                        
                         newField(
-                            "When did it happen? : ",
+                            "For what date? : ",
                             ADD_TRANSACTION_DATE,
                             input = { dateInputField ->
                                 dateInputField.setAttribute("value",
@@ -72,6 +72,8 @@ object BasicTableRenderer {
                     
                     form {
                         addActionAndMethod(AddMonthlyTransaction)
+                        newField("What it's for? : ", ADD_SIMPLE_MONTHLY_TRANSACTION_DESCRIPTION)
+                        lineBreak()
                         
                         newField("Monthly amount : ", ADD_SIMPLE_MONTHLY_TRANSACTION_AMOUNT)
                         lineBreak()
@@ -95,8 +97,6 @@ object BasicTableRenderer {
                             })
                         lineBreak()
                         
-                        newField("What it's for? : ", ADD_SIMPLE_MONTHLY_TRANSACTION_DESCRIPTION)
-                        lineBreak()
                         
                         button { text("Stick a bunch of 'em in there.") }
                     }
