@@ -107,9 +107,9 @@ object BasicTableRenderer {
                     table {
                         tr {
                             td(align = "left") { text("Date") }
+                            td(align = "left") { text("Description") }
                             td(align = "left") { text("Transaction Amount") }
                             td(align = "left") { text("After Transaction") }
-                            td(align = "left") { text("Description") }
                         }
                         
                         fun makeRow(
@@ -118,9 +118,9 @@ object BasicTableRenderer {
                             tr {
                                 with(snapshot.transaction) {
                                     td { text(formattedDate()) }
+                                    td { text(description) }
                                     td { text(formattedAmount()) }
                                     td { text(snapshot.formattedAfter()) }
-                                    td { text(description) }
                                     td {
                                         button {
                                             text("Remove")
