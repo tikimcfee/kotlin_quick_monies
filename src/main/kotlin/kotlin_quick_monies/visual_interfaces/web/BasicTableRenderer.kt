@@ -36,13 +36,11 @@ object BasicTableRenderer {
     fun AppStateFunctions.renderResponseTo(context: Context) {
         val rawHtml = with(SimpleHTML) {
             html {
-                fun header() {
+                fun singleTransactionInput() {
                     lineBreak()
-                    text("<strong>- Transaction Info -</<strong>")
+                    text("<strong>- Transaction Info -</strong>")
                     lineBreak()
-                }
-                
-                fun userTransactionInput() {
+                    
                     form {
                         addActionAndMethod(AddTransaction)
                         
@@ -67,9 +65,11 @@ object BasicTableRenderer {
                     }
                 }
                 
-                fun extraCommands() {
+                fun monthlyTransactionInput() {
                     lineBreak()
                     text("<strong>- Simple Repeated Transactions -</strong>")
+                    lineBreak()
+                    
                     form {
                         addActionAndMethod(AddMonthlyTransaction)
                         
@@ -145,12 +145,11 @@ object BasicTableRenderer {
                     }
                 }
                 
-                header()
-                userTransactionInput()
-                lineBreak()
-                extraCommands()
+                singleTransactionInput()
+                monthlyTransactionInput()
                 lineBreak()
                 transactionTable()
+                
                 form {
                     addActionAndMethod(RemoveIndex)
                     setAttribute("id", ACTION_REMOVE_FROM_POSITION_INDEX.name)
