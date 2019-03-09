@@ -1,10 +1,10 @@
 package kotlin_quick_monies.visual_interfaces.cli
 
-import appcore.functionality.AppStateFunctions
+import kotlin_quick_monies.functionality.AppStateFunctions
 import kotlin_quick_monies.functionality.accounting.TransactionAccountant
-import appcore.functionality.execute
+import kotlin_quick_monies.functionality.execute
 import kotlin_quick_monies.functionality.list.TransactionList
-import appcore.functionality.restoreState
+import kotlin_quick_monies.functionality.restoreState
 import kotlin_quick_monies.transfomers.TransactionsAsText
 
 class TerminalInteractionLoop {

@@ -1,4 +1,4 @@
-package appcore.functionality
+package kotlin_quick_monies.functionality
 
 import kotlin_quick_monies.functionality.accounting.TransactionAccountant
 import kotlin_quick_monies.functionality.commands.Command
@@ -41,20 +41,12 @@ fun Command.execute(
 
 fun AppStateFunctions.restoreState() {
     println("--- Restoring App State ---")
-    commandHistorian.readCommandHistory().forEach { restoredInput ->
-        println(".. processing [$restoredInput]")
-        with(commandProcessor) {
-            with(parseStringCommand(restoredInput)) {
-                when (this) {
-                    is Command.AddMonthlyTransaction -> {
-                        /*
-                        todo: Monthly transactions are recorded for historical purposes
-                        they add actual transaction commands to the history.. may be best not to do that
-                        */
-                    }
-                    else -> execute(this@restoreState)
-                }
-            }
+    commandHistorian
+        .readCommandHistory()
+        .forEach { restoredInput ->
+            println(".. processing [$restoredInput]")
+            commandProcessor
+                .parseStringCommand(restoredInput)
+                .execute(this@restoreState)
         }
-    }
 }

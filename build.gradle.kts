@@ -15,6 +15,8 @@ repositories {
     // Use jcenter for resolving your dependencies.
     // You can declare any Maven/Ivy/file repository here.
     jcenter()
+    mavenCentral()
+    maven { setUrl("https://kotlin.bintray.com/kotlin-js-wrappers/") }
 }
 
 dependencies {
@@ -33,6 +35,9 @@ dependencies {
     
     // - Time -
     implementation("joda-time:joda-time:2.10.1")
+    
+    // - Web Tools : CSS -
+    implementation("org.jetbrains:kotlin-css-jvm:1.0.0-pre.69-kotlin-1.3.21")
 }
 
 application {

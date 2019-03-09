@@ -1,10 +1,10 @@
 package kotlin_quick_monies.visual_interfaces.web
 
-import appcore.functionality.AppStateFunctions
+import kotlin_quick_monies.functionality.AppStateFunctions
 import kotlin_quick_monies.functionality.commands.Command
 import kotlin_quick_monies.functionality.coreDefinitions.Transaction
 import kotlin_quick_monies.functionality.list.RelativePos
-import appcore.functionality.restoreState
+import kotlin_quick_monies.functionality.restoreState
 import kotlin_quick_monies.transfomers.TransactionsAsText
 import kotlin_quick_monies.visual_interfaces.web.BasicTableRenderer.FormParam.*
 import kotlin_quick_monies.visual_interfaces.web.BasicTableRenderer.renderResponseTo

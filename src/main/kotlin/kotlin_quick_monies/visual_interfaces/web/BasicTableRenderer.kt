@@ -1,6 +1,6 @@
 package kotlin_quick_monies.visual_interfaces.web
 
-import appcore.functionality.AppStateFunctions
+import kotlin_quick_monies.functionality.AppStateFunctions
 import io.javalin.Context
 import kotlin_quick_monies.functionality.accounting.TransactionAccountant
 import kotlin_quick_monies.transfomers.TransactionsAsText
@@ -9,6 +9,7 @@ import kotlin_quick_monies.transfomers.TransactionsAsText.IndividualFormatting.f
 import kotlin_quick_monies.transfomers.TransactionsAsText.IndividualFormatting.formattedDate
 import kotlin_quick_monies.visual_interfaces.web.BasicTableRenderer.FormParam.*
 import kotlin_quick_monies.visual_interfaces.web.JavalinWebFrameworkWrapper.Route.*
+import kotlinx.css.CSSBuilder
 import org.joda.time.DateTime
 
 object BasicTableRenderer {
@@ -24,13 +25,6 @@ object BasicTableRenderer {
         ADD_SIMPLE_MONTHLY_TRANSACTION_DESCRIPTION("inputMonthlyTransactionDescription"),
         
         ACTION_REMOVE_FROM_POSITION_INDEX("actionRemoveFromPositionIndex")
-    }
-    
-    fun SimpleHTML.Form.addActionAndMethod(route: JavalinWebFrameworkWrapper.Route) {
-        with(SimpleHTML) {
-            this@addActionAndMethod.setAttribute("action", route.path)
-            this@addActionAndMethod.setAttribute("method", route.method)
-        }
     }
     
     fun AppStateFunctions.renderResponseTo(context: Context) {
@@ -98,6 +92,10 @@ object BasicTableRenderer {
                         lineBreak()
                         
                         
+                        CSSBuilder().apply {
+                        
+                        }
+                        
                         button { text("Stick a bunch of 'em in there.") }
                     }
                     
@@ -159,5 +157,12 @@ object BasicTableRenderer {
         }.toString()
         
         context.result(rawHtml).header("Content-Type", "text/html")
+    }
+    
+    private fun SimpleHTML.Form.addActionAndMethod(route: JavalinWebFrameworkWrapper.Route) {
+        with(SimpleHTML) {
+            this@addActionAndMethod.setAttribute("action", route.path)
+            this@addActionAndMethod.setAttribute("method", route.method)
+        }
     }
 }

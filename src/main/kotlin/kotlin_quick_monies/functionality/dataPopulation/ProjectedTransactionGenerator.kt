@@ -1,8 +1,9 @@
 package kotlin_quick_monies.functionality.dataPopulation
 
-import appcore.functionality.AppStateFunctions
+import kotlin_quick_monies.functionality.AppStateFunctions
 import kotlin_quick_monies.functionality.commands.Command
 import kotlin_quick_monies.functionality.coreDefinitions.Transaction
+import kotlin_quick_monies.functionality.execute
 import kotlin_quick_monies.functionality.list.RelativePos
 import org.joda.time.DateTime
 
@@ -24,9 +25,7 @@ class ProjectedTransactionGenerator {
         
         fun insertTransactions(transactions: List<Transaction>) {
             transactions.forEach {
-                appFunctions.`apply command to current state`(
-                    Command.Add(RelativePos.Last(), it)
-                )
+                Command.Add(RelativePos.Last(), it).execute(appFunctions)
             }
         }
         
