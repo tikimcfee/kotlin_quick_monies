@@ -110,7 +110,16 @@ object BasicTableRenderer {
                             td(align = "left") { text("After Transaction") }
                         }
                         
-                        fun makeRow(
+                        fun makeMonthTransactionSeparator() {
+                            tr {
+                                td { text("---") }
+                                td { text("New Month") }
+                                td { text("---") }
+                                td { text("---") }
+                            }
+                        }
+                        
+                        fun makeTransactionSnapshotRow(
                             snapshot: TransactionAccountant.Snapshot
                         ) {
                             tr {
@@ -137,9 +146,17 @@ object BasicTableRenderer {
                             }
                         }
                         
-                        transactionAccountant
-                            .computeTransactionDeltas(transactionList)
-                            .forEach(::makeRow)
+                        transactionAccountant.computeTransactionDeltas(transactionList, dateGroupReceiver = { groups ->
+                            groups
+                                .asSequence()
+                                .sortedBy { it.key.first * -1 }
+                                .forEach {
+                                    makeMonthTransactionSeparator()
+                                    it.value.forEach {
+                                        makeTransactionSnapshotRow(it)
+                                    }
+                                }
+                        })
                     }
                 }
                 
