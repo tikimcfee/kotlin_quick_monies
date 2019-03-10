@@ -7,10 +7,12 @@ import kotlin_quick_monies.transfomers.TransactionsAsText
 import kotlin_quick_monies.transfomers.TransactionsAsText.IndividualFormatting.formattedAfter
 import kotlin_quick_monies.transfomers.TransactionsAsText.IndividualFormatting.formattedAmount
 import kotlin_quick_monies.transfomers.TransactionsAsText.IndividualFormatting.formattedDate
+import kotlin_quick_monies.transfomers.TransactionsAsText.QuickMoniesDates.monthDayYearFull
 import kotlin_quick_monies.visual_interfaces.web.BasicTableRenderer.FormParam.*
 import kotlin_quick_monies.visual_interfaces.web.JavalinWebFrameworkWrapper.Route.*
 import kotlinx.css.CSSBuilder
 import org.joda.time.DateTime
+import java.util.*
 
 object BasicTableRenderer {
     
@@ -110,12 +112,19 @@ object BasicTableRenderer {
                             td(align = "left") { text("After Transaction") }
                         }
                         
-                        fun makeMonthTransactionSeparator() {
+                        fun makeMonthTransactionSeparator(
+                            forDate: DateTime
+                        ) {
+                            val s = forDate.monthDayYearFull()
                             tr {
-                                td { text("---") }
-                                td { text("New Month") }
-                                td { text("---") }
-                                td { text("---") }
+                                td { }
+                                td { }
+                                td { text(s) }
+                            }
+                            tr {
+                                td { }
+                                td { }
+                                td { text("-".repeat(s.length)) }
                             }
                         }
                         
@@ -146,17 +155,19 @@ object BasicTableRenderer {
                             }
                         }
                         
-                        transactionAccountant.computeTransactionDeltas(transactionList, dateGroupReceiver = { groups ->
-                            groups
-                                .asSequence()
-                                .sortedBy { it.key.first * -1 }
-                                .forEach {
-                                    makeMonthTransactionSeparator()
-                                    it.value.forEach {
-                                        makeTransactionSnapshotRow(it)
+                        transactionAccountant.computeTransactionDeltas(
+                            transactionList,
+                            dateGroupReceiver = { dateMap: Map<LongRange, TreeSet<TransactionAccountant.Snapshot>> ->
+                                dateMap
+                                    .asSequence()
+                                    .sortedBy { it.key.first * -1 }
+                                    .forEach { mapEntry ->
+                                        mapEntry.value.forEach { snapshot ->
+                                            makeTransactionSnapshotRow(snapshot)
+                                        }
+                                        makeMonthTransactionSeparator(DateTime(mapEntry.key.first))
                                     }
-                                }
-                        })
+                            })
                     }
                 }
                 
