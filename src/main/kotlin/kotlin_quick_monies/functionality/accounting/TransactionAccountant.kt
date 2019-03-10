@@ -3,8 +3,8 @@ package kotlin_quick_monies.functionality.accounting
 import kotlin_quick_monies.functionality.accounting.TransactionTimekeeper.DayGroup.*
 import kotlin_quick_monies.functionality.coreDefinitions.Transaction
 import kotlin_quick_monies.functionality.list.TransactionList
-import org.joda.time.DateTime
 import java.util.*
+
 
 class TransactionAccountant {
     
@@ -20,30 +20,34 @@ class TransactionAccountant {
         val sourceListPosition: Int
     )
     
-    enum class SortOption {
-        Date,
-        Amount,
+    class DateRangeSnapshotMultiMap : SortedMultiMap<LongRange, Snapshot>() {
+        override fun compare(o1: Snapshot?, o2: Snapshot?): Int {
+            if (o1 == null) {
+                return if (o2 == null) {
+                    0
+                } else {
+                    1
+                }
+            } else if (o2 == null) {
+                return -1
+            }
+            
+            return SortOption.Date.applyTo(o1.transaction, o2.transaction)
+        }
+        
+        fun addTransaction(rangeKey: LongRange, snapshot: Snapshot) {
+            val targetList = this[rangeKey] ?: SortedList(this).also {
+                this[rangeKey] = it
+            }
+            
+            targetList.add(snapshot)
+        }
     }
     
-    private fun SortOption.applyTo(
-        st1: Transaction, st2: Transaction
-    ): Int =
-        when (this) {
-            SortOption.Date -> when {
-                st1.date isBefore st2.date -> -1
-                st1.date isAfter st2.date -> 1
-                else -> 0
-            }
-            SortOption.Amount -> when {
-                st1.amount < st2.amount -> -1
-                st1.amount > st2.amount -> 1
-                else -> 0
-            }
-        }
     
     fun computeTransactionDeltas(
         transactionList: TransactionList,
-        dateGroupReceiver: ((MutableMap<LongRange, TreeSet<Snapshot>>) -> Unit)? = null,
+        dateGroupReceiver: ((DateRangeSnapshotMultiMap) -> Unit)? = null,
         sortOptions: SortOption = SortOption.Date
     ): List<Snapshot> {
         val transactionCount = transactionList.transactions.size
@@ -53,7 +57,7 @@ class TransactionAccountant {
         }
         
         val deltaList = mutableListOf<Snapshot>()
-        val currentGroups: MutableMap<LongRange, TreeSet<Snapshot>> = mutableMapOf()
+        val currentGroups = DateRangeSnapshotMultiMap()
         
         transactionList.transactions
             .asSequence()
@@ -70,7 +74,6 @@ class TransactionAccountant {
                 }.also {
                     insertSnapshotIntoSection(
                         currentGroups = currentGroups,
-                        sortOption = sortOptions,
                         dayGroup = Month,
                         snapshot = it
                     )
@@ -82,13 +85,9 @@ class TransactionAccountant {
         return deltaList
     }
     
-    private infix fun Long.isBefore(date: Long) = this - date < 0
-    
-    private infix fun Long.isAfter(date: Long) = this - date > 0
     
     private fun insertSnapshotIntoSection(
-        currentGroups: MutableMap<LongRange, TreeSet<Snapshot>>,
-        sortOption: SortOption,
+        currentGroups: DateRangeSnapshotMultiMap,
         dayGroup: TransactionTimekeeper.DayGroup,
         snapshot: Snapshot
     ) {
@@ -100,43 +99,8 @@ class TransactionAccountant {
             }
         }
         
-        val transactionSet = with(currentGroups[expectedRange]) {
-            this ?: dateSortedSetOfSnapshots(sortOption).also {
-                currentGroups[expectedRange] = it
-            }
-        }
-        
-        transactionSet.add(snapshot)
+        currentGroups.addTransaction(expectedRange, snapshot)
     }
-    
-    private fun dateSortedSetOfSnapshots(
-        sortOption: SortOption
-    ) = TreeSet<Snapshot> { s1, s2 ->
-        sortOption.applyTo(
-            s1.transaction, s2.transaction
-        )
-    }
-    
-    private val WEEK_START = 1
-    private val WEEK_END = 7
-    
-    private fun Long.asStartOfWeek() =
-        DateTime(this).withTimeAtStartOfDay().withDayOfWeek(WEEK_START)
-    
-    private fun Long.asEndOfWeek() =
-        asStartOfWeek().plusDays(WEEK_END)
-    
-    private fun Long.asStartOfMonth() =
-        DateTime(this).withTimeAtStartOfDay().withDayOfMonth(1)
-    
-    private fun Long.asEndOfMonth() =
-        asStartOfMonth().plusMonths(1).minusDays(1)
-    
-    private fun Long.asStartOfYear() =
-        DateTime(this).withTimeAtStartOfDay().withMonthOfYear(1)
-    
-    private fun Long.asEndOfYear() =
-        DateTime(this).withTimeAtStartOfDay().withMonthOfYear(12)
     
     
     private fun SortedTransaction.toInitialAccumulator() =

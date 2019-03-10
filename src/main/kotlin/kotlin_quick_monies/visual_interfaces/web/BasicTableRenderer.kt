@@ -2,6 +2,7 @@ package kotlin_quick_monies.visual_interfaces.web
 
 import io.javalin.Context
 import kotlin_quick_monies.functionality.AppStateFunctions
+import kotlin_quick_monies.functionality.accounting.SortedList
 import kotlin_quick_monies.functionality.accounting.TransactionAccountant
 import kotlin_quick_monies.transfomers.TransactionsAsText
 import kotlin_quick_monies.transfomers.TransactionsAsText.IndividualFormatting.formattedAfter
@@ -211,8 +212,9 @@ object BasicTableRenderer {
         with(parentTag) {
             transactionAccountant.computeTransactionDeltas(
                 transactionList,
-                dateGroupReceiver = { dateMap: Map<LongRange, TreeSet<TransactionAccountant.Snapshot>> ->
-                    dateMap.asSequence()
+                dateGroupReceiver = { dateMap ->
+                    dateMap
+                        .allEntries()
                         .forEach { mapEntry ->
                             makeTransactionTable(mapEntry)
                             lineBreak()
@@ -221,7 +223,7 @@ object BasicTableRenderer {
         }
     }
     
-    fun Tag.makeTransactionTable(mapEntry: Map.Entry<LongRange, TreeSet<TransactionAccountant.Snapshot>>) {
+    fun Tag.makeTransactionTable(mapEntry: Map.Entry<LongRange, SortedList<TransactionAccountant.Snapshot>>) {
         table {
             makeMonthTransactionSeparator(DateTime(mapEntry.key.first))
             tableHeader()
