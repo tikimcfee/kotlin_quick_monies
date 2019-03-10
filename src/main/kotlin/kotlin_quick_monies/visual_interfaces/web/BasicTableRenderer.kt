@@ -10,15 +10,24 @@ import kotlin_quick_monies.transfomers.TransactionsAsText.IndividualFormatting.f
 import kotlin_quick_monies.transfomers.TransactionsAsText.QuickMoniesDates.monthDayYearFull
 import kotlin_quick_monies.visual_interfaces.web.BasicTableRenderer.FormParam.*
 import kotlin_quick_monies.visual_interfaces.web.JavalinWebFrameworkWrapper.Route.*
+import kotlin_quick_monies.visual_interfaces.web.SimpleHTML.Form
 import kotlin_quick_monies.visual_interfaces.web.SimpleHTML.Table
+import kotlin_quick_monies.visual_interfaces.web.SimpleHTML.Tag
 import kotlin_quick_monies.visual_interfaces.web.SimpleHTML.button
+import kotlin_quick_monies.visual_interfaces.web.SimpleHTML.div
+import kotlin_quick_monies.visual_interfaces.web.SimpleHTML.form
+import kotlin_quick_monies.visual_interfaces.web.SimpleHTML.lineBreak
+import kotlin_quick_monies.visual_interfaces.web.SimpleHTML.newField
 import kotlin_quick_monies.visual_interfaces.web.SimpleHTML.setAttribute
+import kotlin_quick_monies.visual_interfaces.web.SimpleHTML.table
 import kotlin_quick_monies.visual_interfaces.web.SimpleHTML.td
 import kotlin_quick_monies.visual_interfaces.web.SimpleHTML.text
 import kotlin_quick_monies.visual_interfaces.web.SimpleHTML.tr
-import kotlinx.css.CSSBuilder
+import kotlinx.css.*
+import kotlinx.css.Float
 import org.joda.time.DateTime
 import java.util.*
+
 
 object BasicTableRenderer {
     
@@ -38,106 +47,73 @@ object BasicTableRenderer {
     fun AppStateFunctions.renderResponseTo(context: Context) {
         val rawHtml = with(SimpleHTML) {
             html {
-                setStyles { }
-                
-                body {
-                    fun singleTransactionInput() {
-                        lineBreak()
-                        text("<strong>- Transaction Info -</strong>")
-                        lineBreak()
-                        
-                        form {
-                            addActionAndMethod(AddTransaction)
-                            
-                            newField("What it's for? : ", ADD_TRANSACTION_DESCRIPTION)
-                            lineBreak()
-                            
-                            newField("How much? : ", ADD_TRANSACTION_AMOUNT)
-                            lineBreak()
-                            
-                            newField(
-                                "For what date? : ",
-                                ADD_TRANSACTION_DATE,
-                                input = { dateInputField ->
-                                    dateInputField.setAttribute("value",
-                                        with(TransactionsAsText.QuickMoniesDates) {
-                                            DateTime().format()
-                                        })
-                                })
-                            lineBreak()
-                            
-                            button { text("Stick it in there") }
-                        }
+                setStyles {
+                    rule(".clearfix::after") {
+                        content = QuotedString("")
+                        clear = Clear.both
+                        display = Display.table
                     }
                     
-                    fun monthlyTransactionInput() {
-                        lineBreak()
-                        text("<strong>- Simple Repeated Transactions -</strong>")
-                        lineBreak()
+                    kotlinx.css.table {
+                        padding = "10 10 10 10"
+                        backgroundColor = Color("#EFEFEF")
+                        borderRadius = 4.pt
+                    }
+                    
+                    rule("tr:nth-child(even)") {
+                        backgroundColor = Color.lightGrey
+                    }
+                    
+                    rule(".transaction-input-box") {
+                        backgroundColor = Color("#EFEFEF44")
+                        padding = "8 8 8 8"
                         
-                        form {
-                            addActionAndMethod(AddMonthlyTransaction)
-                            newField("What it's for? : ", ADD_SIMPLE_MONTHLY_TRANSACTION_DESCRIPTION)
-                            lineBreak()
-                            
-                            newField("Monthly amount : ", ADD_SIMPLE_MONTHLY_TRANSACTION_AMOUNT)
-                            lineBreak()
-                            
-                            newField(
-                                "Start date : ",
-                                ADD_SIMPLE_MONTHLY_TRANSACTION_START_DATE,
-                                input = { dateInputField ->
-                                    dateInputField.setAttribute("value",
-                                        with(TransactionsAsText.QuickMoniesDates) {
-                                            DateTime().format()
-                                        })
-                                })
-                            lineBreak()
-                            
-                            newField(
-                                "Months to adds : ",
-                                ADD_SIMPLE_MONTHLY_TRANSACTION_MONTHS_TO_ADD,
-                                input = { dateInputField ->
-                                    dateInputField.setAttribute("value", "12")
-                                })
-                            lineBreak()
-                            
-                            
-                            CSSBuilder().apply {
-                            
+                        width = LinearDimension.fitContent
+                        height = LinearDimension.fitContent
+                        
+                        float = Float.left
+                        marginRight = 16.pt
+                    }
+                    
+                    rule(".main-transaction-window") {
+                        padding = "24 24 24 24"
+                        width = LinearDimension.fitContent
+                        height = 640.px
+                        
+                        scrollBehavior = ScrollBehavior.auto
+                        overflow = Overflow.auto
+                        
+                        backgroundColor = Color("#EFEFEF44")
+                    }
+                }
+                
+                body {
+                    
+                    fun transactionInputs() {
+                        div {
+                            singleTransactionInput().apply {
+                                setAttribute("class", "transaction-input-box")
                             }
-                            
-                            button { text("Stick a bunch of 'em in there.") }
+                            monthlyTransactionInput().apply {
+                                setAttribute("class", "transaction-input-box")
+                            }
                         }
                         
                     }
                     
                     fun transactionTable() {
-                        transactionAccountant.computeTransactionDeltas(
-                            transactionList,
-                            dateGroupReceiver = { dateMap: Map<LongRange, TreeSet<TransactionAccountant.Snapshot>> ->
-                                dateMap
-                                    .asSequence()
-                                    .sortedBy { it.key.first * -1 }
-                                    .forEach { mapEntry ->
-                                        table {
-                                            makeMonthTransactionSeparator(DateTime(mapEntry.key.first))
-                                            tableHeader()
-                                            mapEntry.value.forEach { snapshot ->
-                                                makeTransactionSnapshotRow(snapshot)
-                                            }
-                                        }
-                                        
-                                        lineBreak()
-                                    }
-                            })
+                        div {
+                            setAttribute("class", "main-transaction-window")
+                            makeAllTransactionTables(this)
+                        }
                     }
                     
-                    singleTransactionInput()
-                    monthlyTransactionInput()
+                    lineBreak()
+                    transactionInputs()
                     lineBreak()
                     transactionTable()
                     
+                    // Hidden form input for 'remove' button functionality; a little AJAX would do it but eh... not yet.
                     form {
                         addActionAndMethod(RemoveIndex)
                         setAttribute("id", ACTION_REMOVE_FROM_POSITION_INDEX.name)
@@ -151,16 +127,115 @@ object BasicTableRenderer {
     }
     
     // ---------------------------------
+    // Transaction Actions
+    // ---------------------------------
+    fun Tag.singleTransactionInput(): Tag = div {
+        lineBreak()
+        text("<strong>- Transaction Info -</strong>")
+        lineBreak()
+        
+        form {
+            addActionAndMethod(AddTransaction)
+            
+            newField("What it's for? : ", ADD_TRANSACTION_DESCRIPTION)
+            lineBreak()
+            
+            newField("How much? : ", ADD_TRANSACTION_AMOUNT)
+            lineBreak()
+            
+            newField(
+                "For what date? : ",
+                ADD_TRANSACTION_DATE,
+                input = { dateInputField ->
+                    dateInputField.setAttribute("value",
+                        with(TransactionsAsText.QuickMoniesDates) {
+                            DateTime().format()
+                        })
+                })
+            lineBreak()
+            
+            button { text("Stick it in there") }
+        }
+    }
+    
+    fun Tag.monthlyTransactionInput(): Tag = div {
+        lineBreak()
+        text("<strong>- Simple Repeated Transactions -</strong>")
+        lineBreak()
+        
+        form {
+            addActionAndMethod(AddMonthlyTransaction)
+            newField("What it's for? : ", ADD_SIMPLE_MONTHLY_TRANSACTION_DESCRIPTION)
+            lineBreak()
+            
+            newField("Monthly amount : ", ADD_SIMPLE_MONTHLY_TRANSACTION_AMOUNT)
+            lineBreak()
+            
+            newField(
+                "Start date : ",
+                ADD_SIMPLE_MONTHLY_TRANSACTION_START_DATE,
+                input = { dateInputField ->
+                    dateInputField.setAttribute("value",
+                        with(TransactionsAsText.QuickMoniesDates) {
+                            DateTime().format()
+                        })
+                })
+            lineBreak()
+            
+            newField(
+                "Months to adds : ",
+                ADD_SIMPLE_MONTHLY_TRANSACTION_MONTHS_TO_ADD,
+                input = { dateInputField ->
+                    dateInputField.setAttribute("value", "12")
+                })
+            lineBreak()
+            
+            
+            CSSBuilder().apply {
+            
+            }
+            
+            button { text("Stick a bunch of 'em in there.") }
+        }
+    }
+    
+    
+    // ---------------------------------
     // Table Builders
     // ---------------------------------
+    
+    fun AppStateFunctions.makeAllTransactionTables(parentTag: Tag) {
+        with(parentTag) {
+            transactionAccountant.computeTransactionDeltas(
+                transactionList,
+                dateGroupReceiver = { dateMap: Map<LongRange, TreeSet<TransactionAccountant.Snapshot>> ->
+                    dateMap.asSequence()
+                        .sortedBy { it.key.first * -1 }
+                        .forEach { mapEntry ->
+                            makeTransactionTable(mapEntry)
+                            lineBreak()
+                        }
+                })
+        }
+    }
+    
+    fun Tag.makeTransactionTable(mapEntry: Map.Entry<LongRange, TreeSet<TransactionAccountant.Snapshot>>) {
+        table {
+            makeMonthTransactionSeparator(DateTime(mapEntry.key.first))
+            tableHeader()
+            mapEntry.value.forEach { snapshot ->
+                makeTransactionSnapshotRow(snapshot)
+            }
+        }
+    }
     
     fun Table.makeMonthTransactionSeparator(
         forDate: DateTime
     ) {
         tr {
-            td {  }
-            td {  }
-            td {  }
+            td { }
+            td { }
+            td { }
             td {
                 text(forDate.monthDayYearFull())
             }
@@ -207,7 +282,7 @@ object BasicTableRenderer {
     // Form helpers
     // ---------------------------------
     
-    private fun SimpleHTML.Form.addActionAndMethod(route: JavalinWebFrameworkWrapper.Route) {
+    private fun Form.addActionAndMethod(route: JavalinWebFrameworkWrapper.Route) {
         with(SimpleHTML) {
             this@addActionAndMethod.setAttribute("action", route.path)
             this@addActionAndMethod.setAttribute("method", route.method)

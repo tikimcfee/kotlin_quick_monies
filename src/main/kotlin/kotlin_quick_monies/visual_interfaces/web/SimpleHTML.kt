@@ -1,6 +1,6 @@
 package kotlin_quick_monies.visual_interfaces.web
 
-import kotlinx.css.*
+import kotlinx.css.CSSBuilder
 
 object SimpleHTML {
     open class Tag(val name: String) {
@@ -36,13 +36,15 @@ object SimpleHTML {
     class Body : Tag("body")
     
     class Table : Tag("table")
-    class Span : Tag("span")
-    class Center : Tag("center")
     class TR : Tag("tr")
     class TD : Tag("td")
     class Text(val text: String) : Tag("b") {
         override fun toString() = text
     }
+    
+    class Center : Tag("center")
+    class Span : Tag("span")
+    class Div : Tag("div")
     
     class Form : Tag("form")
     class Label : Tag("label")
@@ -139,18 +141,17 @@ object SimpleHTML {
     fun Tag.button(init: Button.() -> Unit) =
         initTag(Button(), init)
     
+    fun Tag.div(init: Div.() -> Unit) =
+        initTag(Div(), init)
+    
     // ------------------------------------
     // CSS
     // ------------------------------------
-    fun Html.setStyles(receiver: (CSSBuilder) -> Unit) {
+    fun Html.setStyles(receiver: CSSBuilder.() -> Unit) {
         head {
             style {
                 text(
-                    CSSBuilder().apply {
-                        rule("tr:nth-child(even)") {
-                            backgroundColor = Color.lightGrey
-                        }
-                    }
+                    CSSBuilder().apply(receiver).toString()
                 )
             }
         }
