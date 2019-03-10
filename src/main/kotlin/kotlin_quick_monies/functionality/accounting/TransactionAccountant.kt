@@ -20,40 +20,31 @@ class TransactionAccountant {
         val sourceListPosition: Int
     )
     
-    enum class SortOptions {
-        FutureStuffAtTheBottom,
-        FutureStuffAtTheTop,
-        ExpensiveStuffAtTop,
-        ExpensiveStuffAtBottom,
+    enum class SortOption {
+        Date,
+        Amount,
     }
     
-    private fun List<SortOptions>.applyTo(st1: Transaction, st2: Transaction): Int {
-        var totalDelta = 0
-        forEach {
-            val dateDelta = when {
+    private fun SortOption.applyTo(
+        st1: Transaction, st2: Transaction
+    ): Int =
+        when (this) {
+            SortOption.Date -> when {
                 st1.date isBefore st2.date -> -1
                 st1.date isAfter st2.date -> 1
                 else -> 0
             }
-            val amountDelta = when {
+            SortOption.Amount -> when {
                 st1.amount < st2.amount -> -1
                 st1.amount > st2.amount -> 1
                 else -> 0
             }
-            totalDelta += when (it) {
-                SortOptions.FutureStuffAtTheBottom -> dateDelta
-                SortOptions.FutureStuffAtTheTop -> -dateDelta
-                SortOptions.ExpensiveStuffAtTop -> -amountDelta
-                SortOptions.ExpensiveStuffAtBottom -> amountDelta
-            }
         }
-        return totalDelta
-    }
     
     fun computeTransactionDeltas(
         transactionList: TransactionList,
         dateGroupReceiver: ((MutableMap<LongRange, TreeSet<Snapshot>>) -> Unit)? = null,
-        sortOptions: List<SortOptions> = listOf(SortOptions.FutureStuffAtTheBottom)
+        sortOptions: SortOption = SortOption.Date
     ): List<Snapshot> {
         val transactionCount = transactionList.transactions.size
         
@@ -79,7 +70,7 @@ class TransactionAccountant {
                 }.also {
                     insertSnapshotIntoSection(
                         currentGroups = currentGroups,
-                        sortOptions = sortOptions,
+                        sortOption = sortOptions,
                         dayGroup = Month,
                         snapshot = it
                     )
@@ -97,7 +88,7 @@ class TransactionAccountant {
     
     private fun insertSnapshotIntoSection(
         currentGroups: MutableMap<LongRange, TreeSet<Snapshot>>,
-        sortOptions: List<SortOptions>,
+        sortOption: SortOption,
         dayGroup: TransactionTimekeeper.DayGroup,
         snapshot: Snapshot
     ) {
@@ -110,7 +101,7 @@ class TransactionAccountant {
         }
         
         val transactionSet = with(currentGroups[expectedRange]) {
-            this ?: dateSortedSetOfSnapshots(sortOptions).also {
+            this ?: dateSortedSetOfSnapshots(sortOption).also {
                 currentGroups[expectedRange] = it
             }
         }
@@ -119,9 +110,9 @@ class TransactionAccountant {
     }
     
     private fun dateSortedSetOfSnapshots(
-        sortOptions: List<SortOptions>
+        sortOption: SortOption
     ) = TreeSet<Snapshot> { s1, s2 ->
-        sortOptions.applyTo(
+        sortOption.applyTo(
             s1.transaction, s2.transaction
         )
     }
