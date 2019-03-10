@@ -53,7 +53,6 @@ class TransactionAccountant {
         return deltaList
     }
     
-    
     private infix fun Long.isBefore(date: Long) = this - date < 0
     
     private infix fun Long.isAfter(date: Long) = this - date > 0

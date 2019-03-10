@@ -158,6 +158,9 @@ object BasicTableRenderer {
         forDate: DateTime
     ) {
         tr {
+            td {  }
+            td {  }
+            td {  }
             td {
                 text(forDate.monthDayYearFull())
             }
