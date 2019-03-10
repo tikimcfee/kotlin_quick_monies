@@ -60,7 +60,7 @@ object BasicTableRenderer {
                         padding = "10 10 10 10"
                         backgroundColor = Color("#EFEFEF")
                         borderRadius = 4.pt
-                        width = 50.pct
+                        width = 100.pct
                     }
                     
                     rule("tr:nth-child(even)") {
@@ -213,7 +213,6 @@ object BasicTableRenderer {
                 transactionList,
                 dateGroupReceiver = { dateMap: Map<LongRange, TreeSet<TransactionAccountant.Snapshot>> ->
                     dateMap.asSequence()
-                        .sortedBy { it.key.first * -1 }
                         .forEach { mapEntry ->
                             makeTransactionTable(mapEntry)
                             lineBreak()
