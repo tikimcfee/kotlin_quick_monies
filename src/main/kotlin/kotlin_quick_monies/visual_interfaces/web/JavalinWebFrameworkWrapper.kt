@@ -10,7 +10,10 @@ import kotlin_quick_monies.visual_interfaces.web.BasicTableRenderer.FormParam.*
 import kotlin_quick_monies.visual_interfaces.web.BasicTableRenderer.renderResponseTo
 import io.javalin.Context
 import io.javalin.Javalin
+import org.eclipse.jetty.server.Server
+import org.eclipse.jetty.server.ServerConnector
 import org.joda.time.DateTime
+import java.net.InetAddress
 import java.text.ParseException
 
 typealias NotANumber = NumberFormatException
@@ -21,15 +24,30 @@ fun main() {
 
 class JavalinWebFrameworkWrapper {
     
+    object IPHelper {
+        const val preferredPort = "7000"
+        const val protocol = "http"
+        
+        val localNetworkIp: String
+            get() = InetAddress.getLocalHost()?.hostAddress ?: "localhost"
+        
+    }
+    
     sealed class Route(
         name: String,
         val method: String
     ) {
+        companion object {
+            val port: String = IPHelper.preferredPort
+            val host: String = IPHelper.localNetworkIp
+            val protocol: String = IPHelper.protocol
+            val root: String = "$protocol://$host:$port"
+            
+            val startupRouteSet = setOf(
+                Home, AddTransaction, RemoveIndex, AddMonthlyTransaction
+            )
+        }
         
-        private val port = "7000"
-        private val host = "localhost"
-        private val protocol = "http"
-        private val root = "$protocol://$host:$port"
         val path = "$root/$name"
         val name = "/$name"
         
@@ -38,15 +56,21 @@ class JavalinWebFrameworkWrapper {
         object RemoveIndex : Route("remove_index", "post")
         object AddMonthlyTransaction : Route("add_monthly_transaction", "post")
         
-        companion object {
-            val startupRouteSet = setOf(
-                Home, AddTransaction, RemoveIndex, AddMonthlyTransaction
-            )
-        }
     }
     
     fun start() {
-        val app = Javalin.create().enableDebugLogging().start(7000)
+        val app =
+            Javalin.create()
+                .enableDebugLogging()
+                .server {
+                    Server().apply {
+                        connectors = arrayOf(ServerConnector(this).apply {
+                            host = Route.host
+                            port = Route.port.toInt()
+                        })
+                    }
+                }
+                .start(7000)
         val runtimeState = AppStateFunctions().apply { restoreState() }
         
         Route.startupRouteSet.forEach { route ->

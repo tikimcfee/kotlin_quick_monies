@@ -33,6 +33,7 @@ object SimpleHTML {
     class Html : Tag("html")
     class Head : Tag("head")
     class Style : Tag("style")
+    class Meta : Tag("meta")
     class Body : Tag("body")
     
     class Table : Tag("table")
@@ -63,6 +64,9 @@ object SimpleHTML {
     
     fun Html.style(init: Style.() -> Unit) =
         initTag(Style(), init)
+    
+    fun Html.meta(init: Meta.() -> Unit) =
+        initTag(Meta(), init)
     
     fun Html.body(init: Body.() -> Unit) =
         initTag(Body(), init)
@@ -154,6 +158,14 @@ object SimpleHTML {
                     CSSBuilder().apply(receiver).toString()
                 )
             }
+        }
+    }
+    
+    fun Html.applyDeviceDependentSizing() {
+        meta {
+            // <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            setAttribute("name", "viewport")
+            setAttribute("content", "width=device-width, initial-scale=1.0")
         }
     }
 }

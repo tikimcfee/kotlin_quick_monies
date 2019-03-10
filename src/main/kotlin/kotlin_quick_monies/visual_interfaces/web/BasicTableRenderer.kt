@@ -47,6 +47,8 @@ object BasicTableRenderer {
     fun AppStateFunctions.renderResponseTo(context: Context) {
         val rawHtml = with(SimpleHTML) {
             html {
+                applyDeviceDependentSizing()
+                
                 setStyles {
                     rule(".clearfix::after") {
                         content = QuotedString("")
@@ -58,6 +60,7 @@ object BasicTableRenderer {
                         padding = "10 10 10 10"
                         backgroundColor = Color("#EFEFEF")
                         borderRadius = 4.pt
+                        width = 50.pct
                     }
                     
                     rule("tr:nth-child(even)") {
@@ -76,9 +79,9 @@ object BasicTableRenderer {
                     }
                     
                     rule(".main-transaction-window") {
-                        padding = "24 24 24 24"
-                        width = LinearDimension.fitContent
-                        height = 640.px
+                        padding = "2 2 2 2"
+                        width = 100.pct
+                        height = 60.pct
                         
                         scrollBehavior = ScrollBehavior.auto
                         overflow = Overflow.auto
