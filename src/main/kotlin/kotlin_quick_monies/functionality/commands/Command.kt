@@ -28,7 +28,6 @@ sealed class Command(
     ) : Command(REMOVE_TRANSACTION)
     
     data class AddMonthlyTransaction(
-        val monthsToAdd: Int,
         val transactionTemplate: Transaction
     ) : Command(ADD_MONTHLY_TRANSACTION)
     

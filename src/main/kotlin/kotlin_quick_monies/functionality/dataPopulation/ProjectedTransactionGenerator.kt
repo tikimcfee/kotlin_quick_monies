@@ -5,7 +5,7 @@ import kotlin_quick_monies.functionality.commands.Command
 import kotlin_quick_monies.functionality.coreDefinitions.IdealCore
 import kotlin_quick_monies.functionality.coreDefinitions.Transaction
 import kotlin_quick_monies.functionality.coreDefinitions.newTransactionId
-import kotlin_quick_monies.functionality.execute
+import kotlin_quick_monies.functionality.executeWithStateFunctions
 import org.joda.time.DateTime
 
 class ProjectedTransactionGenerator {
@@ -22,7 +22,7 @@ class ProjectedTransactionGenerator {
         }
     }
     
-    fun `generate and insert a number of monthly transcations from a template`(
+    fun insertTransactionsFromTemplate(
         transactionTemplate: Transaction,
         appFunctions: AppStateFunctions
     ) {
@@ -38,7 +38,7 @@ class ProjectedTransactionGenerator {
                         val newId = newTransactionId()
                         transactionTemplate.copy(
                             id = newId,
-                            description = "${transactionTemplate.description} (${index + 1} of ${repetitionAmount})",
+                            description = "${transactionTemplate.description} (${index + 1} of $repetitionAmount)",
                             date = nextDate,
                             groupInfo = transactionTemplate.groupInfo.apply {
                                 resultTransactions.add(newId)
@@ -50,7 +50,7 @@ class ProjectedTransactionGenerator {
         }
         
         fun insertTransactions(transactions: List<Transaction>) {
-            transactions.forEach { Command.Add(it).execute(appFunctions) }
+            transactions.forEach { Command.Add(it).executeWithStateFunctions(appFunctions) }
         }
         
         with(generateTransactions()) {

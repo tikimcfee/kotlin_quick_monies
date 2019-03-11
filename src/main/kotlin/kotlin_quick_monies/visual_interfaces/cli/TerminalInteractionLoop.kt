@@ -2,7 +2,7 @@ package kotlin_quick_monies.visual_interfaces.cli
 
 import kotlin_quick_monies.functionality.AppStateFunctions
 import kotlin_quick_monies.functionality.accounting.TransactionAccountant
-import kotlin_quick_monies.functionality.execute
+import kotlin_quick_monies.functionality.executeWithStateFunctions
 import kotlin_quick_monies.functionality.list.TransactionList
 import kotlin_quick_monies.functionality.restoreState
 import kotlin_quick_monies.transfomers.TransactionsAsText
@@ -30,7 +30,7 @@ class TerminalInteractionLoop {
             val commandInput = commandProcessor.parseStringCommand(input)
             
             // Run it
-            commandInput.execute(
+            commandInput.executeWithStateFunctions(
                 this
             )
             

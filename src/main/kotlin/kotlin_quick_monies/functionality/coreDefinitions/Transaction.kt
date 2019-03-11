@@ -33,9 +33,3 @@ object SingleDaySchedule : TransactionSchedulingData(
     repetitionAmount = 1,
     repetitionSeparator = IdealCore.CoreConstants.DayGroup.Atom
 )
-
-object MonthlySchedule : TransactionSchedulingData(
-    id = "individual_schedule_monthly_repetition",
-    repetitionAmount = 1,
-    repetitionSeparator = IdealCore.CoreConstants.DayGroup.Month
-)

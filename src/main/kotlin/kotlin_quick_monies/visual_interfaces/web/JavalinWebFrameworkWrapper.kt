@@ -2,7 +2,6 @@ package kotlin_quick_monies.visual_interfaces.web
 
 import kotlin_quick_monies.functionality.AppStateFunctions
 import kotlin_quick_monies.functionality.commands.Command
-import kotlin_quick_monies.functionality.list.RelativePos
 import kotlin_quick_monies.functionality.restoreState
 import kotlin_quick_monies.transfomers.TransactionsAsText
 import kotlin_quick_monies.visual_interfaces.web.BasicTableRenderer.FormParam.*
@@ -100,7 +99,7 @@ class JavalinWebFrameworkWrapper {
             val transactionAmount = formDouble(ADD_TRANSACTION_AMOUNT) ?: return
             val transactionDescription = formString(ADD_TRANSACTION_DESCRIPTION)
             
-            `apply command to current state`(
+            saveAndRun(
                 Command.Add(
                     Transaction(
                         "${UUID.randomUUID()}::${transactionDate.millis}",
@@ -123,24 +122,22 @@ class JavalinWebFrameworkWrapper {
     ) {
         with(requestContext) {
             val monthsToAdd = formInt(ADD_SIMPLE_MONTHLY_TRANSACTION_MONTHS_TO_ADD) ?: return
-            
             val startDate = tryFormStringToDate(ADD_SIMPLE_MONTHLY_TRANSACTION_START_DATE) ?: return
             val monthlyAmount = formDouble(ADD_SIMPLE_MONTHLY_TRANSACTION_AMOUNT) ?: return
             val transactionDescription = formString(ADD_SIMPLE_MONTHLY_TRANSACTION_DESCRIPTION)
             
-            `apply command to current state`(
+            saveAndRun(
                 Command.AddMonthlyTransaction(
-                    monthsToAdd,
                     Transaction(
                         newTransactionId(),
                         startDate.millis,
                         monthlyAmount,
                         transactionDescription,
                         groupInfo = TransactionGroupInfo(
-                            "simple-monthly-transactions::$startDate",
+                            "monthly-transactions::${startDate.millis}",
                             mutableListOf(),
                             TransactionSchedulingData(
-                                "simple-monthly-transactions-schedule::$startDate",
+                                "monthly-schedules::${startDate.millis}",
                                 monthsToAdd,
                                 IdealCore.CoreConstants.DayGroup.Month
                             )
@@ -155,7 +152,7 @@ class JavalinWebFrameworkWrapper {
         requestContext: Context
     ) {
         with(requestContext) {
-            `apply command to current state`(
+            saveAndRun(
                 Command.RemoveTransaction(
                     formString(ACTION_REMOVE_TRANSACTION_BY_ID)
                 )

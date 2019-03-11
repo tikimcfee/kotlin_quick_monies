@@ -16,25 +16,29 @@ class AppStateFunctions(
     val projectedTransactionGenerator: ProjectedTransactionGenerator = ProjectedTransactionGenerator()
 ) {
     
-    fun `apply command to current state`(command: Command) {
+    fun saveAndRun(command: Command) {
         commandHistorian.recordCommand(command)
-        command.execute(this)
+        command.executeWithStateFunctions(this)
     }
     
 }
 
-fun Command.execute(
+fun Command.executeWithStateFunctions(
     appStateFunctions: AppStateFunctions
 ): Any = when (this) {
     is Command.Add ->
         appStateFunctions.transactionList.insert(transaction = transaction)
+    
     is Command.RemoveTransaction ->
         appStateFunctions.transactionList.remove(transactionId)
-    is Command.AddMonthlyTransaction -> appStateFunctions.projectedTransactionGenerator
-        .`generate and insert a number of monthly transcations from a template`(
-            transactionTemplate, appStateFunctions
-        )
+    
+    is Command.AddMonthlyTransaction ->
+        appStateFunctions
+            .projectedTransactionGenerator
+            .insertTransactionsFromTemplate(transactionTemplate, appStateFunctions)
+    
     is Command.RemoveScheduledTransaction -> TODO()
+    
     is Command.MainAppStop -> Unit
 }
 
@@ -46,6 +50,6 @@ fun AppStateFunctions.restoreState() {
             println(".. processing [$restoredInput]")
             commandProcessor
                 .parseStringCommand(restoredInput)
-                .execute(this@restoreState)
+                .executeWithStateFunctions(this@restoreState)
         }
 }
