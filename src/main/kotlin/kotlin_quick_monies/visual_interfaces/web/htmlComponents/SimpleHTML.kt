@@ -1,26 +1,20 @@
-package kotlin_quick_monies.visual_interfaces.web
+package kotlin_quick_monies.visual_interfaces.web.htmlComponents
 
+import kotlin_quick_monies.visual_interfaces.web.BasicTableRenderer
+import kotlin_quick_monies.visual_interfaces.web.JavalinWebFrameworkWrapper
 import kotlinx.css.CSSBuilder
 
 object SimpleHTML {
-    open class Tag(val name: String) {
-        val children = mutableListOf<Tag>()
-        val attributes = mutableListOf<Attribute>()
-        override fun toString(): String {
-            return "<$name" +
-                (if (attributes.isEmpty()) "" else attributes.joinToString(separator = " ", prefix = " ")) + ">" +
-                (if (children.isEmpty()) "" else children.joinToString(separator = "")) +
-                "</$name>"
-        }
-    }
-    
-    class Attribute(val name: String, val value: String) {
-        override fun toString() = """$name="$value""""
-    }
     
     fun <T : Tag> T.setAttribute(name: String, value: String?): T = apply {
         if (value != null) {
             attributes.add(Attribute(name, value))
+        }
+    }
+    
+    fun <T : Tag> T.setCssClasses(vararg classes: String): T = apply {
+        classes.joinToString(" ").let {
+            attributes.add(Attribute("class", it))
         }
     }
     
@@ -116,6 +110,7 @@ object SimpleHTML {
         forAttr: BasicTableRenderer.FormParam,
         input: ((Input) -> Unit) = {}
     ) {
+        //<input type = "hidden" name = "topic" value = "something" />
         initTag(Input()) {
             setAttribute("style", "visibility: hidden;")
             setAttribute("name", forAttr.id)
@@ -123,7 +118,13 @@ object SimpleHTML {
         }
     }
     
-    //<input type = "hidden" name = "topic" value = "something" />
+    fun Form.addActionAndMethod(route: JavalinWebFrameworkWrapper.Route) {
+        with(SimpleHTML) {
+            this@addActionAndMethod.setAttribute("action", route.path)
+            this@addActionAndMethod.setAttribute("method", route.method)
+        }
+    }
+    
     // ------------------------------------
     // Simple Children
     // ------------------------------------
