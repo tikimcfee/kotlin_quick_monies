@@ -97,8 +97,6 @@ object SimpleHTML {
             label(this)
         }
         
-        span()
-        
         initTag(Input()) {
             setAttribute("name", forAttr.id)
             setAttribute("id", forAttr.id)
@@ -134,8 +132,8 @@ object SimpleHTML {
     fun Tag.form(init: Form.() -> Unit) =
         initTag(Form(), init)
     
-    fun Tag.span(spanner: ((Span) -> Unit) = {}) =
-        initTag(Span(), spanner)
+    fun Tag.span(init: Span.() -> Unit) =
+        initTag(Span(), init)
     
     fun Tag.text(s: Any?) =
         initTag(Text(s.toString()), {})
@@ -148,6 +146,20 @@ object SimpleHTML {
     
     fun Tag.div(init: Div.() -> Unit) =
         initTag(Div(), init)
+    
+    // ------------------------------------
+    // Buttons
+    // ------------------------------------
+    fun Tag.hiddenInputButton(
+        text: String,
+        buttonInput: String,
+        formParam: BasicTableRenderer.FormParam
+    ) = button {
+        text(text)
+        setAttribute("value", buttonInput)
+        setAttribute("name", formParam.id)
+        setAttribute("form", formParam.name)
+    }
     
     // ------------------------------------
     // CSS

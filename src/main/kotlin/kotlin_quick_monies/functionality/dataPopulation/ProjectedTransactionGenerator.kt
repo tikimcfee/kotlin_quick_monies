@@ -38,7 +38,7 @@ class ProjectedTransactionGenerator {
                         val newId = newTransactionId()
                         transactionTemplate.copy(
                             id = newId,
-                            description = "${transactionTemplate.description} (${index + 1} of $repetitionAmount)",
+                            description = "${transactionTemplate.description} ${index + 1}/$repetitionAmount",
                             date = nextDate,
                             groupInfo = transactionTemplate.groupInfo.apply {
                                 resultTransactions.add(newId)
