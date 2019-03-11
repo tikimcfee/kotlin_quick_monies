@@ -3,7 +3,6 @@ package kotlin_quick_monies.visual_interfaces.web
 import kotlin_quick_monies.functionality.AppStateFunctions
 import kotlin_quick_monies.functionality.commands.Command
 import kotlin_quick_monies.functionality.restoreState
-import kotlin_quick_monies.transfomers.TransactionsAsText
 import kotlin_quick_monies.visual_interfaces.web.BasicTableRenderer.FormParam.*
 import kotlin_quick_monies.visual_interfaces.web.BasicTableRenderer.renderResponseTo
 import io.javalin.Context
@@ -15,7 +14,6 @@ import org.eclipse.jetty.server.ServerConnector
 import org.joda.time.DateTime
 import java.lang.Exception
 import java.net.InetAddress
-import java.text.ParseException
 import java.util.*
 
 typealias NotANumber = NumberFormatException
@@ -35,13 +33,13 @@ class JavalinWebFrameworkWrapper {
     
     sealed class Route(name: String, val method: String) {
         companion object {
-            val port: String = IPHelper.preferredPort
+            const val port: String = IPHelper.preferredPort
             val host: String = IPHelper.localNetworkIp
             val protocol: String = IPHelper.protocol
             val root: String = "$protocol://$host:$port"
             
             val startupRouteSet = setOf(
-                Home, AddTransaction, RemoveIndex, AddMonthlyTransaction
+                Home, AddTransaction, RemoveTransactionById, AddRepeatedTransaction
             )
         }
         
@@ -50,9 +48,8 @@ class JavalinWebFrameworkWrapper {
         
         object Home : Route("", "get")
         object AddTransaction : Route("add_transaction", "post")
-        object RemoveIndex : Route("remove_index", "post")
-        object AddMonthlyTransaction : Route("add_monthly_transaction", "post")
-        
+        object AddRepeatedTransaction : Route("add_repeated_transaction", "post")
+        object RemoveTransactionById : Route("remove_transaction_by_id", "post")
     }
     
     fun start() {
@@ -81,12 +78,12 @@ class JavalinWebFrameworkWrapper {
                     runtimeState.withContextAddTransaction(it)
                     it.redirect(Route.Home.path)
                 }
-                Route.RemoveIndex -> app.post(route.name) {
+                Route.RemoveTransactionById -> app.post(route.name) {
                     runtimeState.withContextRemoveFromPosition(it)
                     it.redirect(Route.Home.path)
                 }
-                Route.AddMonthlyTransaction -> app.post(route.name) {
-                    runtimeState.withContextAddMonthlyTransaction(it)
+                Route.AddRepeatedTransaction -> app.post(route.name) {
+                    runtimeState.withContextAddRepeatedTransaction(it)
                     it.redirect(Route.Home.path)
                 }
             }
@@ -111,7 +108,8 @@ class JavalinWebFrameworkWrapper {
                         TransactionGroupInfo(
                             id = "individual_transactions_with_no_assigned_group",
                             resultTransactions = mutableListOf("individual_transactions_with_no_assigned_group"),
-                            sourceSchedule = SingleDaySchedule
+                            sourceSchedule = SingleDaySchedule,
+                            inHiddenExpenses = false
                         )
                     )
                 )
@@ -119,33 +117,42 @@ class JavalinWebFrameworkWrapper {
         }
     }
     
-    private fun AppStateFunctions.withContextAddMonthlyTransaction(
+    private fun AppStateFunctions.withContextAddRepeatedTransaction(
         requestContext: Context
     ) {
         with(requestContext) {
-            val monthsToAdd = formInt(ADD_SIMPLE_MONTHLY_TRANSACTION_MONTHS_TO_ADD) ?: return
+            val instancesToAdd = formInt(ADD_REPEATED_TRANSACTION_INSTANCES_TO_ADD) ?: return
+            val startDate = tryFormStringToDate(ADD_REPEATED_TRANSACTION_START_DATE) ?: return
+            val monthlyAmount = formDouble(ADD_REPEATED_TRANSACTION_AMOUNT) ?: return
+            val transactionDescription = formString(ADD_REPEATED_TRANSACTION_DESCRIPTION)
             
-            val startDate = tryFormStringToDate(ADD_SIMPLE_MONTHLY_TRANSACTION_START_DATE) ?: return
+            val transactionDayGroup = try {
+                IdealCore.CoreConstants.DayGroup.valueOf(
+                    formString(ADD_REPEATED_TRANSACTION_SEPARATOR)
+                )
+            } catch (e: Exception) {
+                println("Invalid date separator; ${e.message}")
+                return
+            }
             
-            
-            val monthlyAmount = formDouble(ADD_SIMPLE_MONTHLY_TRANSACTION_AMOUNT) ?: return
-            val transactionDescription = formString(ADD_SIMPLE_MONTHLY_TRANSACTION_DESCRIPTION)
+            val isHidden = isChecked(ADD_REPEATED_TRANSACTION_MAKE_HIDDEN_EXPENSE)
             
             saveAndRun(
-                Command.AddMonthlyTransaction(
+                Command.AddRepeatedTransaction(
                     Transaction(
                         newTransactionId(),
                         startDate.millis,
                         monthlyAmount,
                         transactionDescription,
                         groupInfo = TransactionGroupInfo(
-                            "monthly-transactions::${startDate.millis}",
+                            "repeated-transactions::${startDate.millis}",
                             mutableListOf(),
                             TransactionSchedulingData(
-                                "monthly-schedules::${startDate.millis}",
-                                monthsToAdd,
-                                IdealCore.CoreConstants.DayGroup.Month
-                            )
+                                "repeated-schedules::${startDate.millis}",
+                                instancesToAdd,
+                                transactionDayGroup
+                            ),
+                            isHidden
                         )
                     )
                 )
@@ -185,6 +192,9 @@ class JavalinWebFrameworkWrapper {
     
     private fun Context.formString(param: BasicTableRenderer.FormParam): String =
         formParam(param.id) ?: ""
+    
+    private fun Context.isChecked(param: BasicTableRenderer.FormParam): Boolean =
+        (formParam(param.id) ?: "") == param.id
     
     private fun Context.tryFormStringToDate(param: BasicTableRenderer.FormParam): DateTime? =
         with(formString(param)) {

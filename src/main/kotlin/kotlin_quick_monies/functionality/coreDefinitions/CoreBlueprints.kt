@@ -21,6 +21,7 @@ sealed class IdealCore {
             abstract val id: String
             abstract val resultTransactions: MutableList<String>
             abstract val sourceSchedule: IdealTransactionSchedulingData
+            abstract val inHiddenExpenses: Boolean
         }
         
         abstract class IdealTransactionSchedulingData : IdealCoreComponent() {

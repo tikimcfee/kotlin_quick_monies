@@ -40,12 +40,19 @@ object SimpleHTML {
     class Center : Tag("center")
     class Span : Tag("span")
     class Div : Tag("div")
+    class LineBreak : Tag("br")
     
     class Form : Tag("form")
     class Label : Tag("label")
     class Input : Tag("input")
     class Button : Tag("button")
-    class LineBreak : Tag("br")
+    
+    class Select : Tag("select")
+    class Option(value: String) : Tag("option") {
+        init {
+            setAttribute("value", value)
+        }
+    }
     
     // ------------------------------------
     // HTML
@@ -100,6 +107,48 @@ object SimpleHTML {
         initTag(Input()) {
             setAttribute("name", forAttr.id)
             setAttribute("id", forAttr.id)
+            input(this)
+        }
+    }
+    
+    fun Form.selection(init: Select.() -> Unit) =
+        initTag(Select(), init)
+    
+    fun Select.option(value: String, init: Option.() -> Unit) =
+        initTag(Option(value), init)
+    
+    fun Form.selectionDropdown(
+        forAttr: BasicTableRenderer.FormParam,
+        initSelection: Select.() -> Unit,
+        initOption: Option.() -> Unit,
+        vararg selections: String
+    ) {
+        selection {
+            initSelection()
+            
+            setAttribute("for", forAttr.id)
+            setAttribute("name", forAttr.id)
+            
+            selections.forEach {
+                option(it) {
+                    initOption()
+                    text(it)
+                }
+            }
+        }
+    }
+    
+    fun Form.newCheckbox(
+        labelText: String,
+        forAttr: BasicTableRenderer.FormParam,
+        input: ((Input) -> Unit) = {}
+    ) {
+        initTag(Input()) {
+            setAttribute("type", "checkbox")
+            setAttribute("name", forAttr.id)
+            setAttribute("id", forAttr.id)
+            setAttribute("value", forAttr.id)
+            text(labelText)
             input(this)
         }
     }

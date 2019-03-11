@@ -8,7 +8,7 @@ import kotlin.reflect.KClass
 
 const val MAIN_APP_STOP = "--EndOfLine--"
 const val ADD_TRANSACTION = "add_transaction"
-const val ADD_MONTHLY_TRANSACTION = "add_monthly_transaction"
+const val ADD_REPEATED_TRANSACTION = "add_repeated_transaction"
 const val REMOVE_TRANSACTION = "remove_transaction"
 const val REMOVE_SCHEDULED_TRANSACTION = "remove_scheduled_transaction"
 
@@ -27,9 +27,9 @@ sealed class Command(
         val transactionId: String
     ) : Command(REMOVE_TRANSACTION)
     
-    data class AddMonthlyTransaction(
+    data class AddRepeatedTransaction(
         val transactionTemplate: Transaction
-    ) : Command(ADD_MONTHLY_TRANSACTION)
+    ) : Command(ADD_REPEATED_TRANSACTION)
     
     data class RemoveScheduledTransaction(
         val groupId: String
@@ -40,7 +40,7 @@ class CommandTypeAdapter : TypeAdapter<Command> {
     override fun classFor(type: Any): KClass<out Command> = when (type as String) {
         MAIN_APP_STOP -> MainAppStop::class
         ADD_TRANSACTION -> Add::class
-        ADD_MONTHLY_TRANSACTION -> AddMonthlyTransaction::class
+        ADD_REPEATED_TRANSACTION -> AddRepeatedTransaction::class
         REMOVE_TRANSACTION -> RemoveTransaction::class
         REMOVE_SCHEDULED_TRANSACTION -> RemoveScheduledTransaction::class
         else -> throw IllegalArgumentException("Unknown type: $type")

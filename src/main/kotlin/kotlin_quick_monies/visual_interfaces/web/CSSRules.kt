@@ -20,8 +20,10 @@ object componentClasses {
     val transactionInputBox = "transaction-input-box"
     val mainTransactionWindow = "main-transaction-window"
     
-    val transactionTableSectionContainer = "transaction-table-section-container"
+    val transactionInputRepeatedDayGroupOption = "transaction-input-repeated-daygroup-option"
+    val transactionInputRepeatedDayGroupSelection = "transaction-input-repeated-daygroup-selection"
     
+    val transactionTableSectionContainer = "transaction-table-section-container"
     
     val transactionRowInfoContainer = "transaction-row-info-container"
     val transactionRowDeleteButton = "transaction-row-deleteButton"

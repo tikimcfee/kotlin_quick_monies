@@ -32,7 +32,7 @@ fun Command.executeWithStateFunctions(
     is Command.RemoveTransaction ->
         appStateFunctions.transactionList.remove(transactionId)
     
-    is Command.AddMonthlyTransaction ->
+    is Command.AddRepeatedTransaction ->
         appStateFunctions
             .projectedTransactionGenerator
             .insertTransactionsFromTemplate(transactionTemplate, appStateFunctions)

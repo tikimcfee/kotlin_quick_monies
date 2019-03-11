@@ -13,7 +13,8 @@ data class Transaction(
 data class TransactionGroupInfo(
     override val id: String,
     override val resultTransactions: MutableList<String>,
-    override val sourceSchedule: TransactionSchedulingData
+    override val sourceSchedule: TransactionSchedulingData,
+    override val inHiddenExpenses: Boolean
 ) : IdealCore.IdealCoreComponent.IdealTransactionGroupInfo()
 
 open class TransactionSchedulingData(

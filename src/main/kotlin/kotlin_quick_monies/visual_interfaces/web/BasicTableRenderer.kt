@@ -2,11 +2,11 @@ package kotlin_quick_monies.visual_interfaces.web
 
 import io.javalin.Context
 import kotlin_quick_monies.functionality.AppStateFunctions
-import kotlin_quick_monies.visual_interfaces.web.BasicTableRenderer.FormParam.*
-import kotlin_quick_monies.visual_interfaces.web.JavalinWebFrameworkWrapper.Route.RemoveIndex
+import kotlin_quick_monies.visual_interfaces.web.BasicTableRenderer.FormParam.ACTION_REMOVE_TRANSACTION_BY_ID
+import kotlin_quick_monies.visual_interfaces.web.JavalinWebFrameworkWrapper.Route.RemoveTransactionById
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML
 import kotlin_quick_monies.visual_interfaces.web.screenComponents.makeAllTransactionTables
-import kotlin_quick_monies.visual_interfaces.web.screenComponents.monthlyTransactionInput
+import kotlin_quick_monies.visual_interfaces.web.screenComponents.repeatedTransactionInput
 import kotlin_quick_monies.visual_interfaces.web.screenComponents.singleTransactionInput
 
 object BasicTableRenderer {
@@ -16,10 +16,12 @@ object BasicTableRenderer {
         ADD_TRANSACTION_DESCRIPTION("inputTransactionDescription"),
         ADD_TRANSACTION_DATE("inputTransactionDate"),
         
-        ADD_SIMPLE_MONTHLY_TRANSACTION_AMOUNT("inputMonthlyTransactionAmount"),
-        ADD_SIMPLE_MONTHLY_TRANSACTION_MONTHS_TO_ADD("inputMonthlyTransactionCount"),
-        ADD_SIMPLE_MONTHLY_TRANSACTION_START_DATE("inputMonthlyTransactionStartDate"),
-        ADD_SIMPLE_MONTHLY_TRANSACTION_DESCRIPTION("inputMonthlyTransactionDescription"),
+        ADD_REPEATED_TRANSACTION_AMOUNT("inputRepeatedTransactionAmount"),
+        ADD_REPEATED_TRANSACTION_INSTANCES_TO_ADD("inputRepeatedTransactionCount"),
+        ADD_REPEATED_TRANSACTION_START_DATE("inputRepeatedTransactionStartDate"),
+        ADD_REPEATED_TRANSACTION_SEPARATOR("inputRepeatedTransactionSeparator"),
+        ADD_REPEATED_TRANSACTION_DESCRIPTION("inputRepeatedTransactionDescription"),
+        ADD_REPEATED_TRANSACTION_MAKE_HIDDEN_EXPENSE("inputRepeatedTransactionMakeDailyExpense"),
         
         ACTION_REMOVE_TRANSACTION_BY_ID("actionRemoveTransactionById")
     }
@@ -37,7 +39,7 @@ object BasicTableRenderer {
                     fun transactionInputs() {
                         div {
                             singleTransactionInput()
-                            monthlyTransactionInput()
+                            repeatedTransactionInput()
                         }
                     }
                     
@@ -57,7 +59,7 @@ object BasicTableRenderer {
                     
                     // Hidden form input for 'remove' button functionality; a little AJAX would do it but eh... not yet.
                     form {
-                        addActionAndMethod(RemoveIndex)
+                        addActionAndMethod(RemoveTransactionById)
                         setAttribute("id", ACTION_REMOVE_TRANSACTION_BY_ID.name)
                         hiddenInput(ACTION_REMOVE_TRANSACTION_BY_ID)
                     }
@@ -67,8 +69,6 @@ object BasicTableRenderer {
         
         context.result(rawHtml).header("Content-Type", "text/html")
     }
-    
-    
     
     
 }
