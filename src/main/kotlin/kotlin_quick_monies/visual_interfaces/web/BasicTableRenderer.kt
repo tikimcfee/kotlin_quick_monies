@@ -41,7 +41,7 @@ object BasicTableRenderer {
         ADD_SIMPLE_MONTHLY_TRANSACTION_START_DATE("inputMonthlyTransactionStartDate"),
         ADD_SIMPLE_MONTHLY_TRANSACTION_DESCRIPTION("inputMonthlyTransactionDescription"),
         
-        ACTION_REMOVE_FROM_POSITION_INDEX("actionRemoveFromPositionIndex")
+        ACTION_REMOVE_TRANSACTION_BY_ID("actionRemoveTransactionById")
     }
     
     fun AppStateFunctions.renderResponseTo(context: Context) {
@@ -119,8 +119,8 @@ object BasicTableRenderer {
                     // Hidden form input for 'remove' button functionality; a little AJAX would do it but eh... not yet.
                     form {
                         addActionAndMethod(RemoveIndex)
-                        setAttribute("id", ACTION_REMOVE_FROM_POSITION_INDEX.name)
-                        hiddenInput(ACTION_REMOVE_FROM_POSITION_INDEX)
+                        setAttribute("id", ACTION_REMOVE_TRANSACTION_BY_ID.name)
+                        hiddenInput(ACTION_REMOVE_TRANSACTION_BY_ID)
                     }
                 }
             }
@@ -266,14 +266,14 @@ object BasicTableRenderer {
                 td {
                     button {
                         text("Remove")
-                        setAttribute("value", snapshot.sourceListPosition.toString())
+                        setAttribute("value", snapshot.transaction.id)
                         setAttribute(
                             "name",
-                            ACTION_REMOVE_FROM_POSITION_INDEX.id
+                            ACTION_REMOVE_TRANSACTION_BY_ID.id
                         )
                         setAttribute(
                             "form",
-                            ACTION_REMOVE_FROM_POSITION_INDEX.name
+                            ACTION_REMOVE_TRANSACTION_BY_ID.name
                         )
                     }
                 }

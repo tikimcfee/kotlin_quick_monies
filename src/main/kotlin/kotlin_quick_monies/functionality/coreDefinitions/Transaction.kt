@@ -1,9 +1,6 @@
 package kotlin_quick_monies.functionality.coreDefinitions
 
-import com.beust.klaxon.TypeAdapter
-import com.beust.klaxon.TypeFor
 import java.util.*
-import kotlin.reflect.KClass
 
 data class Transaction(
     override val id: String,

@@ -6,7 +6,6 @@ import kotlin_quick_monies.functionality.coreDefinitions.IdealCore
 import kotlin_quick_monies.functionality.coreDefinitions.Transaction
 import kotlin_quick_monies.functionality.coreDefinitions.newTransactionId
 import kotlin_quick_monies.functionality.execute
-import kotlin_quick_monies.functionality.list.RelativePos
 import org.joda.time.DateTime
 
 class ProjectedTransactionGenerator {
@@ -51,7 +50,7 @@ class ProjectedTransactionGenerator {
         }
         
         fun insertTransactions(transactions: List<Transaction>) {
-            transactions.forEach { Command.Add(RelativePos.Last(), it).execute(appFunctions) }
+            transactions.forEach { Command.Add(it).execute(appFunctions) }
         }
         
         with(generateTransactions()) {

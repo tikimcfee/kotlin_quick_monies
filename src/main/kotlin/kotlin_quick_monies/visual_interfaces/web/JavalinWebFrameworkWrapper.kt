@@ -102,7 +102,6 @@ class JavalinWebFrameworkWrapper {
             
             `apply command to current state`(
                 Command.Add(
-                    RelativePos.Last(),
                     Transaction(
                         "${UUID.randomUUID()}::${transactionDate.millis}",
                         transactionDate.millis,
@@ -156,11 +155,11 @@ class JavalinWebFrameworkWrapper {
         requestContext: Context
     ) {
         with(requestContext) {
-            formInt(ACTION_REMOVE_FROM_POSITION_INDEX)?.let {
-                `apply command to current state`(
-                    Command.Remove(RelativePos.Explicit(it))
+            `apply command to current state`(
+                Command.RemoveTransaction(
+                    formString(ACTION_REMOVE_TRANSACTION_BY_ID)
                 )
-            }
+            )
         }
     }
     

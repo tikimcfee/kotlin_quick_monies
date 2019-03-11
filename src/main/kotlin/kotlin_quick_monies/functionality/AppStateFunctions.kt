@@ -27,15 +27,14 @@ fun Command.execute(
     appStateFunctions: AppStateFunctions
 ): Any = when (this) {
     is Command.Add ->
-        appStateFunctions.transactionList.insert(listPos, transaction)
-    is Command.Remove ->
-        appStateFunctions.transactionList.remove(listPos)
-    is Command.Move ->
-        appStateFunctions.transactionList.move(from, to)
+        appStateFunctions.transactionList.insert(transaction = transaction)
+    is Command.RemoveTransaction ->
+        appStateFunctions.transactionList.remove(transactionId)
     is Command.AddMonthlyTransaction -> appStateFunctions.projectedTransactionGenerator
         .`generate and insert a number of monthly transcations from a template`(
             transactionTemplate, appStateFunctions
         )
+    is Command.RemoveScheduledTransaction -> TODO()
     is Command.MainAppStop -> Unit
 }
 
