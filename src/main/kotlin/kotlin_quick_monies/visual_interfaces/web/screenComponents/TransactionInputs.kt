@@ -75,7 +75,7 @@ fun Tag.repeatedTransactionInput(): Tag = div {
         lineBreak()
         
         
-        newField("Monthly amount : ", ADD_REPEATED_TRANSACTION_AMOUNT)
+        newField("Repeated amount : ", ADD_REPEATED_TRANSACTION_AMOUNT)
         lineBreak()
         
         newField(

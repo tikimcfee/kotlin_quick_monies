@@ -6,6 +6,7 @@ import kotlin_quick_monies.visual_interfaces.web.BasicTableRenderer.FormParam.AC
 import kotlin_quick_monies.visual_interfaces.web.JavalinWebFrameworkWrapper.Route.RemoveTransactionById
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML
 import kotlin_quick_monies.visual_interfaces.web.screenComponents.makeAllTransactionTables
+import kotlin_quick_monies.visual_interfaces.web.screenComponents.renderHiddenTransactions
 import kotlin_quick_monies.visual_interfaces.web.screenComponents.repeatedTransactionInput
 import kotlin_quick_monies.visual_interfaces.web.screenComponents.singleTransactionInput
 
@@ -40,6 +41,9 @@ object BasicTableRenderer {
                         div {
                             singleTransactionInput()
                             repeatedTransactionInput()
+                            
+                            // For now, slide hidden stuff to the right
+                            renderHiddenTransactions(this)
                         }
                     }
                     

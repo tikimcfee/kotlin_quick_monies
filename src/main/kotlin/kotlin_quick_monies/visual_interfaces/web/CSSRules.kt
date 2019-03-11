@@ -1,5 +1,9 @@
 package kotlin_quick_monies.visual_interfaces.web
 
+import kotlin_quick_monies.visual_interfaces.web.componentClasses.hiddenExpenses.hiddenExpenseColumn
+import kotlin_quick_monies.visual_interfaces.web.componentClasses.hiddenExpenses.hiddenExpenseColumnSpans
+import kotlin_quick_monies.visual_interfaces.web.componentClasses.hiddenExpenses.hiddenExpenseHeaderContainer
+import kotlin_quick_monies.visual_interfaces.web.componentClasses.hiddenExpenses.hiddenExpenseRootContainer
 import kotlin_quick_monies.visual_interfaces.web.componentClasses.mainTransactionWindow
 import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionInputBox
 import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionRowDeleteButton
@@ -42,6 +46,25 @@ object componentClasses {
     val transactionRowDescriptionHeader = "transaction-row-description-header"
     val transactionRowAmountHeader = "transaction-row-amount-header"
     val transactionRowAfterHeader = "transaction-row-after-header"
+    
+    object hiddenExpenses {
+        val hiddenExpenseRootContainer = "hidden-expense-root-container"
+        
+        val hiddenExpenseColumn = "hidden-expense-column"
+        val hiddenExpenseColumnSpans = "hidden-expense-column span"
+        
+        val hiddenExpenseHeaderContainer = "hidden-expense-header-container"
+        val hiddenExpenseHeaderAllSpans = "hidden-expense-header-all-spans"
+        val hiddenExpenseHeaderDate = "hidden-expense-header-date"
+        val hiddenExpenseHeaderDescription = "hidden-expense-header-description"
+        val hiddenExpenseHeaderAmount = "hidden-expense-header-amount"
+        
+        val hiddenExpenseDataRowContainer = "hidden-expense-data-row-container"
+        val hiddenExpenseDataRowAllSpans = "hidden-expense-data-row-all-spans"
+        val hiddenExpenseDataRowDate = "hidden-expense-data-row-date"
+        val hiddenExpenseDataRowDescription = "hidden-expense-data-row-description"
+        val hiddenExpenseDataRowAmount = "hidden-expense-data-row-amount"
+    }
 }
 
 object namedRules {
@@ -63,14 +86,9 @@ fun SimpleHTML.Html.setGlobalStyles() {
             display = Display.table
         }
         
-        kotlinx.css.table {
-            padding = "10"
-            width = 100.pct
-            
-            borderRadius = 4.pt
-            
-            backgroundColor = Color("#EFEFEF")
-        }
+        // -----------------------------
+        // Transaction Inputs
+        // -----------------------------
         
         addClass(transactionInputBox) {
             padding = "8"
@@ -82,6 +100,32 @@ fun SimpleHTML.Html.setGlobalStyles() {
             float = Float.left
             backgroundColor = Color("#EFEFEF44")
         }
+    
+        // -----------------------------
+        // Hidden Expenses
+        // -----------------------------
+        addClass(hiddenExpenseRootContainer) {
+            marginTop = 8.pt
+            marginBottom = 8.pt
+            padding = "4pt"
+            backgroundColor = Color("#0000000a")
+            float = Float.left
+        }
+        
+        addClass(hiddenExpenseColumn) {
+            float = Float.left
+        }
+        
+        addClass(hiddenExpenseColumnSpans) {
+            margin = "auto"
+            display = Display.inherit
+            textAlign = TextAlign.right
+            padding = "4pt"
+        }
+        
+        // -----------------------------
+        // Main Transaction Scrollbox
+        // -----------------------------
         
         addClass(mainTransactionWindow) {
             padding = "4 4 4 4"
@@ -94,7 +138,7 @@ fun SimpleHTML.Html.setGlobalStyles() {
             
             backgroundColor = Color("#EFEFEF44")
         }
-    
+        
         addClass(transactionTableSectionContainer) {
             marginTop = 8.pt
             marginBottom = 8.pt

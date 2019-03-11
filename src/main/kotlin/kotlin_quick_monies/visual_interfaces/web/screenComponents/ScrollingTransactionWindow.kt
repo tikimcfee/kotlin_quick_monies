@@ -6,7 +6,7 @@ import kotlin_quick_monies.functionality.accounting.TransactionAccountant
 import kotlin_quick_monies.transfomers.TransactionsAsText.IndividualFormatting.formattedAfter
 import kotlin_quick_monies.transfomers.TransactionsAsText.IndividualFormatting.formattedAmount
 import kotlin_quick_monies.transfomers.TransactionsAsText.IndividualFormatting.formattedDate
-import kotlin_quick_monies.transfomers.TransactionsAsText.QuickMoniesDates.monthDayYearFull
+import kotlin_quick_monies.transfomers.TransactionsAsText.QuickMoniesDates.longMonthLongYear
 import kotlin_quick_monies.visual_interfaces.web.BasicTableRenderer.FormParam.ACTION_REMOVE_TRANSACTION_BY_ID
 import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionRowAfter
 import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionRowAfterHeader
@@ -23,10 +23,10 @@ import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionRow
 import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionTableSectionContainer
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.div
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.hiddenInputButton
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.setAttribute
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.setCssClasses
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.span
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.text
-import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.setAttribute
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.Tag
 import org.joda.time.DateTime
 
@@ -51,15 +51,34 @@ fun AppStateFunctions.makeAllTransactionTables(parentTag: Tag) {
 typealias LongRangeToSnapshotEntry = Map.Entry<LongRange, SortedList<TransactionAccountant.Snapshot>>
 
 fun Tag.makeTransactionTable(mapEntry: LongRangeToSnapshotEntry) {
-    div {
-        setCssClasses(transactionTableSectionContainer)
+    val (dateRange, sortedSnapshots) = mapEntry
+    
+    /**
+     * The author would like to state how absolutely happy it has made him
+     * to type, in a semi-serious fashion, and with a completely and perfectly
+     * valid set of syntactic and semantic uses, the equivalent of:
+     *
+     * --- with the lens of truth, isolate the hidden transactions
+     *          and { pretend, somewhere else, the other side of the lens
+     *          is showing the truth } - [on this side, we allow the hidden,
+     *          to hide]
+     *          ---- ~ (a proud and humble dork)
+     */
+    with(LensOfTruth) {
+        sortedSnapshots.removeHiddenTransactions().toList()
+    }.let {
+        if (it.isEmpty()) return
         
-        snapshotEntryDataHeader(DateTime(mapEntry.key.first).monthDayYearFull())
-        div { setCssClasses(transactionRowSeparator) }
-        
-        mapEntry.value.forEach { snapshot ->
-            snapshotEntryDataRow(snapshot)
+        div {
+            setCssClasses(transactionTableSectionContainer)
+            
+            snapshotEntryDataHeader(DateTime(dateRange.first).longMonthLongYear())
             div { setCssClasses(transactionRowSeparator) }
+            
+            it.forEach { snapshot ->
+                snapshotEntryDataRow(snapshot)
+                div { setCssClasses(transactionRowSeparator) }
+            }
         }
     }
 }

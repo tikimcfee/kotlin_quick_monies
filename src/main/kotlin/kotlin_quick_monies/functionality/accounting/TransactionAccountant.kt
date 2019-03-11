@@ -12,13 +12,7 @@ class TransactionAccountant {
     data class Snapshot(
         val transaction: Transaction,
         val amountBeforeTransaction: Double,
-        val amountAfterTransaction: Double,
-        val sourceListPosition: Int
-    )
-    
-    private data class SortedTransaction(
-        val transaction: Transaction,
-        val sourceListPosition: Int
+        val amountAfterTransaction: Double
     )
     
     class DateRangeSnapshotMultiMap : SortedMultiMap<LongRange, Snapshot>() {
@@ -45,7 +39,6 @@ class TransactionAccountant {
         }
     }
     
-    
     fun computeTransactionDeltas(
         transactionList: TransactionList,
         dateGroupReceiver: ((DateRangeSnapshotMultiMap) -> Unit)? = null,
@@ -62,10 +55,14 @@ class TransactionAccountant {
         
         transactionList.transactions
             .asSequence()
-            .withIndex()
-            .map { SortedTransaction(it.value, it.index) }
+//            .filter {
+//                // Here's where we the play the game of hide and seek.
+//                // We know it's hidden. But guess what...
+//                // We're gonna compute with it anyway.
+//                !it.groupInfo.inHiddenExpenses
+//            }
             .sortedWith(Comparator { t1, t2 ->
-                sortOptions.applyTo(t1.transaction, t2.transaction)
+                sortOptions.applyTo(t1, t2)
             })
             .mapTo(deltaList) { sortedTransaction ->
                 if (deltaList.isEmpty()) {
@@ -86,7 +83,6 @@ class TransactionAccountant {
         return deltaList
     }
     
-    
     private fun insertSnapshotIntoSection(
         currentGroups: DateRangeSnapshotMultiMap,
         dayGroup: IdealCore.CoreConstants.DayGroup,
@@ -104,21 +100,18 @@ class TransactionAccountant {
         currentGroups.addTransaction(expectedRange, snapshot)
     }
     
-    
-    private fun SortedTransaction.toInitialAccumulator() =
+    private fun Transaction.toInitialAccumulator() =
         Snapshot(
-            transaction,
+            this,
             0.0,
-            this.transaction.amount,
-            sourceListPosition
+            amount
         )
     
-    private infix fun Snapshot.withAnother(transaction: SortedTransaction) =
+    private infix fun Snapshot.withAnother(transaction: Transaction) =
         Snapshot(
-            transaction.transaction,
+            transaction,
             amountAfterTransaction,
-            amountAfterTransaction + transaction.transaction.amount,
-            transaction.sourceListPosition
+            amountAfterTransaction + transaction.amount
         )
     
 }

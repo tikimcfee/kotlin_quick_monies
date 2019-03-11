@@ -136,19 +136,20 @@ class JavalinWebFrameworkWrapper {
             }
             
             val isHidden = isChecked(ADD_REPEATED_TRANSACTION_MAKE_HIDDEN_EXPENSE)
-            
+    
+            val newId = newTransactionId()
             saveAndRun(
                 Command.AddRepeatedTransaction(
                     Transaction(
-                        newTransactionId(),
+                        newId,
                         startDate.millis,
                         monthlyAmount,
                         transactionDescription,
                         groupInfo = TransactionGroupInfo(
-                            "repeated-transactions::${startDate.millis}",
+                            "repeated-transactions::$newId::${startDate.millis}",
                             mutableListOf(),
                             TransactionSchedulingData(
-                                "repeated-schedules::${startDate.millis}",
+                                "repeated-schedules::$newId::${startDate.millis}",
                                 instancesToAdd,
                                 transactionDayGroup
                             ),

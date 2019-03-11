@@ -15,16 +15,14 @@ object TransactionsAsText {
             .appendLiteral('-')
             .appendDayOfMonth(2)
     
-    private val yearMonthDayLongBuilder =
+    private val longMonthLongYearBuilder =
         DateTimeFormatterBuilder()
             .appendMonthOfYearText()
-//            .appendLiteral(' ')
-//            .appendDayOfMonth(1)
             .appendLiteral(", ")
             .appendYear(4, 4)
     
     private val yearMonthDayFormatter = yearMonthDayBuilder.toFormatter()
-    private val yearMonthDayLongFormatter = yearMonthDayLongBuilder.toFormatter()
+    private val longMonthLongYearFormatter = longMonthLongYearBuilder.toFormatter()
     
     object Simple {
         private fun DateTime.format() = yearMonthDayFormatter.print(this)
@@ -49,7 +47,7 @@ object TransactionsAsText {
         
         fun DateTime.format(): String = yearMonthDayFormatter.print(this)
     
-        fun DateTime.monthDayYearFull(): String = yearMonthDayLongFormatter.print(this)
+        fun DateTime.longMonthLongYear(): String = longMonthLongYearFormatter.print(this)
     }
     
     object IndividualFormatting {
