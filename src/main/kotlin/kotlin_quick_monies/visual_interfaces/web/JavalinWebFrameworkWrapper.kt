@@ -9,9 +9,11 @@ import kotlin_quick_monies.visual_interfaces.web.BasicTableRenderer.renderRespon
 import io.javalin.Context
 import io.javalin.Javalin
 import kotlin_quick_monies.functionality.coreDefinitions.*
+import kotlin_quick_monies.transfomers.TransactionsAsText.QuickMoniesDates.parse
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.ServerConnector
 import org.joda.time.DateTime
+import java.lang.Exception
 import java.net.InetAddress
 import java.text.ParseException
 import java.util.*
@@ -122,7 +124,10 @@ class JavalinWebFrameworkWrapper {
     ) {
         with(requestContext) {
             val monthsToAdd = formInt(ADD_SIMPLE_MONTHLY_TRANSACTION_MONTHS_TO_ADD) ?: return
+            
             val startDate = tryFormStringToDate(ADD_SIMPLE_MONTHLY_TRANSACTION_START_DATE) ?: return
+            
+            
             val monthlyAmount = formDouble(ADD_SIMPLE_MONTHLY_TRANSACTION_AMOUNT) ?: return
             val transactionDescription = formString(ADD_SIMPLE_MONTHLY_TRANSACTION_DESCRIPTION)
             
@@ -182,15 +187,26 @@ class JavalinWebFrameworkWrapper {
         formParam(param.id) ?: ""
     
     private fun Context.tryFormStringToDate(param: BasicTableRenderer.FormParam): DateTime? =
-        with(TransactionsAsText.QuickMoniesDates) {
-            val dateString = formString(param)
-            try {
-                dateString.parse()
-            } catch (e: ParseException) {
-                // Don't allow bad dates in, for now.
-                println("Tried to parse a string into a Date. No such luck: $dateString\n$e")
-                null
+        with(formString(param)) {
+            (parseAsFormattedDate() ?: parseAsEpochLong()).also {
+                if (it == null) {
+                    println("Tried to parse a string into a Date. No such luck: ${this@with}")
+                }
             }
         }
+    
+    private fun String.parseAsFormattedDate() = try {
+        parse()
+    } catch (badInput: Exception) {
+        null
+    }
+    
+    private fun String.parseAsEpochLong() = try {
+        DateTime(toLong())
+    } catch (badInput: Exception) {
+        null
+    }
+    
+    
 }
 

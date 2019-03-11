@@ -26,6 +26,7 @@ import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.hidde
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.setCssClasses
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.span
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.text
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.setAttribute
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.Tag
 import org.joda.time.DateTime
 
@@ -113,6 +114,7 @@ fun Tag.snapshotEntryDataRow(
             }
             span {
                 setCssClasses(transactionRowDescription)
+                setAttribute("style", "text-align:right;")
                 text(description)
             }
             span {
