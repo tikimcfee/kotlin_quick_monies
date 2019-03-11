@@ -1,6 +1,7 @@
 package kotlin_quick_monies.functionality.accounting
 
-import kotlin_quick_monies.functionality.accounting.TransactionTimekeeper.DayGroup.*
+import kotlin_quick_monies.functionality.coreDefinitions.IdealCore
+import kotlin_quick_monies.functionality.coreDefinitions.IdealCore.CoreConstants.DayGroup.*
 import kotlin_quick_monies.functionality.coreDefinitions.Transaction
 import kotlin_quick_monies.functionality.list.TransactionList
 import java.util.*
@@ -74,7 +75,7 @@ class TransactionAccountant {
                 }.also {
                     insertSnapshotIntoSection(
                         currentGroups = currentGroups,
-                        dayGroup = Month,
+                        dayGroup = IdealCore.CoreConstants.DayGroup.Month,
                         snapshot = it
                     )
                 }
@@ -88,14 +89,15 @@ class TransactionAccountant {
     
     private fun insertSnapshotIntoSection(
         currentGroups: DateRangeSnapshotMultiMap,
-        dayGroup: TransactionTimekeeper.DayGroup,
+        dayGroup: IdealCore.CoreConstants.DayGroup,
         snapshot: Snapshot
     ) {
         val expectedRange = with(snapshot.transaction.date) {
             when (dayGroup) {
-                is Week -> LongRange(asStartOfWeek().millis, asEndOfWeek().millis)
-                is Month -> LongRange(asStartOfMonth().millis, asEndOfMonth().millis)
-                is Year -> LongRange(asStartOfYear().millis, asEndOfYear().millis)
+                Atom -> LongRange(this, this)
+                Week -> LongRange(asStartOfWeek().millis, asEndOfWeek().millis)
+                Month -> LongRange(asStartOfMonth().millis, asEndOfMonth().millis)
+                Year -> LongRange(asStartOfYear().millis, asEndOfYear().millis)
             }
         }
         

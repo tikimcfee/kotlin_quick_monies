@@ -34,7 +34,7 @@ fun Command.execute(
         appStateFunctions.transactionList.move(from, to)
     is Command.AddMonthlyTransaction -> appStateFunctions.projectedTransactionGenerator
         .`generate and insert a number of monthly transcations from a template`(
-            monthsToAdd, transactionTemplate, appStateFunctions
+            transactionTemplate, appStateFunctions
         )
     is Command.MainAppStop -> Unit
 }
