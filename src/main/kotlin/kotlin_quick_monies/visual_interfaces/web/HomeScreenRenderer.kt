@@ -7,10 +7,7 @@ import kotlin_quick_monies.visual_interfaces.web.JavalinWebFrameworkWrapper.Rout
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.setGlobalStyles
-import kotlin_quick_monies.visual_interfaces.web.screenComponents.makeAllTransactionTables
-import kotlin_quick_monies.visual_interfaces.web.screenComponents.renderHiddenTransactions
-import kotlin_quick_monies.visual_interfaces.web.screenComponents.repeatedTransactionInput
-import kotlin_quick_monies.visual_interfaces.web.screenComponents.singleTransactionInput
+import kotlin_quick_monies.visual_interfaces.web.screenComponents.*
 
 object HomeScreenRenderer {
     
@@ -38,36 +35,36 @@ object HomeScreenRenderer {
                 
                 // Page content
                 body {
-                    // All inputs, wrapped in a floating block
-                    fun transactionInputs() {
-                        div {
-                            singleTransactionInput()
-                            repeatedTransactionInput()
-                            
-                            // For now, slide hidden stuff to the right
-                            renderHiddenTransactions(this)
+                    div {
+                        setCssClasses(componentClasses.mainPage.mainBodyWrapper)
+    
+                        // All inputs
+                        fun transactionInputs() {
+                            allInputsAsVerticalBar()
                         }
-                    }
-                    
-                    // The scrolling transaction window
-                    fun transactionTable() {
-                        div {
-                            setCssClasses(componentClasses.mainTransaction.mainTransactionWindow)
-                            makeAllTransactionTables(this)
+    
+                        // The scrolling transaction window
+                        fun transactionTable() {
+                            div {
+                                setCssClasses(componentClasses.mainTransaction.mainTransactionWindow)
+                                makeAllTransactionTables(this)
+                            }
                         }
-                    }
-                    
-                    // The 'high level' picture of how to draw it
-                    lineBreak()
-                    transactionInputs()
-                    lineBreak()
-                    transactionTable()
-                    
-                    // Hidden form input for 'remove' button functionality; a little AJAX would do it but eh... not yet.
-                    form {
-                        addActionAndMethod(RemoveTransactionById)
-                        setAttribute("id", ACTION_REMOVE_TRANSACTION_BY_ID.name)
-                        hiddenInput(ACTION_REMOVE_TRANSACTION_BY_ID)
+                        
+                        
+                        // The 'high level' picture of how to draw it
+                        transactionTable()
+                        transactionInputs()
+    
+                        // For now, slide hidden stuff to the bottom
+                        renderHiddenTransactions(this)
+    
+                        // Hidden form input for 'remove' button functionality; a little AJAX would do it but eh... not yet.
+                        form {
+                            addActionAndMethod(RemoveTransactionById)
+                            setAttribute("id", ACTION_REMOVE_TRANSACTION_BY_ID.name)
+                            hiddenInput(ACTION_REMOVE_TRANSACTION_BY_ID)
+                        }
                     }
                 }
             }

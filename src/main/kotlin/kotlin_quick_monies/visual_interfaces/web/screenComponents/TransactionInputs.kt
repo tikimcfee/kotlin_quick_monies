@@ -5,24 +5,30 @@ import kotlin_quick_monies.transfomers.TransactionsAsText
 import kotlin_quick_monies.visual_interfaces.web.HomeScreenRenderer.FormParam.*
 import kotlin_quick_monies.visual_interfaces.web.JavalinWebFrameworkWrapper
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML
-import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses
-import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses.transactionInputRepeatedDayGroupOption
-import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses.transactionInputRepeatedDayGroupSelection
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.addActionAndMethod
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.button
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.div
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.form
-import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.lineBreak
-import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.newCheckbox
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.inputTag
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.newCheckbox
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.selectionDropdown
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.setAttribute
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.setCssClasses
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.text
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.Tag
-import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses.transactionInputBox
-import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses.transactionInputRepeatedCountInput
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses.transactionInput.transactionInputBox
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses.transactionInput.transactionInputRepeatedCountInput
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses.transactionInput.transactionInputRepeatedDayGroupOption
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses.transactionInput.transactionInputRepeatedDayGroupSelection
 import org.joda.time.DateTime
+
+fun Tag.allInputsAsVerticalBar(): Tag = div {
+    setCssClasses(componentClasses.transactionInput.container.vertical)
+    
+    singleTransactionInput()
+    repeatedTransactionInput()
+}
 
 /**
  *  Creates an input component, asking someone to stick stuff
@@ -32,7 +38,6 @@ fun Tag.singleTransactionInput(): Tag = div {
     setCssClasses(transactionInputBox)
     
     div { text("<strong>- Transaction Info -</strong>") }
-    lineBreak()
     
     form {
         addActionAndMethod(JavalinWebFrameworkWrapper.Route.AddTransaction)
@@ -57,8 +62,6 @@ fun Tag.singleTransactionInput(): Tag = div {
             button { text("Stick it in there") }
         }
     }
-}.apply {
-    setCssClasses(componentClasses.transactionInputBox)
 }
 
 fun SimpleHTML.Input.setValueAsToday() {
@@ -77,7 +80,6 @@ fun Tag.repeatedTransactionInput(): Tag = div {
     setCssClasses(transactionInputBox)
     
     text("<strong>- Simple Repeated Transactions -</strong>")
-    lineBreak()
     
     form {
         addActionAndMethod(JavalinWebFrameworkWrapper.Route.AddRepeatedTransaction)
@@ -128,6 +130,4 @@ fun Tag.repeatedTransactionInput(): Tag = div {
         }
         
     }
-}.apply {
-    setCssClasses(componentClasses.transactionInputBox)
 }
