@@ -31,7 +31,7 @@ object BasicTableRenderer {
         val rawHtml = with(SimpleHTML) {
             html {
                 // Page setup (style, meta, etc.)
-//                applyDeviceDependentSizing()
+                setMetaData()
                 setGlobalStyles()
                 
                 // Page content

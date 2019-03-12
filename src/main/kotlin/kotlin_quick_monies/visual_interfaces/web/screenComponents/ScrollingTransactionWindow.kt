@@ -67,21 +67,21 @@ fun Tag.makeTransactionTable(mapEntry: LongRangeToSnapshotEntry) {
         
         span {
             setCssClasses(transactionRowsGridItem)
-            text("Date")
+            text("When ⏳")
         }
         
         span {
             setCssClasses(transactionRowsGridItem)
-            text("Description")
+            text("What 🔍")
         }
         
         span {
             setCssClasses(transactionRowsGridItem)
-            text("Transaction Amount")
+            text("Moneys 💸")
         }
         span {
             setCssClasses(transactionRowsGridItem)
-            text("After Transaction")
+            text("After ✅")
         }
         
         nonHiddenTransactions.forEach { snapshot ->
