@@ -218,8 +218,8 @@ object SimpleHTML {
     fun Html.setMetaData() {
         meta {
             // <meta name="viewport" content="width=device-width, initial-scale=1.0">
-//            setAttribute("name", "viewport")
-//            setAttribute("content", "width=device-width, initial-scale=1.0")
+            setAttribute("name", "viewport")
+            setAttribute("content", "width=device-width, initial-scale=1.0")
             setAttribute("charset", "UTF-8")
         }
     }
