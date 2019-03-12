@@ -4,7 +4,7 @@ sealed class IdealCore {
     
     object CoreConstants {
         enum class DayGroup {
-            Atom, Week, Month, Year
+            Day, Week, Month, Year
         }
     }
     

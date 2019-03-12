@@ -90,7 +90,7 @@ class TransactionAccountant {
     ) {
         val expectedRange = with(snapshot.transaction.date) {
             when (dayGroup) {
-                Atom -> LongRange(this, this)
+                Day -> LongRange(this, this)
                 Week -> LongRange(asStartOfWeek().millis, asEndOfWeek().millis)
                 Month -> LongRange(asStartOfMonth().millis, asEndOfMonth().millis)
                 Year -> LongRange(asStartOfYear().millis, asEndOfYear().millis)

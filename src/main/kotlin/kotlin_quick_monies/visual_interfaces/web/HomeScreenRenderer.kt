@@ -2,15 +2,17 @@ package kotlin_quick_monies.visual_interfaces.web
 
 import io.javalin.Context
 import kotlin_quick_monies.functionality.AppStateFunctions
-import kotlin_quick_monies.visual_interfaces.web.BasicTableRenderer.FormParam.ACTION_REMOVE_TRANSACTION_BY_ID
+import kotlin_quick_monies.visual_interfaces.web.HomeScreenRenderer.FormParam.ACTION_REMOVE_TRANSACTION_BY_ID
 import kotlin_quick_monies.visual_interfaces.web.JavalinWebFrameworkWrapper.Route.RemoveTransactionById
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.setGlobalStyles
 import kotlin_quick_monies.visual_interfaces.web.screenComponents.makeAllTransactionTables
 import kotlin_quick_monies.visual_interfaces.web.screenComponents.renderHiddenTransactions
 import kotlin_quick_monies.visual_interfaces.web.screenComponents.repeatedTransactionInput
 import kotlin_quick_monies.visual_interfaces.web.screenComponents.singleTransactionInput
 
-object BasicTableRenderer {
+object HomeScreenRenderer {
     
     enum class FormParam(val id: String) {
         ADD_TRANSACTION_AMOUNT("inputTransactionAmount"),

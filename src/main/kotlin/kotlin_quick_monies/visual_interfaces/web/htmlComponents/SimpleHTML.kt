@@ -1,6 +1,6 @@
 package kotlin_quick_monies.visual_interfaces.web.htmlComponents
 
-import kotlin_quick_monies.visual_interfaces.web.BasicTableRenderer
+import kotlin_quick_monies.visual_interfaces.web.HomeScreenRenderer
 import kotlin_quick_monies.visual_interfaces.web.JavalinWebFrameworkWrapper
 import kotlinx.css.CSSBuilder
 
@@ -92,33 +92,25 @@ object SimpleHTML {
     // ------------------------------------
     // Forms
     // ------------------------------------
-    fun Form.newField(
+    fun Tag.inputTag(
         labelText: String,
-        forAttr: BasicTableRenderer.FormParam,
-        label: ((Label) -> Unit) = {},
-        input: ((Input) -> Unit) = {}
-    ) {
-        initTag(Label()) {
-            setAttribute("for", forAttr.id)
-            text(labelText)
-            label(this)
-        }
-        
-        initTag(Input()) {
-            setAttribute("name", forAttr.id)
-            setAttribute("id", forAttr.id)
-            input(this)
-        }
+        forAttr: HomeScreenRenderer.FormParam,
+        input: Input.() -> Unit = {}
+    ) = initTag(Input()) {
+        setAttribute("name", forAttr.id)
+        setAttribute("id", forAttr.id)
+        setAttribute("placeholder", labelText)
+        input(this)
     }
     
-    fun Form.selection(init: Select.() -> Unit) =
+    fun Tag.selection(init: Select.() -> Unit) =
         initTag(Select(), init)
     
-    fun Select.option(value: String, init: Option.() -> Unit) =
+    fun Tag.option(value: String, init: Option.() -> Unit) =
         initTag(Option(value), init)
     
-    fun Form.selectionDropdown(
-        forAttr: BasicTableRenderer.FormParam,
+    fun Tag.selectionDropdown(
+        forAttr: HomeScreenRenderer.FormParam,
         initSelection: Select.() -> Unit,
         initOption: Option.() -> Unit,
         vararg selections: String
@@ -138,9 +130,9 @@ object SimpleHTML {
         }
     }
     
-    fun Form.newCheckbox(
+    fun Tag.newCheckbox(
         labelText: String,
-        forAttr: BasicTableRenderer.FormParam,
+        forAttr: HomeScreenRenderer.FormParam,
         input: ((Input) -> Unit) = {}
     ) {
         initTag(Input()) {
@@ -154,7 +146,7 @@ object SimpleHTML {
     }
     
     fun Form.hiddenInput(
-        forAttr: BasicTableRenderer.FormParam,
+        forAttr: HomeScreenRenderer.FormParam,
         input: ((Input) -> Unit) = {}
     ) {
         //<input type = "hidden" name = "topic" value = "something" />
@@ -202,7 +194,7 @@ object SimpleHTML {
     fun Tag.hiddenInputButton(
         text: String,
         buttonInput: String,
-        formParam: BasicTableRenderer.FormParam
+        formParam: HomeScreenRenderer.FormParam
     ) = button {
         text(text)
         setAttribute("value", buttonInput)

@@ -3,8 +3,8 @@ package kotlin_quick_monies.visual_interfaces.web
 import kotlin_quick_monies.functionality.AppStateFunctions
 import kotlin_quick_monies.functionality.commands.Command
 import kotlin_quick_monies.functionality.restoreState
-import kotlin_quick_monies.visual_interfaces.web.BasicTableRenderer.FormParam.*
-import kotlin_quick_monies.visual_interfaces.web.BasicTableRenderer.renderResponseTo
+import kotlin_quick_monies.visual_interfaces.web.HomeScreenRenderer.FormParam.*
+import kotlin_quick_monies.visual_interfaces.web.HomeScreenRenderer.renderResponseTo
 import io.javalin.Context
 import io.javalin.Javalin
 import kotlin_quick_monies.functionality.coreDefinitions.*
@@ -173,7 +173,7 @@ class JavalinWebFrameworkWrapper {
         }
     }
     
-    private fun Context.formDouble(param: BasicTableRenderer.FormParam): Double? {
+    private fun Context.formDouble(param: HomeScreenRenderer.FormParam): Double? {
         return try {
             formParam(param.id)?.toDouble()
         } catch (badInput: NotANumber) {
@@ -182,7 +182,7 @@ class JavalinWebFrameworkWrapper {
         }
     }
     
-    private fun Context.formInt(param: BasicTableRenderer.FormParam): Int? {
+    private fun Context.formInt(param: HomeScreenRenderer.FormParam): Int? {
         return try {
             formParam(param.id)?.toInt()
         } catch (badInput: NotANumber) {
@@ -191,13 +191,13 @@ class JavalinWebFrameworkWrapper {
         }
     }
     
-    private fun Context.formString(param: BasicTableRenderer.FormParam): String =
+    private fun Context.formString(param: HomeScreenRenderer.FormParam): String =
         formParam(param.id) ?: ""
     
-    private fun Context.isChecked(param: BasicTableRenderer.FormParam): Boolean =
+    private fun Context.isChecked(param: HomeScreenRenderer.FormParam): Boolean =
         (formParam(param.id) ?: "") == param.id
     
-    private fun Context.tryFormStringToDate(param: BasicTableRenderer.FormParam): DateTime? =
+    private fun Context.tryFormStringToDate(param: HomeScreenRenderer.FormParam): DateTime? =
         with(formString(param)) {
             (parseAsFormattedDate() ?: parseAsEpochLong()).also {
                 if (it == null) {

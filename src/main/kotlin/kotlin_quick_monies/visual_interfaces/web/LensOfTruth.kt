@@ -1,4 +1,4 @@
-package kotlin_quick_monies.visual_interfaces.web.screenComponents
+package kotlin_quick_monies.visual_interfaces.web
 
 import kotlin_quick_monies.functionality.accounting.TransactionAccountant
 import kotlin_quick_monies.functionality.coreDefinitions.Transaction

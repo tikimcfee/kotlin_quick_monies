@@ -8,7 +8,6 @@ import kotlin_quick_monies.functionality.coreDefinitions.Transaction
 import kotlin_quick_monies.functionality.coreDefinitions.newTransactionId
 import kotlin_quick_monies.functionality.executeWithStateFunctions
 import org.joda.time.DateTime
-import java.util.*
 
 class ProjectedTransactionGenerator {
     
@@ -27,7 +26,7 @@ class ProjectedTransactionGenerator {
     fun dateGenerator(group: IdealCore.CoreConstants.DayGroup, date: Long): Long {
         return with(DateTime(date)) {
             when (group) {
-                Atom -> plusDays(1)
+                Day -> plusDays(1)
                 Week -> plusWeeks(1)
                 Month -> plusMonths(1)
                 Year -> plusYears(1)

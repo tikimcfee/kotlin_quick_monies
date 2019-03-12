@@ -1,26 +1,27 @@
 package kotlin_quick_monies.visual_interfaces.web.screenComponents
 
-import kotlin_quick_monies.functionality.coreDefinitions.IdealCore
 import kotlin_quick_monies.functionality.coreDefinitions.IdealCore.CoreConstants.DayGroup.*
 import kotlin_quick_monies.transfomers.TransactionsAsText
-import kotlin_quick_monies.visual_interfaces.web.BasicTableRenderer.FormParam.*
+import kotlin_quick_monies.visual_interfaces.web.HomeScreenRenderer.FormParam.*
 import kotlin_quick_monies.visual_interfaces.web.JavalinWebFrameworkWrapper
-import kotlin_quick_monies.visual_interfaces.web.componentClasses
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionInputRepeatedDayGroupOption
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionInputRepeatedDayGroupSelection
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses.transactionInputRepeatedDayGroupOption
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses.transactionInputRepeatedDayGroupSelection
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.addActionAndMethod
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.button
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.div
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.form
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.lineBreak
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.newCheckbox
-import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.newField
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.inputTag
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.selectionDropdown
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.setAttribute
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.setCssClasses
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.text
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.Tag
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses.transactionInputBox
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses.transactionInputRepeatedCountInput
 import org.joda.time.DateTime
 
 /**
@@ -28,35 +29,43 @@ import org.joda.time.DateTime
  *  in place to record a single new transaction.
  */
 fun Tag.singleTransactionInput(): Tag = div {
-    lineBreak()
-    text("<strong>- Transaction Info -</strong>")
+    setCssClasses(transactionInputBox)
+    
+    div { text("<strong>- Transaction Info -</strong>") }
     lineBreak()
     
     form {
         addActionAndMethod(JavalinWebFrameworkWrapper.Route.AddTransaction)
         
-        newField("What it's for? : ", ADD_TRANSACTION_DESCRIPTION)
-        lineBreak()
+        div {
+            inputTag("What it's for? : ", ADD_TRANSACTION_DESCRIPTION)
+        }
         
-        newField("How much? : ", ADD_TRANSACTION_AMOUNT)
-        lineBreak()
+        div {
+            inputTag("How much? : ", ADD_TRANSACTION_AMOUNT)
+        }
         
-        newField(
-            "For what date? : ",
-            ADD_TRANSACTION_DATE,
-            input = { dateInputField ->
-                dateInputField.setAttribute("value",
-                    with(TransactionsAsText.QuickMoniesDates) {
-                        DateTime().format()
-                    })
+        div {
+            inputTag(
+                "When? (yyyy-mm-dd)? : ", ADD_TRANSACTION_DATE
+            ) {
+                setValueAsToday()
             }
-        )
-        lineBreak()
+        }
         
-        button { text("Stick it in there") }
+        div {
+            button { text("Stick it in there") }
+        }
     }
 }.apply {
     setCssClasses(componentClasses.transactionInputBox)
+}
+
+fun SimpleHTML.Input.setValueAsToday() {
+    setAttribute("value",
+        with(TransactionsAsText.QuickMoniesDates) {
+            DateTime().format()
+        })
 }
 
 /**
@@ -65,51 +74,59 @@ fun Tag.singleTransactionInput(): Tag = div {
  *  monthly. So very fancy.
  */
 fun Tag.repeatedTransactionInput(): Tag = div {
-    lineBreak()
+    setCssClasses(transactionInputBox)
+    
     text("<strong>- Simple Repeated Transactions -</strong>")
     lineBreak()
     
     form {
         addActionAndMethod(JavalinWebFrameworkWrapper.Route.AddRepeatedTransaction)
-        newField("What it's for? : ", ADD_REPEATED_TRANSACTION_DESCRIPTION)
-        lineBreak()
         
+        div {
+            inputTag("What it's for?", ADD_REPEATED_TRANSACTION_DESCRIPTION)
+        }
         
-        newField("Repeated amount : ", ADD_REPEATED_TRANSACTION_AMOUNT)
-        lineBreak()
+        div {
+            inputTag("Amount for each", ADD_REPEATED_TRANSACTION_AMOUNT)
+        }
         
-        newField(
-            "Start date : ",
-            ADD_REPEATED_TRANSACTION_START_DATE,
-            input = { dateInputField ->
-                dateInputField.setAttribute("value",
-                    with(TransactionsAsText.QuickMoniesDates) {
-                        DateTime().format()
-                    })
-            })
-        lineBreak()
-    
-        text("Separation between ")
-        selectionDropdown(
-            ADD_REPEATED_TRANSACTION_SEPARATOR,
-            { setCssClasses(transactionInputRepeatedDayGroupSelection) },
-            { setCssClasses(transactionInputRepeatedDayGroupOption) },
-            Atom.name, Week.name, Month.name, Year.name
-        )
-        lineBreak()
+        div {
+            inputTag(
+                "Start these on... ",
+                ADD_REPEATED_TRANSACTION_START_DATE
+            ) {
+                setValueAsToday()
+            }
+        }
         
-        newField(
-            "Stop after : ",
-            ADD_REPEATED_TRANSACTION_INSTANCES_TO_ADD,
-            input = { dateInputField ->
-                dateInputField.setAttribute("value", "12")
-            })
-        lineBreak()
+        div {
+            text("Every: ")
+            selectionDropdown(
+                ADD_REPEATED_TRANSACTION_SEPARATOR,
+                { setCssClasses(transactionInputRepeatedDayGroupSelection) },
+                { setCssClasses(transactionInputRepeatedDayGroupOption) },
+                Day.name, Week.name, Month.name, Year.name
+            )
+            text(", ")
+            inputTag(
+                "Stop after:",
+                ADD_REPEATED_TRANSACTION_INSTANCES_TO_ADD
+            ) {
+                setCssClasses(transactionInputRepeatedCountInput)
+                setAttribute("value", "12")
+            }
+            
+            text(" times.")
+        }
         
-        newCheckbox("Mark as hidden, everyday expense", ADD_REPEATED_TRANSACTION_MAKE_HIDDEN_EXPENSE)
-        lineBreak()
+        div {
+            newCheckbox("Mark as hidden, everyday expense", ADD_REPEATED_TRANSACTION_MAKE_HIDDEN_EXPENSE)
+        }
         
-        button { text("Stick a bunch of 'em in there.") }
+        div {
+            button { text("Stick a bunch of 'em in there.") }
+        }
+        
     }
 }.apply {
     setCssClasses(componentClasses.transactionInputBox)

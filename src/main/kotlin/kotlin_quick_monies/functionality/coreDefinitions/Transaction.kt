@@ -32,5 +32,5 @@ fun newTransactionId() = UUID.randomUUID().toString()
 object SingleDaySchedule : TransactionSchedulingData(
     id = "individual_schedule_no_repetition_single_day",
     repetitionAmount = 1,
-    repetitionSeparator = IdealCore.CoreConstants.DayGroup.Atom
+    repetitionSeparator = IdealCore.CoreConstants.DayGroup.Day
 )

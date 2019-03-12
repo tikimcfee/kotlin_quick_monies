@@ -1,20 +1,21 @@
-package kotlin_quick_monies.visual_interfaces.web
+package kotlin_quick_monies.visual_interfaces.web.htmlComponents
 
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.hiddenExpenses.hiddenExpenseColumn
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.hiddenExpenses.hiddenExpenseColumnSpans
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.hiddenExpenses.hiddenExpenseRootContainer
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.mainTransaction.mainTransactionWindow
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.mainTransaction.transactionRowsGridItem
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.mainTransaction.transactionRowsGridParent
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionInputBox
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionRowDeleteButton
-import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses.hiddenExpenses.hiddenExpenseColumn
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses.hiddenExpenses.hiddenExpenseColumnSpans
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses.hiddenExpenses.hiddenExpenseRootContainer
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses.mainTransaction.mainTransactionWindow
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses.mainTransaction.transactionRowsGridItem
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses.mainTransaction.transactionRowsGridParent
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses.transactionInputBox
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses.transactionRowDeleteButton
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.setStyles
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses.transactionInputRepeatedCountInput
 import kotlinx.css.*
 import kotlinx.css.Float
 
 object componentClasses {
     val transactionInputBox = "transaction-input-box"
+    val transactionInputRepeatedCountInput = "transaction-input-repeated-count-input"
     val transactionInputRepeatedDayGroupOption = "transaction-input-repeated-daygroup-option"
     val transactionInputRepeatedDayGroupSelection = "transaction-input-repeated-daygroup-selection"
     
@@ -56,6 +57,8 @@ fun SimpleHTML.Html.setGlobalStyles() {
         // -----------------------------
         
         addClass(transactionInputBox) {
+            display = Display.inlineGrid
+            
             padding = "8"
             margin = "8"
             
@@ -64,6 +67,15 @@ fun SimpleHTML.Html.setGlobalStyles() {
             
             float = Float.left
             backgroundColor = Color("#EFEFEF44")
+        }
+    
+        addClass("$transactionInputBox div") {
+            backgroundColor = Color("#EFEFEF44")
+            margin = "4pt"
+        }
+    
+        addClass("$transactionInputBox form") {
+            display = Display.inlineGrid
         }
         
         // -----------------------------
@@ -125,7 +137,10 @@ fun SimpleHTML.Html.setGlobalStyles() {
             marginLeft = 2.pt
             marginRight = 2.pt
             textAlign = TextAlign.center
-            
+        }
+        
+        addClass(transactionInputRepeatedCountInput) {
+            width = 10.pct
         }
         
         rule("span.transaction-row-info-grid-item:nth-child(-n+4)") {
