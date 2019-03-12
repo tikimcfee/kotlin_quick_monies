@@ -2,76 +2,41 @@ package kotlin_quick_monies.visual_interfaces.web
 
 import kotlin_quick_monies.visual_interfaces.web.componentClasses.hiddenExpenses.hiddenExpenseColumn
 import kotlin_quick_monies.visual_interfaces.web.componentClasses.hiddenExpenses.hiddenExpenseColumnSpans
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.hiddenExpenses.hiddenExpenseHeaderContainer
 import kotlin_quick_monies.visual_interfaces.web.componentClasses.hiddenExpenses.hiddenExpenseRootContainer
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.mainTransactionWindow
+import kotlin_quick_monies.visual_interfaces.web.componentClasses.mainTransaction.mainTransactionWindow
+import kotlin_quick_monies.visual_interfaces.web.componentClasses.mainTransaction.transactionRowsGridItem
+import kotlin_quick_monies.visual_interfaces.web.componentClasses.mainTransaction.transactionRowsGridParent
 import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionInputBox
 import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionRowDeleteButton
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionRowInfoContainerAllSpans
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionRowInfoContainerHeaderAllSpans
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionRowInfoContainerHeaderFirstSpan
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionRowInfoContainerHeaders
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionRowSeparator
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionTableSectionContainer
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.setStyles
 import kotlinx.css.*
 import kotlinx.css.Float
-import kotlinx.css.pt
-import kotlinx.css.pct
 
 object componentClasses {
     val transactionInputBox = "transaction-input-box"
-    val mainTransactionWindow = "main-transaction-window"
-    
     val transactionInputRepeatedDayGroupOption = "transaction-input-repeated-daygroup-option"
     val transactionInputRepeatedDayGroupSelection = "transaction-input-repeated-daygroup-selection"
     
-    val transactionTableSectionContainer = "transaction-table-section-container"
-    
-    val transactionRowInfoContainer = "transaction-row-info-container"
     val transactionRowDeleteButton = "transaction-row-deleteButton"
-    val transactionRowSeparator = "transaction-row-separator"
     
-    val transactionRowInfoContainerAllSpans = "transaction-row-info-container span"
-    val transactionRowDate = "transaction-row-date"
-    val transactionRowDescription = "transaction-row-description"
-    val transactionRowAmount = "transaction-row-amount"
-    val transactionRowAfter = "transaction-row-after"
-    
-    val transactionRowInfoContainerHeaderAllSpans = "transaction-row-info-container-headers span"
-    val transactionRowInfoContainerHeaderFirstSpan = "$transactionRowInfoContainerHeaderAllSpans:first-child"
-    val transactionRowInfoContainerHeaders = "transaction-row-info-container-headers"
-    val transactionRowDateHeader = "transaction-row-date-header"
-    val transactionRowDescriptionHeader = "transaction-row-description-header"
-    val transactionRowAmountHeader = "transaction-row-amount-header"
-    val transactionRowAfterHeader = "transaction-row-after-header"
+    object mainTransaction {
+        val mainTransactionWindow = "main-transaction-window"
+        val transactionRowsGridParent = "transaction-row-info-grid"
+        val transactionRowsGridItem = "transaction-row-info-grid-item"
+    }
     
     object hiddenExpenses {
         val hiddenExpenseRootContainer = "hidden-expense-root-container"
-        
+        val hiddenExpenseDataRow = "hidden-expense-row"
         val hiddenExpenseColumn = "hidden-expense-column"
         val hiddenExpenseColumnSpans = "hidden-expense-column span"
-        
-        val hiddenExpenseHeaderContainer = "hidden-expense-header-container"
-        val hiddenExpenseHeaderAllSpans = "hidden-expense-header-all-spans"
-        val hiddenExpenseHeaderDate = "hidden-expense-header-date"
-        val hiddenExpenseHeaderDescription = "hidden-expense-header-description"
-        val hiddenExpenseHeaderAmount = "hidden-expense-header-amount"
-        
-        val hiddenExpenseDataRowContainer = "hidden-expense-data-row-container"
-        val hiddenExpenseDataRowAllSpans = "hidden-expense-data-row-all-spans"
-        val hiddenExpenseDataRowDate = "hidden-expense-data-row-date"
-        val hiddenExpenseDataRowDescription = "hidden-expense-data-row-description"
-        val hiddenExpenseDataRowAmount = "hidden-expense-data-row-amount"
     }
 }
 
 object namedRules {
     val clearfix = ".clearfix::after"
 }
-
-fun String.target() = ".$this"
 
 fun CSSBuilder.addClass(
     name: String,
@@ -100,7 +65,7 @@ fun SimpleHTML.Html.setGlobalStyles() {
             float = Float.left
             backgroundColor = Color("#EFEFEF44")
         }
-    
+        
         // -----------------------------
         // Hidden Expenses
         // -----------------------------
@@ -139,37 +104,41 @@ fun SimpleHTML.Html.setGlobalStyles() {
             backgroundColor = Color("#EFEFEF44")
         }
         
-        addClass(transactionTableSectionContainer) {
+        addClass(transactionRowsGridParent) {
+            display = Display.grid
+            gridTemplateColumns = GridTemplateColumns(
+                25.pct, 25.pct, 25.pct, 25.pct
+            )
+            
+            borderRadius = 2.pt
+            borderColor = Color.lightGrey
+            borderWidth = 1.pt
+            
             marginTop = 8.pt
             marginBottom = 8.pt
-            padding = "4pt"
+            padding = "2pt"
             backgroundColor = Color("#0000000a")
+            
         }
         
-        addClass(transactionRowInfoContainerHeaders) {
+        addClass(transactionRowsGridItem) {
+            marginLeft = 2.pt
+            marginRight = 2.pt
+            textAlign = TextAlign.center
+            
+        }
+        
+        rule("span.transaction-row-info-grid-item:nth-child(-n+4)") {
+            backgroundColor = Color.deepSkyBlue
+            fontWeight = FontWeight.bold
+            color = Color.white
             marginBottom = 4.pt
         }
         
-        addClass(transactionRowInfoContainerHeaderAllSpans) {
-            width = 20.pct
-            margin = "auto"
-            textAlign = TextAlign.center
-            display = Display.inlineBlock
-            fontStyle = FontStyle.italic
-        }
-        
-        addClass(transactionRowInfoContainerHeaderFirstSpan) {
-            color = Color.dimGray
-            fontWeight = FontWeight.bold
-            fontStyle = FontStyle.normal
-            textAlign = TextAlign.left
-        }
-        
-        addClass(transactionRowInfoContainerAllSpans) {
-            width = 20.pct
-            margin = "auto"
-            textAlign = TextAlign.center
-            display = Display.inlineBlock
+        rule("span.transaction-row-info-grid-item:nth-child(n+5)") {
+            backgroundColor = Color("#00beff1a")
+            borderBottom = "1px solid #0000001a"
+            marginBottom = 2.pt
         }
         
         addClass(transactionRowDeleteButton) {
@@ -177,13 +146,6 @@ fun SimpleHTML.Html.setGlobalStyles() {
             margin = "auto"
         }
         
-        addClass(transactionRowSeparator) {
-            width = 100.pct
-            background = "#a5a5a542"
-            height = 1.px
-            marginTop = 2.pt
-            marginBottom = 2.pt
-        }
     }
     
     

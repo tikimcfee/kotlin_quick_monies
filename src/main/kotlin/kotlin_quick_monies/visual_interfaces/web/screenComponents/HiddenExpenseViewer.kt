@@ -3,8 +3,9 @@ package kotlin_quick_monies.visual_interfaces.web.screenComponents
 import kotlin_quick_monies.functionality.AppStateFunctions
 import kotlin_quick_monies.functionality.coreDefinitions.Transaction
 import kotlin_quick_monies.transfomers.TransactionsAsText.QuickMoniesDates.longMonthLongYear
-import kotlin_quick_monies.visual_interfaces.web.componentClasses
 import kotlin_quick_monies.visual_interfaces.web.componentClasses.hiddenExpenses.hiddenExpenseColumn
+import kotlin_quick_monies.visual_interfaces.web.componentClasses.hiddenExpenses.hiddenExpenseDataRow
+
 import kotlin_quick_monies.visual_interfaces.web.componentClasses.hiddenExpenses.hiddenExpenseRootContainer
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.div
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.lineBreak
@@ -28,7 +29,7 @@ fun AppStateFunctions.renderHiddenTransactions(parentTag: Tag) {
                 val dateColumn = div {
                     setCssClasses(hiddenExpenseColumn)
                     span {
-                        setCssClasses(componentClasses.hiddenExpenses.hiddenExpenseHeaderDate)
+                        
                         text("Date")
                     }
                 }
@@ -36,7 +37,7 @@ fun AppStateFunctions.renderHiddenTransactions(parentTag: Tag) {
                 val descriptionColumn = div {
                     setCssClasses(hiddenExpenseColumn)
                     span {
-                        setCssClasses(componentClasses.hiddenExpenses.hiddenExpenseHeaderDescription)
+                        
                         text("Description")
                     }
                 }
@@ -44,7 +45,7 @@ fun AppStateFunctions.renderHiddenTransactions(parentTag: Tag) {
                 val amountColumn = div {
                     setCssClasses(hiddenExpenseColumn)
                     span {
-                        setCssClasses(componentClasses.hiddenExpenses.hiddenExpenseHeaderAmount)
+                        
                         text("Transaction Amount")
                     }
                 }
@@ -56,9 +57,9 @@ fun AppStateFunctions.renderHiddenTransactions(parentTag: Tag) {
                     .filter { it.groupInfo.id !in knownGroups }
                     .onEach { knownGroups += it.groupInfo.id }
                     .forEach {
-                        dateColumn.dateBlock(it)
-                        descriptionColumn.descriptionBlock(it)
-                        amountColumn.amountBlock(it)
+                        dateColumn.hiddenExpenseDateBlock(it)
+                        descriptionColumn.hiddenExpenseDescriptionBlock(it)
+                        amountColumn.hiddenExpenseAmountBlock(it)
                     }
             }
         }
@@ -69,28 +70,28 @@ fun Transaction.separatorName() = groupInfo.sourceSchedule.repetitionSeparator.n
 
 fun Transaction.separatorAmount() = groupInfo.sourceSchedule.repetitionAmount
 
-fun Tag.dateBlock(transaction: Transaction) {
+fun Tag.hiddenExpenseDateBlock(transaction: Transaction) {
     span {
-        setCssClasses(componentClasses.hiddenExpenses.hiddenExpenseDataRowDate)
+        setCssClasses(hiddenExpenseDataRow)
         text(
             DateTime(transaction.date).longMonthLongYear()
-        +"\n(${transaction.separatorAmount()} ${transaction.separatorName()})"
+                + "\n(${transaction.separatorAmount()} ${transaction.separatorName()})"
         )
     }
 }
 
-fun Tag.descriptionBlock(transaction: Transaction) {
+fun Tag.hiddenExpenseDescriptionBlock(transaction: Transaction) {
     span {
-        setCssClasses(componentClasses.hiddenExpenses.hiddenExpenseDataRowDescription)
+        setCssClasses(hiddenExpenseDataRow)
         text(
             transaction.description
         )
     }
 }
 
-fun Tag.amountBlock(transaction: Transaction) {
+fun Tag.hiddenExpenseAmountBlock(transaction: Transaction) {
     span {
-        setCssClasses(componentClasses.hiddenExpenses.hiddenExpenseDataRowAmount)
+        setCssClasses(hiddenExpenseDataRow)
         text(
             transaction.amount
         )

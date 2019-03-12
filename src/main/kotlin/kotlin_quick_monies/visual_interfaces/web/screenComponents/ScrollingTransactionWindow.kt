@@ -7,23 +7,9 @@ import kotlin_quick_monies.transfomers.TransactionsAsText.IndividualFormatting.f
 import kotlin_quick_monies.transfomers.TransactionsAsText.IndividualFormatting.formattedAmount
 import kotlin_quick_monies.transfomers.TransactionsAsText.IndividualFormatting.formattedDate
 import kotlin_quick_monies.transfomers.TransactionsAsText.QuickMoniesDates.longMonthLongYear
-import kotlin_quick_monies.visual_interfaces.web.BasicTableRenderer.FormParam.ACTION_REMOVE_TRANSACTION_BY_ID
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionRowAfter
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionRowAfterHeader
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionRowAmount
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionRowAmountHeader
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionRowDate
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionRowDateHeader
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionRowDeleteButton
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionRowDescription
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionRowDescriptionHeader
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionRowInfoContainer
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionRowInfoContainerHeaders
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionRowSeparator
-import kotlin_quick_monies.visual_interfaces.web.componentClasses.transactionTableSectionContainer
+import kotlin_quick_monies.visual_interfaces.web.componentClasses.mainTransaction.transactionRowsGridItem
+import kotlin_quick_monies.visual_interfaces.web.componentClasses.mainTransaction.transactionRowsGridParent
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.div
-import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.hiddenInputButton
-import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.setAttribute
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.setCssClasses
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.span
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.text
@@ -64,86 +50,82 @@ fun Tag.makeTransactionTable(mapEntry: LongRangeToSnapshotEntry) {
      *          to hide]
      *          ---- ~ (a proud and humble dork)
      */
-    with(LensOfTruth) {
+    val nonHiddenTransactions = with(LensOfTruth) {
         sortedSnapshots.removeHiddenTransactions().toList()
-    }.let {
+    }.also {
         if (it.isEmpty()) return
-        
-        div {
-            setCssClasses(transactionTableSectionContainer)
-            
-            snapshotEntryDataHeader(DateTime(dateRange.first).longMonthLongYear())
-            div { setCssClasses(transactionRowSeparator) }
-            
-            it.forEach { snapshot ->
-                snapshotEntryDataRow(snapshot)
-                div { setCssClasses(transactionRowSeparator) }
-            }
+    }
+    
+    div {
+        span {
+            text(DateTime(dateRange.first).longMonthLongYear())
         }
     }
-}
-
-fun Tag.snapshotEntryDataHeader(
-    headerText: String
-) {
+    
     div {
-        setCssClasses(transactionRowInfoContainerHeaders)
+        setCssClasses(transactionRowsGridParent)
         
         span {
-            text(headerText)
-        }
-        
-        span {
-            setCssClasses(transactionRowDateHeader)
+            setCssClasses(transactionRowsGridItem)
             text("Date")
         }
+        
         span {
-            setCssClasses(transactionRowDescriptionHeader)
+            setCssClasses(transactionRowsGridItem)
             text("Description")
         }
+        
         span {
-            setCssClasses(transactionRowAmountHeader)
+            setCssClasses(transactionRowsGridItem)
             text("Transaction Amount")
         }
         span {
-            setCssClasses(transactionRowAfterHeader)
+            setCssClasses(transactionRowsGridItem)
             text("After Transaction")
+        }
+        
+        nonHiddenTransactions.forEach { snapshot ->
+            mainTransactionDateBlock(snapshot)
+            mainTransactionDescriptionBlock(snapshot)
+            mainTransactionAmountBlock(snapshot)
+            mainTransactionAmountAfterBlock(snapshot)
         }
     }
 }
 
-fun Tag.snapshotEntryDataRow(
-    snapshot: TransactionAccountant.Snapshot
-) {
+fun Tag.mainTransactionDateBlock(snapshot: TransactionAccountant.Snapshot) {
     with(snapshot.transaction) {
-        div {
-            setCssClasses(transactionRowInfoContainer)
-            
-            hiddenInputButton(
-                "Remove",
-                snapshot.transaction.id,
-                ACTION_REMOVE_TRANSACTION_BY_ID
-            ).apply {
-                setCssClasses(transactionRowDeleteButton)
-            }
-            
-            span {
-                setCssClasses(transactionRowDate)
-                text(formattedDate())
-            }
-            span {
-                setCssClasses(transactionRowDescription)
-                setAttribute("style", "text-align:right;")
-                text(description)
-            }
-            span {
-                setCssClasses(transactionRowAmount)
-                text(formattedAmount())
-            }
-            span {
-                setCssClasses(transactionRowAfter)
-                text(snapshot.formattedAfter())
-            }
+        span {
+            setCssClasses(transactionRowsGridItem)
+            text(formattedDate())
+        }
+    }
+}
+
+fun Tag.mainTransactionDescriptionBlock(snapshot: TransactionAccountant.Snapshot) {
+    with(snapshot.transaction) {
+        span {
+            setCssClasses(transactionRowsGridItem)
+            text(description)
+        }
+    }
+}
+
+fun Tag.mainTransactionAmountBlock(snapshot: TransactionAccountant.Snapshot) {
+    with(snapshot.transaction) {
+        span {
+            setCssClasses(transactionRowsGridItem)
+            text(formattedAmount())
+        }
+    }
+}
+
+
+fun Tag.mainTransactionAmountAfterBlock(snapshot: TransactionAccountant.Snapshot) {
+    with(snapshot.transaction) {
+        span {
+            setCssClasses(transactionRowsGridItem)
+            text(snapshot.formattedAfter())
         }
     }
 }

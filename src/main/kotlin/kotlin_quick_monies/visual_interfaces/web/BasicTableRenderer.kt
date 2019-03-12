@@ -31,7 +31,7 @@ object BasicTableRenderer {
         val rawHtml = with(SimpleHTML) {
             html {
                 // Page setup (style, meta, etc.)
-                applyDeviceDependentSizing()
+//                applyDeviceDependentSizing()
                 setGlobalStyles()
                 
                 // Page content
@@ -50,7 +50,7 @@ object BasicTableRenderer {
                     // The scrolling transaction window
                     fun transactionTable() {
                         div {
-                            setCssClasses(componentClasses.mainTransactionWindow)
+                            setCssClasses(componentClasses.mainTransaction.mainTransactionWindow)
                             makeAllTransactionTables(this)
                         }
                     }
