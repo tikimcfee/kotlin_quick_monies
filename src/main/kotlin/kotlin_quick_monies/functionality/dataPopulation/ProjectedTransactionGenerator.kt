@@ -50,9 +50,15 @@ class ProjectedTransactionGenerator {
                         val newId = newTransactionId()
                         transactionTemplate.copy(
                             id = newId,
+                            // todo: numbering tries to show when something ends; maybe mark 'last' instead?
                             description = when (transactionTemplate.groupInfo.inHiddenExpenses) {
                                 true -> transactionTemplate.description
-                                false -> "${transactionTemplate.description} | ${index + 1}/$repetitionAmount"
+                                false -> transactionTemplate.description +
+                                    (if (index + 1 == repetitionAmount) {
+                                        " (last one)"
+                                    } else {
+                                        ""
+                                    })
                             },
                             date = nextDate,
                             groupInfo = transactionTemplate.groupInfo.apply {
@@ -72,5 +78,6 @@ class ProjectedTransactionGenerator {
             insertTransactions(this)
         }
     }
+    
     
 }
