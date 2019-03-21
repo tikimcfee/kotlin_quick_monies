@@ -9,6 +9,8 @@ class CommandHistorian {
     private val commandHistoryBackupPre = "command_history_pre.bak"
     private val commandHistoryBackupPost = "command_history_post.bak"
     
+    private val ynabIntegrationData = "ynab_integration_data"
+    
     fun recordCommand(command: Command) {
         with(CommandProcessor) {
             recordRawCommand(command.toJsonString())
@@ -26,6 +28,9 @@ class CommandHistorian {
     
     fun readCommandHistory() = historyFile().readLines()
     
+    // THIS IS SO UGLY JUST MAKE A SUPER CLASS!
+    fun readYnabIntegrationData() = integrationFile().readLines()
+    
     private fun ensureRoot() =
         File(workingDirectory())
             .resolve(historyDirectoryName)
@@ -40,6 +45,8 @@ class CommandHistorian {
     private fun preBackupFile() = ensureFile(commandHistoryBackupPre)
     
     private fun postBackupFile() = ensureFile(commandHistoryBackupPost)
+    
+    private fun integrationFile() = ensureFile(ynabIntegrationData)
     
     private fun workingDirectory() = System.getProperty("user.dir")
 }

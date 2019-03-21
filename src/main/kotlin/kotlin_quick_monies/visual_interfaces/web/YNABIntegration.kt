@@ -1,5 +1,7 @@
 package kotlin_quick_monies.visual_interfaces.web
 
+import kotlin_quick_monies.functionality.AppStateFunctions
+import kotlin_quick_monies.functionality.commands.CommandHistorian
 import kotlin_quick_monies.functionality.json.JsonTools.jsonParser
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
@@ -12,6 +14,22 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 object YNABIntegration {
+    
+    private val temporaryApiToken: String
+    private val mainBudgetId: String
+    
+    init {
+        with(CommandHistorian()) {
+            with(readYnabIntegrationData()) {
+                temporaryApiToken = first()
+                mainBudgetId = last()
+                
+                println("--- YNAB integration started ---")
+                println("--- token = $temporaryApiToken")
+                println("--- budgetId = $mainBudgetId")
+            }
+        }
+    }
     
     
     
@@ -32,9 +50,6 @@ object YNABIntegration {
         .build()
     
     private val mainService = mainRetrofit.create(YNABService::class.java)
-    
-    private val ynabUserAdapter = jsonParser.adapter(YNABUser.UserResponse::class.java)
-    private val ynabBudgetAdapter = jsonParser.adapter(YNABBudget.BudgetSummaryResponse::class.java)
     
     
     fun testFetch() {
