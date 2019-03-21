@@ -6,7 +6,7 @@
 
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin on the JVM.
-    id("org.jetbrains.kotlin.jvm").version("1.3.20")
+    id("org.jetbrains.kotlin.jvm") version "1.3.20"
     // Apply the application plugin to add support for building a CLI application.
     application
 }
@@ -34,7 +34,11 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.5.0")
     
     // - Data Serialization (because 'Dataz' was lame) -
-    implementation("com.beust:klaxon:5.0.5")
+//    implementation("com.beust:klaxon:5.0.5")
+    
+    implementation("com.squareup.moshi:moshi:1.8.0")
+    implementation("com.squareup.moshi:moshi-kotlin:1.8.0")
+    
     
     // - Time -
     implementation("joda-time:joda-time:2.10.1")
