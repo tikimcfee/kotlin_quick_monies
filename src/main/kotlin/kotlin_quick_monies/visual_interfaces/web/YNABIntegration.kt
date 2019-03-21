@@ -1,12 +1,13 @@
 package kotlin_quick_monies.visual_interfaces.web
 
-import com.squareup.moshi.Moshi
+import kotlin_quick_monies.functionality.json.JsonTools.jsonParser
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
 
@@ -27,11 +28,10 @@ object YNABIntegration {
     private val mainRetrofit = Retrofit.Builder()
         .baseUrl("https://api.youneedabudget.com/v1/")
         .client(httpClient)
+        .addConverterFactory(MoshiConverterFactory.create(jsonParser))
         .build()
     
     private val mainService = mainRetrofit.create(YNABService::class.java)
-    
-    private val jsonParser = Moshi.Builder().build()
     
     private val ynabUserAdapter = jsonParser.adapter(YNABUser.UserResponse::class.java)
     private val ynabBudgetAdapter = jsonParser.adapter(YNABBudget.BudgetSummaryResponse::class.java)
@@ -39,23 +39,15 @@ object YNABIntegration {
     
     fun testFetch() {
         mainService.getAllBudgets().enqueue(
-            object : Callback<ResponseBody> {
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+            object : Callback<YNABBudget.BudgetSummaryResponse> {
+                override fun onFailure(call: Call<YNABBudget.BudgetSummaryResponse>, t: Throwable) {
                     println(call)
                     println(t)
                 }
                 
-                override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                override fun onResponse(call: Call<YNABBudget.BudgetSummaryResponse>, response: Response<YNABBudget.BudgetSummaryResponse>) {
                     println(call)
-                    println(response)
-                    
-                    response.body()?.let {
-                        with(it.string()) {
-                            println(ynabBudgetAdapter.fromJson(this))
-                        }
-                        
-                        it.close()
-                    }
+                    println(response.body())
                 }
                 
             }
@@ -66,10 +58,10 @@ object YNABIntegration {
 
 interface YNABService {
     @GET("user")
-    fun getUser(): Call<ResponseBody>
+    fun getUser(): Call<YNABUser.UserResponse>
     
     @GET("budgets")
-    fun getAllBudgets(): Call<ResponseBody>
+    fun getAllBudgets(): Call<YNABBudget.BudgetSummaryResponse>
     
     @GET("budgets/{budgetId}")
     fun getBudgetById(@Path("budgetId") budgetId: String): Call<ResponseBody>
@@ -88,8 +80,7 @@ object YNABBudget {
     data class BudgetSummary(
         val id: String,
         val name: String,
-        val last_modified_on: String,
-        val date_format: String?
+        val last_modified_on: String
     )
     
 }

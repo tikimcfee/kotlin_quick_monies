@@ -30,15 +30,13 @@ dependencies {
     implementation("io.javalin:javalin:2.7.0")
     implementation("org.slf4j:slf4j-simple:1.7.25")
     
-    // - Ser-..client... serlcients. 
-    implementation("com.squareup.retrofit2:retrofit:2.5.0")
-    
     // - Data Serialization (because 'Dataz' was lame) -
-//    implementation("com.beust:klaxon:5.0.5")
-    
     implementation("com.squareup.moshi:moshi:1.8.0")
     implementation("com.squareup.moshi:moshi-kotlin:1.8.0")
     
+    // - Ser-..client... serlcients.
+    implementation("com.squareup.retrofit2:retrofit:2.5.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.5.0")
     
     // - Time -
     implementation("joda-time:joda-time:2.10.1")
