@@ -73,9 +73,6 @@ class JavalinWebFrameworkWrapper {
             val noopReturnHandle = when (route) {
                 Route.Home -> app.get(route.name) {
                     runtimeState.renderResponseTo(it)
-                    
-                    YNABIntegration.testFetch()
-                    
                 }
                 Route.AddTransaction -> app.post(route.name) {
                     runtimeState.withContextAddTransaction(it)
