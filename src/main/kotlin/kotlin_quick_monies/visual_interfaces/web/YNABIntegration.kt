@@ -1,6 +1,5 @@
 package kotlin_quick_monies.visual_interfaces.web
 
-import kotlin_quick_monies.functionality.AppStateFunctions
 import kotlin_quick_monies.functionality.commands.CommandHistorian
 import kotlin_quick_monies.functionality.json.JsonTools.jsonParser
 import okhttp3.OkHttpClient
@@ -12,6 +11,8 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
+
+typealias THE_TEST_TYPE = YNABBudgetDetail.BudgetDetailResponse
 
 object YNABIntegration {
     
@@ -30,7 +31,6 @@ object YNABIntegration {
             }
         }
     }
-    
     
     
     private val httpClient = OkHttpClient.Builder()
@@ -53,16 +53,16 @@ object YNABIntegration {
     
     
     fun testFetch() {
-        mainService.getAllBudgets().enqueue(
-            object : Callback<YNABBudget.BudgetSummaryResponse> {
-                override fun onFailure(call: Call<YNABBudget.BudgetSummaryResponse>, t: Throwable) {
-                    println(call)
-                    println(t)
+        mainService.getBudgetById(mainBudgetId).enqueue(
+            object : Callback<THE_TEST_TYPE> {
+                override fun onFailure(call: Call<THE_TEST_TYPE>, t: Throwable) {
+                
                 }
                 
-                override fun onResponse(call: Call<YNABBudget.BudgetSummaryResponse>, response: Response<YNABBudget.BudgetSummaryResponse>) {
-                    println(call)
-                    println(response.body())
+                override fun onResponse(call: Call<THE_TEST_TYPE>, response: Response<THE_TEST_TYPE>) {
+                    response.body()?.data?.budget?.categories?.forEach {
+                        println(it)
+                    }
                 }
                 
             }
@@ -79,7 +79,7 @@ interface YNABService {
     fun getAllBudgets(): Call<YNABBudget.BudgetSummaryResponse>
     
     @GET("budgets/{budgetId}")
-    fun getBudgetById(@Path("budgetId") budgetId: String): Call<ResponseBody>
+    fun getBudgetById(@Path("budgetId") budgetId: String): Call<YNABBudgetDetail.BudgetDetailResponse>
 }
 
 object YNABBudget {
@@ -96,6 +96,27 @@ object YNABBudget {
         val id: String,
         val name: String,
         val last_modified_on: String
+    )
+}
+
+object YNABBudgetDetail {
+    
+    data class BudgetDetailResponse(
+        val data: BudgetDetailWrapper
+    )
+    
+    data class BudgetDetailWrapper(
+        val budget: BudgetDetail
+    )
+    
+    data class BudgetDetail(
+        val categories: List<Category>
+    )
+    
+    data class Category(
+        val name: String,
+        val hidden: Boolean,
+        val goal_target: Int
     )
     
 }
