@@ -37,7 +37,7 @@ object TransactionsAsText {
     }
     
     object QuickMoniesDates {
-        fun String.parse(): DateTime = try {
+        fun String.parseToDate(): DateTime = try {
             yearMonthDayFormatter.parseDateTime(this)
         } catch (e: Exception) {
             println("Parse failure [$yearMonthDayBuilder]<[$this]")

@@ -8,7 +8,7 @@ import kotlin_quick_monies.visual_interfaces.web.HomeScreenRenderer.renderRespon
 import io.javalin.Context
 import io.javalin.Javalin
 import kotlin_quick_monies.functionality.coreDefinitions.*
-import kotlin_quick_monies.transfomers.TransactionsAsText.QuickMoniesDates.parse
+import kotlin_quick_monies.transfomers.TransactionsAsText.QuickMoniesDates.parseToDate
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.ServerConnector
 import org.joda.time.DateTime
@@ -73,6 +73,8 @@ class JavalinWebFrameworkWrapper {
             val noopReturnHandle = when (route) {
                 Route.Home -> app.get(route.name) {
                     runtimeState.renderResponseTo(it)
+                    
+                    YNABIntegration.testFetch()
                 }
                 Route.AddTransaction -> app.post(route.name) {
                     runtimeState.withContextAddTransaction(it)
@@ -207,7 +209,7 @@ class JavalinWebFrameworkWrapper {
         }
     
     private fun String.parseAsFormattedDate() = try {
-        parse()
+        parseToDate()
     } catch (badInput: Exception) {
         null
     }

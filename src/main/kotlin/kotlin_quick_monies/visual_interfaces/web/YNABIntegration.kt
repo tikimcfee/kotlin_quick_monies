@@ -2,6 +2,7 @@ package kotlin_quick_monies.visual_interfaces.web
 
 import kotlin_quick_monies.functionality.commands.CommandHistorian
 import kotlin_quick_monies.functionality.json.JsonTools.jsonParser
+import kotlin_quick_monies.transfomers.TransactionsAsText
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -11,8 +12,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
-
-typealias THE_TEST_TYPE = YNABBudgetDetail.BudgetDetailResponse
 
 object YNABIntegration {
     
@@ -53,18 +52,27 @@ object YNABIntegration {
     
     
     fun testFetch() {
-        mainService.getBudgetById(mainBudgetId).enqueue(
+        fun checkResponse(response: Response<THE_TEST_TYPE>) {
+            response.body()?.data
+                ?.category_groups
+                ?.asSequence()
+                ?.filter { !it.hidden }
+                ?.flatMap { it.categories.asSequence() }
+                ?.filter {
+                    !it.hidden && it.goal_creation_month != null
+                }
+                ?.forEach { println(it) }
+        }
+        
+        mainService.getCategoriesForBudgetById(mainBudgetId).enqueue(
             object : Callback<THE_TEST_TYPE> {
                 override fun onFailure(call: Call<THE_TEST_TYPE>, t: Throwable) {
                 
                 }
                 
                 override fun onResponse(call: Call<THE_TEST_TYPE>, response: Response<THE_TEST_TYPE>) {
-                    response.body()?.data?.budget?.categories?.forEach {
-                        println(it)
-                    }
+                    checkResponse(response)
                 }
-                
             }
         )
     }
@@ -80,7 +88,12 @@ interface YNABService {
     
     @GET("budgets/{budgetId}")
     fun getBudgetById(@Path("budgetId") budgetId: String): Call<YNABBudgetDetail.BudgetDetailResponse>
+    
+    @GET("budgets/{budgetId}/categories")
+    fun getCategoriesForBudgetById(@Path("budgetId") budgetId: String): Call<YNABCategories.CategoriesReponse>
 }
+
+typealias THE_TEST_TYPE = YNABCategories.CategoriesReponse
 
 object YNABBudget {
     
@@ -116,9 +129,29 @@ object YNABBudgetDetail {
     data class Category(
         val name: String,
         val hidden: Boolean,
-        val goal_target: Int
+        val goal_target: Int,
+        val goal_creation_month: String?
     )
     
+}
+
+object YNABCategories {
+    
+    data class CategoriesReponse(
+        val data: CategoryGroupsWrapper
+    )
+    
+    data class CategoryGroupsWrapper(
+        val category_groups: List<CategoryGroupWithCategories>
+    )
+    
+    data class CategoryGroupWithCategories(
+        val id: String,
+        val name: String,
+        val hidden: Boolean,
+        val deleted: Boolean,
+        val categories: List<YNABBudgetDetail.Category>
+    )
 }
 
 object YNABUser {
