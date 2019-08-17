@@ -10,9 +10,10 @@ object CommandProcessor {
     
     fun parseStringCommand(input: String?) =
         input?.let {
-            commandAdapter.fromJson(input)
+            commandAdapter.fromJson(it)
         } ?: Command.MainAppStop()
     
     fun Command.toJsonString(): String =
         commandAdapter.toJson(this)
+    
 }

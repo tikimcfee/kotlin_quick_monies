@@ -30,3 +30,4 @@ sealed class Command(
         val groupId: String
     ) : Command(REMOVE_SCHEDULED_TRANSACTION)
 }
+

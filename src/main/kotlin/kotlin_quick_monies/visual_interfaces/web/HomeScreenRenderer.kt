@@ -51,7 +51,6 @@ object HomeScreenRenderer {
                             }
                         }
                         
-                        
                         // The 'high level' picture of how to draw it
                         transactionTable()
                         transactionInputs()

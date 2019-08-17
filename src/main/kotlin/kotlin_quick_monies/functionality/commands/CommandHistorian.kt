@@ -20,9 +20,9 @@ class CommandHistorian {
     fun recordRawCommand(rawCommand: String) {
         println("Recording raw command: [$rawCommand]")
         with(historyFile()) {
-            copyTo(preBackupFile(), overwrite = true)
+//            copyTo(preBackupFile(), overwrite = true)
             appendText(rawCommand + "\n")
-            copyTo(postBackupFile(), overwrite = true)
+//            copyTo(postBackupFile(), overwrite = true)
         }
     }
     

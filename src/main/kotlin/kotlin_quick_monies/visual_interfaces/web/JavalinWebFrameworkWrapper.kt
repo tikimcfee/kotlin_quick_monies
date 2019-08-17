@@ -7,7 +7,12 @@ import kotlin_quick_monies.visual_interfaces.web.HomeScreenRenderer.FormParam.*
 import kotlin_quick_monies.visual_interfaces.web.HomeScreenRenderer.renderResponseTo
 import io.javalin.Context
 import io.javalin.Javalin
+import kotlin_quick_monies.functionality.accounting.TransactionAccountant
+import kotlin_quick_monies.functionality.commands.CommandHistorian
+import kotlin_quick_monies.functionality.commands.CommandProcessor
 import kotlin_quick_monies.functionality.coreDefinitions.*
+import kotlin_quick_monies.functionality.dataPopulation.ProjectedTransactionGenerator
+import kotlin_quick_monies.functionality.list.TransactionList
 import kotlin_quick_monies.transfomers.TransactionsAsText.QuickMoniesDates.parseToDate
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.ServerConnector
@@ -54,7 +59,7 @@ class JavalinWebFrameworkWrapper {
     
     fun start() {
         val app = Javalin.create()
-            .enableDebugLogging()
+//            .enableDebugLogging()
             .server {
                 Server().apply {
                     connectors = arrayOf(ServerConnector(this).apply {
@@ -65,7 +70,13 @@ class JavalinWebFrameworkWrapper {
             }
             .start(7000)
         
-        val runtimeState = AppStateFunctions().apply { restoreState() }
+        val runtimeState = AppStateFunctions(
+            TransactionList(),
+            TransactionAccountant(),
+            CommandProcessor,
+            CommandHistorian(),
+            ProjectedTransactionGenerator()
+        ).apply { restoreState() }
         
         Route.startupRouteSet.forEach { route ->
             // little trick to make the compiler enforce full enum set usage
@@ -73,8 +84,6 @@ class JavalinWebFrameworkWrapper {
             val noopReturnHandle = when (route) {
                 Route.Home -> app.get(route.name) {
                     runtimeState.renderResponseTo(it)
-                    
-                    YNABIntegration.testFetch()
                 }
                 Route.AddTransaction -> app.post(route.name) {
                     runtimeState.withContextAddTransaction(it)

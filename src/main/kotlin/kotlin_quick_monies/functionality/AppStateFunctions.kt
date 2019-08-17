@@ -9,11 +9,11 @@ import kotlin_quick_monies.functionality.list.TransactionList
 
 
 class AppStateFunctions(
-    val transactionList: TransactionList = TransactionList(),
-    val transactionAccountant: TransactionAccountant = TransactionAccountant(),
-    val commandProcessor: CommandProcessor = CommandProcessor,
-    val commandHistorian: CommandHistorian = CommandHistorian(),
-    val projectedTransactionGenerator: ProjectedTransactionGenerator = ProjectedTransactionGenerator()
+    val transactionList: TransactionList,
+    val transactionAccountant: TransactionAccountant,
+    val commandProcessor: CommandProcessor,
+    val commandHistorian: CommandHistorian,
+    val projectedTransactionGenerator: ProjectedTransactionGenerator
 ) {
     
     fun saveAndRun(command: Command) {
