@@ -72,11 +72,11 @@ class TerminalInteractionLoop {
         transactionList: TransactionList,
         transactionAccountant: TransactionAccountant
     ) {
-        transactionAccountant
-            .computeTransactionDeltas(transactionList)
-            .forEachIndexed { index, snapshot ->
-                println("${index + 1}. ${TransactionsAsText.Simple.render(snapshot)}")
-            }
+//        transactionAccountant
+//            .computeTransactionDeltas(transactionList)
+//            .forEachIndexed { index, snapshot ->
+//                println("${index + 1}. ${TransactionsAsText.Simple.render(snapshot)}")
+//            }
     }
     
 }

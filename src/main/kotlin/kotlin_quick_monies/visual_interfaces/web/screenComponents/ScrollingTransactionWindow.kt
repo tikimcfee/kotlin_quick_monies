@@ -21,6 +21,8 @@ import org.joda.time.DateTime
 // Table Builders
 // ---------------------------------
 
+typealias LongRangeToSnapshotEntry = Map.Entry<LongRange, SortedList<TransactionAccountant.Snapshot>>
+
 fun AppStateFunctions.makeAllTransactionTables(parentTag: Tag) {
     with(parentTag) {
         transactionAccountant.computeTransactionDeltas(
@@ -35,7 +37,6 @@ fun AppStateFunctions.makeAllTransactionTables(parentTag: Tag) {
     }
 }
 
-typealias LongRangeToSnapshotEntry = Map.Entry<LongRange, SortedList<TransactionAccountant.Snapshot>>
 
 fun Tag.makeTransactionTable(mapEntry: LongRangeToSnapshotEntry) {
     val (dateRange, sortedSnapshots) = mapEntry

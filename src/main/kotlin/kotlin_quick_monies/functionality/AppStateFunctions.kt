@@ -27,7 +27,7 @@ fun Command.executeWithStateFunctions(
     appStateFunctions: AppStateFunctions
 ): Any = when (this) {
     is Command.Add ->
-        appStateFunctions.transactionList.insert(transaction = transaction)
+        appStateFunctions.transactionList.insert(transaction)
     
     is Command.RemoveTransaction ->
         appStateFunctions.transactionList.remove(transactionId)

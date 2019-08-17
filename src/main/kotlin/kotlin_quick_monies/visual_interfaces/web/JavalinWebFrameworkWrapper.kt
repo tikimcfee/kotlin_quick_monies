@@ -1,23 +1,23 @@
 package kotlin_quick_monies.visual_interfaces.web
 
-import kotlin_quick_monies.functionality.AppStateFunctions
-import kotlin_quick_monies.functionality.commands.Command
-import kotlin_quick_monies.functionality.restoreState
-import kotlin_quick_monies.visual_interfaces.web.HomeScreenRenderer.FormParam.*
-import kotlin_quick_monies.visual_interfaces.web.HomeScreenRenderer.renderResponseTo
 import io.javalin.Context
 import io.javalin.Javalin
+import kotlin_quick_monies.functionality.AppStateFunctions
+import kotlin_quick_monies.functionality.CSVWrapper
 import kotlin_quick_monies.functionality.accounting.TransactionAccountant
+import kotlin_quick_monies.functionality.commands.Command
 import kotlin_quick_monies.functionality.commands.CommandHistorian
 import kotlin_quick_monies.functionality.commands.CommandProcessor
 import kotlin_quick_monies.functionality.coreDefinitions.*
 import kotlin_quick_monies.functionality.dataPopulation.ProjectedTransactionGenerator
 import kotlin_quick_monies.functionality.list.TransactionList
+import kotlin_quick_monies.functionality.restoreState
 import kotlin_quick_monies.transfomers.TransactionsAsText.QuickMoniesDates.parseToDate
+import kotlin_quick_monies.visual_interfaces.web.HomeScreenRenderer.FormParam.*
+import kotlin_quick_monies.visual_interfaces.web.HomeScreenRenderer.renderResponseTo
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.ServerConnector
 import org.joda.time.DateTime
-import java.lang.Exception
 import java.net.InetAddress
 import java.util.*
 
@@ -76,12 +76,16 @@ class JavalinWebFrameworkWrapper {
             CommandProcessor,
             CommandHistorian(),
             ProjectedTransactionGenerator()
-        ).apply { restoreState() }
+        ).apply {
+            restoreState()
+    
+            with(CSVWrapper) {
+                exportCurrentSnapshotsToCsv()
+            }
+        }
         
         Route.startupRouteSet.forEach { route ->
-            // little trick to make the compiler enforce full enum set usage
-            // *Do not add an else!*
-            val noopReturnHandle = when (route) {
+            when (route) {
                 Route.Home -> app.get(route.name) {
                     runtimeState.renderResponseTo(it)
                 }
@@ -97,6 +101,9 @@ class JavalinWebFrameworkWrapper {
                     runtimeState.withContextAddRepeatedTransaction(it)
                     it.redirect(Route.Home.path)
                 }
+            }.run {
+                // Keep this around to ensure the when above is guaranteed a known value at compile time
+                println("## Route [$route] loaded")
             }
         }
     }

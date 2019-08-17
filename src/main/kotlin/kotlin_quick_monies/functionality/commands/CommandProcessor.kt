@@ -1,8 +1,7 @@
 package kotlin_quick_monies.functionality.commands
 
-import com.squareup.moshi.JsonAdapter
 import kotlin_quick_monies.functionality.json.JsonTools.jsonParser
-
+import com.squareup.moshi.JsonAdapter
 
 object CommandProcessor {
     
@@ -15,5 +14,4 @@ object CommandProcessor {
     
     fun Command.toJsonString(): String =
         commandAdapter.toJson(this)
-    
 }
