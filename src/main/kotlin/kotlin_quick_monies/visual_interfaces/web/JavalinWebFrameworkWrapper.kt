@@ -145,7 +145,7 @@ class JavalinWebFrameworkWrapper {
             val transactionDescription = formString(ADD_REPEATED_TRANSACTION_DESCRIPTION)
             
             val transactionDayGroup = try {
-                IdealCore.CoreConstants.DayGroup.valueOf(
+                DayGroup.valueOf(
                     formString(ADD_REPEATED_TRANSACTION_SEPARATOR)
                 )
             } catch (e: Exception) {

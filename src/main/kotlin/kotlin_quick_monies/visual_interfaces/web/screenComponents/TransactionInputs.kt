@@ -1,6 +1,6 @@
 package kotlin_quick_monies.visual_interfaces.web.screenComponents
 
-import kotlin_quick_monies.functionality.coreDefinitions.IdealCore.CoreConstants.DayGroup.*
+import kotlin_quick_monies.functionality.coreDefinitions.DayGroup.*
 import kotlin_quick_monies.transfomers.TransactionsAsText
 import kotlin_quick_monies.visual_interfaces.web.HomeScreenRenderer.FormParam.*
 import kotlin_quick_monies.visual_interfaces.web.JavalinWebFrameworkWrapper

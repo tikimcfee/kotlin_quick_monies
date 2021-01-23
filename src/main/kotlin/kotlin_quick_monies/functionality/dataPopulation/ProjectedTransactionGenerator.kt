@@ -2,8 +2,8 @@ package kotlin_quick_monies.functionality.dataPopulation
 
 import kotlin_quick_monies.functionality.AppStateFunctions
 import kotlin_quick_monies.functionality.commands.Command
-import kotlin_quick_monies.functionality.coreDefinitions.IdealCore
-import kotlin_quick_monies.functionality.coreDefinitions.IdealCore.CoreConstants.DayGroup.*
+import kotlin_quick_monies.functionality.coreDefinitions.DayGroup
+import kotlin_quick_monies.functionality.coreDefinitions.DayGroup.*
 import kotlin_quick_monies.functionality.coreDefinitions.Transaction
 import kotlin_quick_monies.functionality.coreDefinitions.newTransactionId
 import kotlin_quick_monies.functionality.executeWithStateFunctions
@@ -11,9 +11,9 @@ import org.joda.time.DateTime
 
 class ProjectedTransactionGenerator {
     
-    private fun IdealCore.CoreConstants.DayGroup.makeGenerator(
+    private fun DayGroup.makeGenerator(
         startDate: Long,
-        produceNextDateFrom: (IdealCore.CoreConstants.DayGroup, Long) -> Long,
+        produceNextDateFrom: (DayGroup, Long) -> Long,
         shouldKeepRunning: () -> Boolean = { true }
     ) = sequence {
         var nextDateToYield = startDate
@@ -23,7 +23,7 @@ class ProjectedTransactionGenerator {
         }
     }
     
-    fun dateGenerator(group: IdealCore.CoreConstants.DayGroup, date: Long): Long {
+    fun dateGenerator(group: DayGroup, date: Long): Long {
         return with(DateTime(date)) {
             when (group) {
                 Day -> plusDays(1)

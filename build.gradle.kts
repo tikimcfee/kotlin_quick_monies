@@ -1,6 +1,5 @@
 import org.gradle.jvm.tasks.Jar
 
-
 plugins {
     // Apply the Kotlin JVM plugin to add support for Kotlin on the JVM.
     kotlin("jvm") version "1.4.10"
@@ -19,21 +18,16 @@ repositories {
 dependencies {
     // Use the Kotlin JDK 8 standard library.
     implementation(kotlin("stdlib-jdk8"))
-    implementation(kotlin("reflect"))
-    
-    // --- PoC Libs ---
     
     // - Server -
     implementation("io.javalin:javalin:2.7.0")
     implementation("org.slf4j:slf4j-simple:1.7.25")
     
-    // - Data Serialization (because 'Dataz' was lame) -
-    implementation("com.squareup.moshi:moshi:1.8.0")
-    implementation("com.squareup.moshi:moshi-kotlin:1.8.0")
+    // Serialization and networking glue
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
     
-    // - Ser-..client... serlcients.
     implementation("com.squareup.retrofit2:retrofit:2.5.0")
-    implementation("com.squareup.retrofit2:converter-moshi:2.5.0")
     
     // - Time -
     implementation("joda-time:joda-time:2.10.1")
@@ -42,18 +36,17 @@ dependencies {
     implementation("org.jetbrains:kotlin-css:1.0.0-pre.141-kotlin-1.4.21")
 }
 
-val mainClassPathJavalin = "kotlin_quick_monies.visual_interfaces.web.JavalinWebFrameworkWrapperKt"
+application {
+    // Define the main class for the CLI application.
+    mainClassName = "kotlin_quick_monies.visual_interfaces.web.JavalinWebFrameworkWrapperKt"
+}
 
 val fatJar = task("fatJar", type = Jar::class) {
     archiveBaseName.set("${project.name}-fat")
     
-    // Used to provide default main class for executable jar
-    manifest {
-        attributes["Main-Class"] = mainClassPathJavalin
-    }
+    from(sourceSets.main.get().output)
     
     dependsOn(configurations.runtimeClasspath)
-    from(sourceSets.main.get().output)
     from(configurations.runtimeClasspath.get()
         .filter { it.name.endsWith("jar") }
         .map { zipTree(it) }
@@ -64,9 +57,8 @@ val fatJar = task("fatJar", type = Jar::class) {
 //        "**/*.kotlin_module",
 //        "**/*.kotlin_builtins"
     )
-}
-
-application {
-    // Define the main class for the CLI application.
-    mainClassName = mainClassPathJavalin
+    
+    manifest {
+        attributes["Main-Class"] = "kotlin_quick_monies.visual_interfaces.web.JavalinWebFrameworkWrapperKt"
+    }
 }

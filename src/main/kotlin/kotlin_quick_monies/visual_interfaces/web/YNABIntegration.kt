@@ -1,15 +1,15 @@
 package kotlin_quick_monies.visual_interfaces.web
 
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlin_quick_monies.functionality.commands.CommandHistorian
-import kotlin_quick_monies.functionality.json.JsonTools.jsonParser
-import kotlin_quick_monies.transfomers.TransactionsAsText
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType
 import okhttp3.OkHttpClient
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Path
 
@@ -31,7 +31,6 @@ object YNABIntegration {
         }
     }
     
-    
     private val httpClient = OkHttpClient.Builder()
         .addInterceptor { chain ->
             val requestWithTokenHeader = chain.request()
@@ -42,14 +41,15 @@ object YNABIntegration {
         }
         .build()
     
+    @ExperimentalSerializationApi
     private val mainRetrofit = Retrofit.Builder()
         .baseUrl("https://api.youneedabudget.com/v1/")
         .client(httpClient)
-        .addConverterFactory(MoshiConverterFactory.create(jsonParser))
+        .addConverterFactory(Json.asConverterFactory(MediaType.get("application/json")))
         .build()
     
+    @ExperimentalSerializationApi
     private val mainService = mainRetrofit.create(YNABService::class.java)
-    
     
     fun testFetch() {
         fun checkResponse(response: Response<THE_TEST_TYPE>) {

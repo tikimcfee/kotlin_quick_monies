@@ -1,27 +1,31 @@
 package kotlin_quick_monies.functionality.coreDefinitions
 
+import kotlinx.serialization.Serializable
 import java.util.*
 
+@Serializable
 data class Transaction(
-    override val id: String,
-    override val date: Long,
-    override val amount: Double,
-    override val description: String,
-    override val groupInfo: TransactionGroupInfo
-) : IdealCore.IdealCoreComponent.IdealTransaction()
+    val id: String,
+    val date: Long,
+    val amount: Double,
+    val description: String,
+    val groupInfo: TransactionGroupInfo
+)
 
+@Serializable
 data class TransactionGroupInfo(
-    override val id: String,
-    override val resultTransactions: MutableList<String>,
-    override val sourceSchedule: TransactionSchedulingData,
-    override val inHiddenExpenses: Boolean
-) : IdealCore.IdealCoreComponent.IdealTransactionGroupInfo()
+    val id: String,
+    val resultTransactions: MutableList<String>,
+    val sourceSchedule: TransactionSchedulingData,
+    val inHiddenExpenses: Boolean
+)
 
+@Serializable
 open class TransactionSchedulingData(
-    override val id: String,
-    override val repetitionAmount: Int,
-    override val repetitionSeparator: IdealCore.CoreConstants.DayGroup
-) : IdealCore.IdealCoreComponent.IdealTransactionSchedulingData()
+    val id: String,
+    val repetitionAmount: Int,
+    val repetitionSeparator: DayGroup
+)
 
 fun newTransactionId() = UUID.randomUUID().toString()
 
@@ -32,5 +36,5 @@ fun newTransactionId() = UUID.randomUUID().toString()
 object SingleDaySchedule : TransactionSchedulingData(
     id = "individual_schedule_no_repetition_single_day",
     repetitionAmount = 1,
-    repetitionSeparator = IdealCore.CoreConstants.DayGroup.Day
+    repetitionSeparator = DayGroup.Day
 )
