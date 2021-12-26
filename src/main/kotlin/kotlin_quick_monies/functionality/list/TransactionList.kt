@@ -15,5 +15,13 @@ class TransactionList(
     fun remove(transactionId: String): Boolean {
         return transactions.removeAll { it.id == transactionId }
     }
-    
+
+    fun update(transactionId: String, receiver: (Transaction) -> Unit) {
+        transactions.forEach {
+            if (it.id.contains(transactionId)) {
+                receiver(it)
+            }
+        }
+    }
+
 }

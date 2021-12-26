@@ -149,7 +149,7 @@ fun SimpleHTML.Html.setGlobalStyles() {
         addClass(transactionRowsGridParent) {
             display = Display.grid
             gridTemplateColumns = GridTemplateColumns(
-                25.pct, 35.pct, 20.pct, 20.pct
+                25.pct, 25.pct, 20.pct, 10.pct, 20.pct
             )
             
             borderRadius = 2.pt
@@ -173,14 +173,14 @@ fun SimpleHTML.Html.setGlobalStyles() {
             width = 10.pct
         }
         
-        rule("span.transaction-row-info-grid-item:nth-child(-n+4)") {
+        rule("span.transaction-row-info-grid-item:nth-child(-n+5)") {
             backgroundColor = Color.deepSkyBlue
             fontWeight = FontWeight.bold
             color = Color.white
             marginBottom = 4.pt
         }
         
-        rule("span.transaction-row-info-grid-item:nth-child(n+5)") {
+        rule("span.transaction-row-info-grid-item:nth-child(n+6)") {
             backgroundColor = Color("#00beff1a")
             borderBottom = "1px solid #0000001a"
             marginBottom = 2.pt

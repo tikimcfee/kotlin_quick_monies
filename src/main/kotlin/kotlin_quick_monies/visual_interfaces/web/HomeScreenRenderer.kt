@@ -15,6 +15,8 @@ object HomeScreenRenderer {
         ADD_TRANSACTION_AMOUNT("inputTransactionAmount"),
         ADD_TRANSACTION_DESCRIPTION("inputTransactionDescription"),
         ADD_TRANSACTION_DATE("inputTransactionDate"),
+
+        TRANSACTION_UPDATE_AMOUNT("inputUpdateTransactionAmount"),
         
         ADD_REPEATED_TRANSACTION_AMOUNT("inputRepeatedTransactionAmount"),
         ADD_REPEATED_TRANSACTION_INSTANCES_TO_ADD("inputRepeatedTransactionCount"),

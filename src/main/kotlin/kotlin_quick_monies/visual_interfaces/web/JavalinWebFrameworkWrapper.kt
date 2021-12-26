@@ -8,6 +8,7 @@ import kotlin_quick_monies.functionality.accounting.TransactionAccountant
 import kotlin_quick_monies.functionality.commands.Command
 import kotlin_quick_monies.functionality.commands.CommandHistorian
 import kotlin_quick_monies.functionality.commands.CommandProcessor
+import kotlin_quick_monies.functionality.commands.UPDATE_TRANSACTION_AMOUNT
 import kotlin_quick_monies.functionality.coreDefinitions.*
 import kotlin_quick_monies.functionality.dataPopulation.ProjectedTransactionGenerator
 import kotlin_quick_monies.functionality.list.TransactionList
@@ -44,7 +45,7 @@ class JavalinWebFrameworkWrapper {
             val root: String = "$protocol://$host:$port"
             
             val startupRouteSet = setOf(
-                Home, AddTransaction, RemoveTransactionById, AddRepeatedTransaction
+                Home, AddTransaction, RemoveTransactionById, AddRepeatedTransaction, UpdateTransactionAmount
             )
         }
         
@@ -55,6 +56,7 @@ class JavalinWebFrameworkWrapper {
         object AddTransaction : Route("add_transaction", "post")
         object AddRepeatedTransaction : Route("add_repeated_transaction", "post")
         object RemoveTransactionById : Route("remove_transaction_by_id", "post")
+        object UpdateTransactionAmount : Route("update_transaction_amount", "post")
     }
     
     fun start() {
@@ -101,6 +103,10 @@ class JavalinWebFrameworkWrapper {
                     runtimeState.withContextAddRepeatedTransaction(it)
                     it.redirect(Route.Home.path)
                 }
+                Route.UpdateTransactionAmount -> app.post(route.name) {
+                    runtimeState.withContextUpdateTransaction(it)
+                    it.redirect(Route.Home.path)
+                }
             }.run {
                 // Keep this around to ensure the when above is guaranteed a known value at compile time
                 println("## Route [$route] loaded")
@@ -119,7 +125,7 @@ class JavalinWebFrameworkWrapper {
             saveAndRun(
                 Command.Add(
                     Transaction(
-                        "${UUID.randomUUID()}::${transactionDate.millis}",
+                        "${UUID.randomUUID()}",
                         transactionDate.millis,
                         transactionAmount,
                         transactionDescription,
@@ -130,6 +136,30 @@ class JavalinWebFrameworkWrapper {
                             inHiddenExpenses = false
                         )
                     )
+                )
+            )
+        }
+    }
+
+    private fun AppStateFunctions.withContextUpdateTransaction(
+        requestContext: Context
+    ) {
+        with(requestContext) {
+            val map = formParamMap()
+            val updateRow = map.entries.firstOrNull() ?: return
+            val updateAmount = formDoubleUnsafe(updateRow.key) ?: return
+
+            val splitData = updateRow.key.split("_")
+            val transactionId = when(splitData.count()) {
+                2 -> splitData[1] // single
+                3 -> splitData[1] // repeated with random id behind
+                else -> return
+            }
+
+            saveAndRun(
+                Command.UpdateTransactionAmount(
+                    transactionId = transactionId,
+                    newAmount = updateAmount
                 )
             )
         }
@@ -164,10 +194,10 @@ class JavalinWebFrameworkWrapper {
                         monthlyAmount,
                         transactionDescription,
                         groupInfo = TransactionGroupInfo(
-                            "repeated-transactions::$newId::${startDate.millis}",
+                            "repeated-transactions_${newId}",
                             mutableListOf(),
                             TransactionSchedulingData(
-                                "repeated-schedules::$newId::${startDate.millis}",
+                                "repeated-schedules_${newId}",
                                 instancesToAdd,
                                 transactionDayGroup
                             ),
@@ -196,6 +226,15 @@ class JavalinWebFrameworkWrapper {
             formParam(param.id)?.toDouble()
         } catch (badInput: NotANumber) {
             println("Looked for $param, scored a ${formParam(param.id)}")
+            null
+        }
+    }
+
+    private fun Context.formDoubleUnsafe(param: String): Double? {
+        return try {
+            formParam(param)?.toDouble()
+        } catch (badInput: NotANumber) {
+            println("Looked for $param, scored a ${formParam(param)}")
             null
         }
     }
@@ -235,7 +274,5 @@ class JavalinWebFrameworkWrapper {
     } catch (badInput: Exception) {
         null
     }
-    
-    
 }
 

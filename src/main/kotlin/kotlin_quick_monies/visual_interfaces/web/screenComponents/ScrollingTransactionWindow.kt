@@ -3,14 +3,21 @@ package kotlin_quick_monies.visual_interfaces.web.screenComponents
 import kotlin_quick_monies.functionality.AppStateFunctions
 import kotlin_quick_monies.functionality.accounting.SortedList
 import kotlin_quick_monies.functionality.accounting.TransactionAccountant
+import kotlin_quick_monies.functionality.commands.UPDATE_TRANSACTION_AMOUNT
 import kotlin_quick_monies.transfomers.TransactionsAsText.IndividualFormatting.formattedAfter
 import kotlin_quick_monies.transfomers.TransactionsAsText.IndividualFormatting.formattedAmount
 import kotlin_quick_monies.transfomers.TransactionsAsText.IndividualFormatting.formattedDate
 import kotlin_quick_monies.transfomers.TransactionsAsText.QuickMoniesDates.longMonthLongYear
+import kotlin_quick_monies.visual_interfaces.web.HomeScreenRenderer
+import kotlin_quick_monies.visual_interfaces.web.JavalinWebFrameworkWrapper
 import kotlin_quick_monies.visual_interfaces.web.LensOfTruth
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.addActionAndMethod
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses.mainTransaction.transactionRowsGridItem
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.componentClasses.mainTransaction.transactionRowsGridParent
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.div
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.form
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.inputTag
+import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.setAttribute
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.setCssClasses
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.span
 import kotlin_quick_monies.visual_interfaces.web.htmlComponents.SimpleHTML.text
@@ -28,11 +35,9 @@ fun AppStateFunctions.makeAllTransactionTables(parentTag: Tag) {
         transactionAccountant.computeTransactionDeltas(
             transactionList,
             dateGroupReceiver = { dateMap ->
-                dateMap
-                    .allEntries()
-                    .forEach { mapEntry ->
-                        makeTransactionTable(mapEntry)
-                    }
+                dateMap.allEntries().forEach { group ->
+                    makeTransactionTable(group)
+                }
             })
     }
 }
@@ -81,6 +86,12 @@ fun Tag.makeTransactionTable(mapEntry: LongRangeToSnapshotEntry) {
             setCssClasses(transactionRowsGridItem)
             text("Moneys 💸")
         }
+
+        span {
+            setCssClasses(transactionRowsGridItem)
+            text("Update $")
+        }
+
         span {
             setCssClasses(transactionRowsGridItem)
             text("After ✅")
@@ -90,6 +101,7 @@ fun Tag.makeTransactionTable(mapEntry: LongRangeToSnapshotEntry) {
             mainTransactionDateBlock(snapshot)
             mainTransactionDescriptionBlock(snapshot)
             mainTransactionAmountBlock(snapshot)
+            mainTransactionUpdateAmountBlock(snapshot)
             mainTransactionAmountAfterBlock(snapshot)
         }
     }
@@ -122,6 +134,21 @@ fun Tag.mainTransactionAmountBlock(snapshot: TransactionAccountant.Snapshot) {
     }
 }
 
+fun Tag.mainTransactionUpdateAmountBlock(snapshot: TransactionAccountant.Snapshot) {
+    with(snapshot.transaction) {
+        span {
+            setCssClasses(transactionRowsGridItem)
+            form {
+                addActionAndMethod(JavalinWebFrameworkWrapper.Route.UpdateTransactionAmount)
+                inputTag(
+                    "...",
+                    HomeScreenRenderer.FormParam.TRANSACTION_UPDATE_AMOUNT,
+                    uniqueId = id
+                ).setAttribute("style", "width: 100%")
+            }
+        }
+    }
+}
 
 fun Tag.mainTransactionAmountAfterBlock(snapshot: TransactionAccountant.Snapshot) {
     with(snapshot.transaction) {

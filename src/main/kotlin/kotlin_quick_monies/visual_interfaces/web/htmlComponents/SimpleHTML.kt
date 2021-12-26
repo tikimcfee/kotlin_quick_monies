@@ -95,9 +95,11 @@ object SimpleHTML {
     fun Tag.inputTag(
         labelText: String,
         forAttr: HomeScreenRenderer.FormParam,
+        uniqueId: String? = null,
         input: Input.() -> Unit = {}
     ) = initTag(Input()) {
-        setAttribute("name", forAttr.id)
+        val finalId = forAttr.id + uniqueId?.let { "_$it" }
+        setAttribute("name", finalId)
         setAttribute("id", forAttr.id)
         setAttribute("placeholder", labelText)
         input(this)

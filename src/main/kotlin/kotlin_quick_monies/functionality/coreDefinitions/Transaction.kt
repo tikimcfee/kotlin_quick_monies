@@ -6,9 +6,9 @@ import java.util.*
 @Serializable
 data class Transaction(
     val id: String,
-    val date: Long,
-    val amount: Double,
-    val description: String,
+    var date: Long,
+    var amount: Double,
+    var description: String,
     val groupInfo: TransactionGroupInfo
 )
 

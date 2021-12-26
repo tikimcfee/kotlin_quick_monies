@@ -41,15 +41,13 @@ class ProjectedTransactionGenerator {
         fun generateTransactions(): List<Transaction> {
             return with(transactionTemplate.groupInfo.sourceSchedule) {
                 repetitionSeparator
-                    .makeGenerator(
-                        transactionTemplate.date,
-                        ::dateGenerator
-                    )
+                    .makeGenerator(transactionTemplate.date,  ::dateGenerator)
                     .take(repetitionAmount)
                     .mapIndexed { index, nextDate ->
-                        val newId = newTransactionId()
+                        val newId = "${transactionTemplate.id}_from-template-${newTransactionId()}"
                         transactionTemplate.copy(
                             id = newId,
+
                             // todo: numbering tries to show when something ends; maybe mark 'last' instead?
                             description = when (transactionTemplate.groupInfo.inHiddenExpenses) {
                                 true -> transactionTemplate.description
@@ -60,7 +58,9 @@ class ProjectedTransactionGenerator {
                                         ""
                                     })
                             },
+
                             date = nextDate,
+
                             groupInfo = transactionTemplate.groupInfo.apply {
                                 resultTransactions.add(newId)
                             }

@@ -23,7 +23,7 @@ class TerminalInteractionLoop {
     private fun AppStateFunctions.stateLoop() {
         while (shouldContinue) {
             // Grab Input
-            print("What's your poison? :: ")
+            print("What's your poison? } ")
             val input = readLine()
             commandHistorian.recordRawCommand(input ?: "--end-of-input--")
             

@@ -38,7 +38,12 @@ fun Command.executeWithStateFunctions(
             .insertTransactionsFromTemplate(transactionTemplate, appStateFunctions)
     
     is Command.RemoveScheduledTransaction -> TODO()
-    
+
+    is Command.UpdateTransactionAmount ->
+        appStateFunctions.transactionList.update(transactionId) {
+            it.amount = newAmount
+        }
+
     is Command.MainAppStop -> Unit
 }
 
