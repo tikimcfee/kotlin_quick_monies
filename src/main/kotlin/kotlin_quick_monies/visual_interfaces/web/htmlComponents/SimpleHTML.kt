@@ -98,7 +98,7 @@ object SimpleHTML {
         uniqueId: String? = null,
         input: Input.() -> Unit = {}
     ) = initTag(Input()) {
-        val finalId = forAttr.id + uniqueId?.let { "_$it" }
+        val finalId = forAttr.id + (uniqueId?.let { "_$it" } ?: "")
         setAttribute("name", finalId)
         setAttribute("id", forAttr.id)
         setAttribute("placeholder", labelText)

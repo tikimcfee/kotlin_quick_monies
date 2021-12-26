@@ -51,12 +51,11 @@ class ProjectedTransactionGenerator {
                             // todo: numbering tries to show when something ends; maybe mark 'last' instead?
                             description = when (transactionTemplate.groupInfo.inHiddenExpenses) {
                                 true -> transactionTemplate.description
-                                false -> transactionTemplate.description +
-                                    (if (index + 1 == repetitionAmount) {
-                                        " (last one)"
-                                    } else {
-                                        ""
-                                    })
+                                false -> transactionTemplate.description + when(index) {
+                                    0 -> " (first one)"
+                                    repetitionAmount - 1 -> " (last one)"
+                                    else -> ""
+                                }
                             },
 
                             date = nextDate,
